@@ -13,4 +13,7 @@ Gathers and displays statistics about the tags throughout the zettelkasten, incl
 * Total tags.
 
 ## find_and_replace.py
-Searches for a string (or regex pattern!) of your choice throughout all zettels, and helps you choose whether you want to replace some or all of them with another string or pattern.
+Searches for a string (or regex pattern) of your choice throughout all zettels, and helps you choose whether you want to replace some or all of them with another string or pattern.
+
+## new_zettel.py
+Creates a new zettel with a title of your choice and a YAML frontmatter block containing that title.
