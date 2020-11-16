@@ -7,7 +7,6 @@
 import os
 import sys
 import re
-# from PIL import Image
 import send2trash
 import datetime
 import pyautogui
@@ -15,17 +14,22 @@ import pyautogui
 
 zettel_types = ('.md', '.markdown')
 asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4')
-image_types = ('.jpg', '.jpeg', '.png')  # Not in use. Test the program and consider deleting.
 asset_link_pattern = r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|pdf|mp4)\)'
 
 
 def main():
-    unused_assets, unused_bytes = find_unused_assets()
-    print_unused_asset_info(unused_assets, unused_bytes)
-    total_bytes = sum(unused_bytes)
+    unused_assets = find_unused_assets()
+    sorted_assets = dict()
+
+    # Sort the assets by value.
+    for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
+        sorted_assets[key] = value
+
+    print_asset_info(sorted_assets)
+    total_bytes = sum(sorted_assets.values())
     print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
 
-    if len(unused_assets) == 0:
+    if len(sorted_assets) == 0:
         return
 
     print('\nMenu:')
@@ -37,31 +41,31 @@ def main():
 
     os.chdir('..')
     if choice == '1':
-        validate_unused_assets(unused_assets)
+        validate_unused_assets(sorted_assets)
     elif choice == '2':
-        delete_unused_assets(unused_assets)
+        delete_unused_assets(sorted_assets)
     else:
         sys.exit(0)
 
 
+# For sorting a dictionary by value with the sorted() function.
+def by_value(item):
+    return item[1]
+
+
+# Returns a dict with keys of asset names and values of asset file sizes.
 def find_unused_assets():
     zettel_names, asset_names = find_file_names()
     asset_links = find_asset_links(zettel_names)
 
     # Find unused assets by comparing the zettelkasten's files and the file links in the zettels.
-    unused_assets_b = dict() # The keys are asset names, and the values are the asset file sizes.
-
-
-    unused_assets = []
-    unused_bytes = []
+    unused_assets = dict()
     for asset_name in asset_names:
         if asset_name not in asset_links:
             asset_path = '../' + asset_name
-            unused_assets_b[asset_name] = os.path.getsize(asset_path)
-            unused_assets.append(asset_name)
-            unused_bytes.append(os.path.getsize(asset_path))
+            unused_assets[asset_name] = os.path.getsize(asset_path)
 
-    return unused_assets, unused_bytes
+    return unused_assets
 
 
 def find_file_names():
@@ -101,14 +105,14 @@ def find_asset_links(zettel_names):
 
 
 # Print the names and the kilobytes of each unused asset.
-def print_unused_asset_info(unused_assets, unused_bytes):
+def print_asset_info(unused_assets):
     if len(unused_assets) == 0:
         return
-    name_size = len(max(unused_assets, key=len))  # The size of the longest asset name.
+    name_size = len(max(unused_assets.keys(), key=len))  # The size of the longest asset name.
     print('\nUnused assets:')
-    for i, _ in enumerate(unused_assets):
-        Bytes = format_bytes(unused_bytes[i])
-        print(f'{unused_assets[i]:<{name_size}}{Bytes:>12}')
+    for key, value in unused_assets.items():
+        Bytes = format_bytes(value)
+        print(f'{key:<{name_size}}{Bytes:>12}')
 
 
 # Convert bytes to kilobytes, megabytes, etc.
@@ -118,7 +122,7 @@ def format_bytes(Bytes):
     while Bytes > 1024:
         power += 3
         Bytes /= 1024
-    result = str(round(Bytes, 2))
+    result = '{:.2f}'.format(round(Bytes, 2))
     if power == 0:
         return result + '  B'
     elif power == 3:
@@ -136,47 +140,31 @@ def format_bytes(Bytes):
 #   ask the user what to do with it
 def validate_unused_assets(unused_assets):
     print('\nChoose what to do with each unused asset.')
-    print('\nYou can enter q to quit.\n')
-    for asset_name in unused_assets:
-        print(asset_name)
+    print('You can enter q to quit.\n')
+    for key, value in unused_assets.items():
+        # Print the asset name and memory.
+        Bytes = format_bytes(value)
+        print(f'{key}{Bytes:>10}')
 
-        os.startfile(asset_name)  # Open the asset for the user to view.
+        os.startfile(key)  # Open the asset for the user to view.
         pyautogui.sleep(0.5)
         asset_window = pyautogui.getActiveWindow()
         pyautogui.hotkey('alt', 'tab')  # Bring the program's window back to the front.
         choice = input('Send asset to the recycle bin? [y/n]: ')
         asset_window.close()
 
-        '''
-            # If the code above doesn't work for certain filetypes, use this:
-            # https://helloacm.com/execute-external-programs-the-python-ways/
-            if asset_name.endswith(image_types):
-                with Image.open(asset_path) as image:
-                    image.show()
-                    choice = input('Send asset to the recycle bin? [y/n]: ')
-            elif asset_name.endswith('.pdf'):
-                pdf = Popen(asset_path, shell=True)
-                choice = input('Send asset to the recycle bin? [y/n]: ')
-                pdf.kill() # Close the pdf.
-            elif asset_name.endswith('.mp4'):
-                # TODO.
-            else:
-                print('Error: file type not yet supported.')
-                choice = 'n'
-        '''
-
         # Respond to the user's choice.
         if choice == 'y':
-            send2trash.send2trash(asset_name)
-            print('Asset sent to the recycle bin.')
+            send2trash.send2trash(key)
+            print('Asset sent to the recycle bin.\n')
         elif choice == 'n':
-            print('Asset saved.')
+            print('Asset saved.\n')
         elif choice == 'q':
             sys.exit(0)
         else:
-            print('Asset saved.')
+            print('Asset saved.\n')
 
-    print('\nAll assets validated.')
+    print('\nAll assets validated.\n')
 
 
 # Send all unused assets to the recycle bin in a new folder.
@@ -189,19 +177,18 @@ def delete_unused_assets(unused_assets):
 
     # Create a folder for all the files that will be sent to the recycle bin.
     # The folder's name will be the current datetime and this program's name.
-    date_and_time = str(datetime.datetime.now())
+    date_and_time_with_colons = str(datetime.datetime.now())
+    date_and_time = date_and_time_with_colons.replace(':', '')
     new_folder_name = date_and_time + ' check_media'
-    new_folder_path = '../' + new_folder_name
-    os.mkdir(new_folder_path)
+    os.mkdir(new_folder_name)
 
     # Move all the files into the new folder.
-    for asset_name in unused_assets:
-        asset_path = '../' + asset_name
-        new_path = os.path.join(new_folder_path, asset_name)
-        os.rename(asset_path, new_path)
+    for asset_name in unused_assets.keys():
+        new_path = os.path.join(new_folder_name, asset_name)
+        os.rename(asset_name, new_path)
 
     # Move the new folder to the recycle bin.
-    send2trash.send2trash(new_folder_path)
+    send2trash.send2trash(new_folder_name)
     print(f'\nAll unused assets sent to the recycle bin in the new folder {new_folder_name}\n')
 
 
