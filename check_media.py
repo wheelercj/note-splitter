@@ -19,10 +19,10 @@ asset_link_pattern = r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|pdf|mp4|html
 
 def main():
     try:
-        unused_assets = find_unused_assets()
+        unused_assets = find_unused_assets() # Dict of asset names and their memory sizes.
         sorted_assets = dict()
 
-        # Sort the assets by value.
+        # Sort the assets by descending value.
         for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
             sorted_assets[key] = value
 
@@ -34,7 +34,7 @@ def main():
             return
 
         print('\nMenu:')
-        print('1. Manually validate unused assets.')
+        print('1. Choose what to do with each unused asset individually.')
         print('2. Send all unused assets to the recycle bin.')
         print('3. Exit')
         print('> ', end='', flush=True)
