@@ -2,8 +2,14 @@
 # and let the user decide what to do with them.
 
 # To add support for a new asset type to the program,
-# change both the asset_types and asset_link_pattern variables.
+# change both the asset_types and asset_link_pattern variables
+# in the file common.py. Other changes in this file may be necessary,
+# depending on how the asset can be automatically opened and closed.
 
+# Internal
+from common import get_file_names, asset_link_pattern
+
+# External
 import os
 import sys
 import re
@@ -12,14 +18,9 @@ import datetime
 import pyautogui
 
 
-zettel_types = ('.md', '.markdown')
-asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4', '.html')
-asset_link_pattern = r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|pdf|mp4|html)\)'
-
-
 def main():
     try:
-        unused_assets = find_unused_assets() # Dict of asset names and their memory sizes.
+        unused_assets = find_unused_assets()  # Dict of asset names and their memory sizes.
         sorted_assets = dict()
 
         # Sort the assets by descending value.
@@ -37,8 +38,7 @@ def main():
         print('1. Choose what to do with each unused asset individually.')
         print('2. Send all unused assets to the recycle bin.')
         print('3. Exit')
-        print('> ', end='', flush=True)
-        choice = input()
+        choice = input('> ')
 
         os.chdir('..')
         if choice == '1':
@@ -59,8 +59,8 @@ def by_value(item):
 
 # Returns a dict with keys of asset names and values of asset file sizes.
 def find_unused_assets():
-    zettel_names, asset_names = find_file_names()
-    asset_links = find_asset_links(zettel_names)
+    zettel_names, asset_names = get_file_names()
+    asset_links = get_asset_links(zettel_names)
 
     # Find unused assets by comparing the zettelkasten's files and the file links in the zettels.
     unused_assets = dict()
@@ -88,25 +88,8 @@ def get_size(start_path='.'):
     return total_size
 
 
-# Returns lists of the names of all zettels and assets in the zettelkasten.
-def find_file_names():
-    # Get all files in the current directory.
-    file_names = os.listdir('..')
-
-    # Of these files, we only want the zettels and the assets.
-    zettel_names = []
-    asset_names = []
-    for file_name in file_names:
-        if file_name.endswith(zettel_types):
-            zettel_names.append(file_name)
-        elif file_name.endswith(asset_types):
-            asset_names.append(file_name)
-
-    return zettel_names, asset_names
-
-
 # Returns a list of all asset file links in the zettels.
-def find_asset_links(zettel_names):
+def get_asset_links(zettel_names):
     asset_links = []
 
     # For each zettel.
@@ -116,7 +99,8 @@ def find_asset_links(zettel_names):
         # Find all the links in the zettel.
         with open(zettel_path, 'r', encoding='utf8') as file:
             contents = file.read()
-            new_links = re.findall(asset_link_pattern, contents)
+            p = re.compile(asset_link_pattern)
+            new_links = p.findall(contents)
 
             # Append this zettel's links to the list of all links.
             for new_link in new_links:
