@@ -2,7 +2,7 @@
 # throughout the entire zettelkasten.
 
 # Internal
-from common import get_file_names
+from common import get_zettel_names
 
 # External
 import re
@@ -11,7 +11,7 @@ import sys
 
 def main():
     try:
-        zettel_names, _ = get_file_names()
+        zettel_names = get_zettel_names()
 
         print('Find and replace a regex pattern with a')
         print('string throughout the entire zettelkasten.')

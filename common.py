@@ -10,12 +10,30 @@ asset_link_pattern = re.compile(r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|p
 
 # Returns lists of the names of all zettels and assets in the zettelkasten.
 def get_file_names():
-    zettel_names = []
-    asset_names = []
-    for file_name in os.listdir('..'):
-        if file_name.endswith(zettel_types):
-            zettel_names.append(file_name)
-        elif file_name.endswith(asset_types):
-            asset_names.append(file_name)
+    directory = os.listdir('..')
+    zettel_names = get_zettel_names(directory)
+    asset_names = get_asset_names(directory)
 
     return zettel_names, asset_names
+
+
+# Parameter: a list of all files in the zettelkasten directory.
+# Returns a list of the names of all zettels in the zettelkasten.
+def get_zettel_names(directory):
+    zettel_names = []
+    for file_name in directory:
+        if file_name.endswith(zettel_types):
+            zettel_names.append(file_name)
+
+    return zettel_names
+
+
+# Parameter: a list of all files in the zettelkasten directory.
+# Returns a list of the names of all assets in the zettelkasten.
+def get_asset_names(directory):
+    asset_names = []
+    for file_name in directory:
+        if file_name.endswith(asset_types):
+            asset_names.append(file_name)
+
+    return asset_names
