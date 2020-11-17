@@ -7,8 +7,11 @@ Gathers and displays statistics about the tags throughout the zettelkasten, incl
 * Total tags.
 '''
 
+# Internal
+from common import get_file_names
+
+# External
 import re
-import os
 from igraph import *
 
 
@@ -18,7 +21,7 @@ class Tags:
 
 
 def main():
-    zettel_names = get_zettel_names()
+    zettel_names, _ = get_file_names()
     tags, tagless_zettels = get_tags(zettel_names)
     total_tags = sum(tags.frequency.values())
     draw_graph(tags)
@@ -31,17 +34,6 @@ def main():
     print_untagged(tagless_zettels)
 
 
-# Return a list of all zettel names in the current working directory.
-def get_zettel_names():
-    zettel_names = []
-
-    for file_name in os.listdir('..'):
-        if re.match(r'(\d{14})', file_name) != None:
-            if file_name.endswith('.md'):
-                zettel_names.append(file_name)
-    return zettel_names
-
-
 # Return the frequency and adjacency of all tags.
 def get_tags(zettel_names):
     tags = Tags()
@@ -51,7 +43,8 @@ def get_tags(zettel_names):
         zettel_path = '../' + zettel_name
         with open(zettel_path, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
-            new_tags = re.findall(r'(?<=\s)#[a-zA-Z0-9_-]+', contents)
+            p = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
+            new_tags = p.findall(contents)
 
             if new_tags == 0:
                 tagless_zettels.append(zettel_name)
