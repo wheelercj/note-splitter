@@ -4,6 +4,7 @@ import os
 import re
 
 zettel_types = ('.md', '.markdown')
+zettel_type_pattern = r'\.(md|markdown)'
 asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4', '.html')
 asset_link_pattern = re.compile(r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|pdf|mp4|html)\)')
 
