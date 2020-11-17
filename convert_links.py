@@ -1,9 +1,6 @@
 # Convert zettelkasten-style links to
 # markdown-style links, or vice versa.
 
-# Internal
-from common import zettel_type_pattern
-
 # External
 import re
 import sys
@@ -31,7 +28,7 @@ def main():
             if choice == 1:
                 convert_links(r'\[\[(\d{14})\]\]', r'[§](\1.md)', file_names)
             elif choice == 2:
-                convert_links(rf'\[§\]\((\d{{14}}){zettel_type_pattern}\)', r'[[\1]]', file_names)
+                convert_links(r'\[§\]\((\d{14})\.md\)', r'[[\1]]', file_names)
             else:
                 sys.exit(0)
 
@@ -49,9 +46,7 @@ def get_target_file_names(file_name):
     except OSError:
         print(f'File not found: {file_name}')
         sys.exit(0)
-    matches = []
-    for match in re.findall(rf'(\d{{14}}{zettel_type_pattern})', contents):
-        matches.append(match[0])
+    matches = re.findall(r'(\d{14}\.md)', contents)
     return matches
 
 
