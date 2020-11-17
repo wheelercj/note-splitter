@@ -71,11 +71,11 @@ def replace_pattern(compiled_pattern, replacement_string, zettel_names):
         zettel_path = '../' + zettel_name
         with open(zettel_path, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
-        replacements = compiled_pattern.subn(replacement_string, contents)
-        total_replaced += replacements[1]
-        if replacements[1] > 0:
+        new_contents, n_replaced = compiled_pattern.subn(replacement_string, contents)
+        total_replaced += n_replaced
+        if n_replaced > 0:
             with open(zettel_path, 'w', encoding='utf8') as zettel:
-                zettel.write(replacements[0])
+                zettel.write(new_contents)
 
     return total_replaced
 
