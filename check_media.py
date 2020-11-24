@@ -7,7 +7,7 @@
 # depending on how the asset can be automatically opened and closed.
 
 # Internal
-from common import get_file_names, asset_link_pattern
+from common import get_file_names, asset_link_pattern, web_types
 
 # External
 import os
@@ -20,16 +20,28 @@ import pyautogui
 
 def main():
     try:
-        unused_assets = find_unused_assets()  # Dict of asset names and their memory sizes.
-        sorted_assets = dict()
+        zettel_names, dir_asset_names = get_file_names()
+        os.chdir('..')
+        asset_links, linked_asset_names = get_asset_links(zettel_names)
+
+        unused_assets = find_unused_assets(dir_asset_names, linked_asset_names)  # A dict of unused asset names and their memory sizes.
+        missing_assets = get_broken_asset_links(asset_links)  # A list of broken asset links.
 
         # Sort the assets by descending value.
+        sorted_assets = dict()
         for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
             sorted_assets[key] = value
 
-        print_asset_info(sorted_assets)
+        # Print info about the assets.
+        if len(missing_assets):
+            print('\nMissing assets:')
+        for missing_asset in missing_assets:
+            print(f'   {missing_asset}')
+        print('\nUnused assets:')
+        print_assets_dict(sorted_assets)
         total_bytes = sum(sorted_assets.values())
-        print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
+        print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory,')
+        print(f'and {len(missing_assets)} broken asset link(s).')
 
         if len(sorted_assets) == 0:
             return
@@ -40,7 +52,6 @@ def main():
         print('3. Exit')
         choice = input('> ')
 
-        os.chdir('..')
         if choice == '1':
             validate_unused_assets(sorted_assets)
         elif choice == '2':
@@ -58,21 +69,28 @@ def by_value(item):
 
 
 # Returns a dict with keys of asset names and values of asset file sizes.
-def find_unused_assets():
-    zettel_names, asset_names = get_file_names()
-    asset_links = get_asset_links(zettel_names)
-
+def find_unused_assets(dir_asset_names, linked_asset_names):
     # Find unused assets by comparing the zettelkasten's files and the file links in the zettels.
     unused_assets = dict()
-    for asset_name in asset_names:
-        if asset_name not in asset_links:
-            asset_path = '../' + asset_name
-            unused_assets[asset_name] = os.path.getsize(asset_path)
+    for dir_asset_name in dir_asset_names:
+        if dir_asset_name not in linked_asset_names:
+            asset_path = dir_asset_name
+            unused_assets[dir_asset_name] = os.path.getsize(asset_path)
             # If the unused asset is an .html file, get the size of the corresponding folder too.
-            if asset_name.endswith('.html'):
-                unused_assets[asset_name] += get_size(asset_path[0:-5] + '_files')
+            if dir_asset_name.endswith('.html'):
+                unused_assets[dir_asset_name] += get_size(asset_path[0:-5] + '_files')
 
     return unused_assets
+
+
+# Returns a list of broken asset links.
+def get_broken_asset_links(asset_links):
+    broken_links = []
+    for asset_link in asset_links:
+        if not os.path.exists(asset_link):
+            broken_links.append(asset_link)
+
+    return broken_links
 
 
 # Get the total memory size of an entire folder.
@@ -90,34 +108,62 @@ def get_size(start_path='.'):
 
 # Returns a list of all asset file links in the zettels.
 def get_asset_links(zettel_names):
+    # TODO: create asset_links dict so the output can say where the broken links are.
+    # asset_links = dict()  # A dict of zettel names and their links.
     asset_links = []
+    linked_asset_names = []
 
     # For each zettel.
     for zettel_name in zettel_names:
-        zettel_path = '../' + zettel_name
-
         # Find all the links in the zettel.
-        with open(zettel_path, 'r', encoding='utf8') as file:
+        with open(zettel_name, 'r', encoding='utf8') as file:
             contents = file.read()
-            p = re.compile(asset_link_pattern)
-            new_links = p.findall(contents)
+        p = re.compile(asset_link_pattern)
+        new_links = p.findall(contents)
 
-            # Append this zettel's links to the list of all links.
-            for new_link in new_links:
-                asset_links.append(new_link[1] + '.' + new_link[2])
+        # Append this zettel's links to the list of all links.
+        for new_link in new_links:
+            link = new_link[2]
+            name = new_link[3]
 
-    return asset_links
+            # Ignore zotero file links.
+            if link.startswith('zotero:'):
+                continue
+
+            # Ignore URLs.
+            is_URL = False
+            for web_type in web_types:
+                if link.endswith(web_type) or link.endswith(web_type + '/'):
+                    is_URL = True
+                    break
+            if is_URL:
+                continue
+
+            # Remove 'file://' from the beginning of any file links that have it.
+            if link.startswith('file://'):
+                link = link[7:]
+
+            # Make any relative file links absolute.
+            link = os.path.abspath(link)
+
+            # Replace all instances of '\\' with '/'.
+            link = link.replace('\\', '/')
+
+            # Append the link to the list of all links.
+            asset_links.append(link)
+            linked_asset_names.append(name)
+
+    return asset_links, linked_asset_names
 
 
-# Print the names and the kilobytes of each unused asset.
-def print_asset_info(unused_assets):
-    if len(unused_assets) == 0:
+# Print the names and the bytes of each asset.
+def print_assets_dict(assets_dict):
+    if len(assets_dict) == 0:
         return
-    name_size = len(max(unused_assets.keys(), key=len))  # The size of the longest asset name.
-    print('\nUnused assets:')
-    for key, value in unused_assets.items():
+    name_size = len(max(assets_dict.keys(), key=len))  # The size of the longest asset name.
+    for key, value in assets_dict.items():
         Bytes = format_bytes(value)
-        print(f'{key:<{name_size}}{Bytes:>12}')
+        print(f'   {key:<{name_size}}{Bytes:>12}')
 
 
 # Convert bytes to kilobytes, megabytes, etc.
