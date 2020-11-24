@@ -1,4 +1,4 @@
-# This file is code that is used by multiple other files, or may be in the future.
+# This file is imported by a few other files.
 
 import os
 import re
@@ -6,7 +6,8 @@ import re
 zettel_types = ('.md', '.markdown')
 zettel_type_pattern = r'\.(md|markdown)'
 asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4', '.html')
-asset_link_pattern = re.compile(r'(?<=(\(|\\|/))([^(\(|\\|/)]+)\.(jpg|jpeg|png|pdf|mp4|html)\)')
+web_types = ('.com', '.org', '.net', '.gov', '.edu', '.ly', '.info', '.jobs', '.us', '.ca', '.de', '.fr', '.ch', '.au', '.in', '.ru', '.no', '.se', '.br', '.es', '.cn', '.jp', '.nl', '.mx')
+asset_link_pattern = re.compile(r'(?<=]\()(?!(https?://)|(mailto:))(.*?([^(/|\\)]*?(\.(jpg|jpeg|png|pdf|mp4|html))?))(?=\))')
 
 
 # Returns lists of the names of all zettels and assets in the zettelkasten.
