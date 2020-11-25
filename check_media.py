@@ -1,13 +1,15 @@
 # Search the zettelkasten folder for unused assets,
 # and let the user decide what to do with them.
 
+# This program does not check for broken URLs, folders, email addresses, or zotero links.
+
 # To add support for a new asset type to the program,
 # change both the asset_types and asset_link_pattern variables
 # in the file common.py. Other changes in this file may be necessary,
 # depending on how the asset can be automatically opened and closed.
 
 # Internal
-from common import get_file_names, asset_link_pattern, web_types
+from common import get_file_names, asset_link_pattern
 
 # External
 import os
@@ -109,7 +111,7 @@ def get_size(start_path='.'):
 
 # Returns a list of all asset file links in the zettels.
 def get_asset_links(zettel_names):
-    # TODO: create asset_links dict so the output can say where the broken links are.
+    # TODO: create asset_links dict so the output can say where the broken links are?
     # asset_links = dict()  # A dict of zettel names and their links.
     asset_links = []
     linked_asset_names = []
@@ -127,10 +129,6 @@ def get_asset_links(zettel_names):
             link = new_link[0]
             name = new_link[1]
 
-            # Ignore URLs.
-            if is_URL(link):
-                continue
-
             # Remove 'file://' from the beginning of any file links that have it.
             if link.startswith('file://'):
                 link = link[7:]
@@ -141,24 +139,18 @@ def get_asset_links(zettel_names):
             # Replace all instances of '\' with '/'.
             link = link.replace('\\', '/')
 
+            # TODO: write a separate program that moves one file of the user's choice to and from anywhere, then continue working on this.
             # Move any assets in the downloads folder to the zettelkasten.
             # if '/Downloads/' in link:
-            # TODO: change the link variable
-            # move the file
-            # update the zettel
+            # # TODO: change the link variable
+            # #       move the file
+            # #       update the zettel
 
             # Append the link to the list of all links.
             asset_links.append(link)
             linked_asset_names.append(name)
 
     return asset_links, linked_asset_names
-
-
-def is_URL(link):
-    for web_type in web_types:
-        if web_type in link:
-            return True
-    return False
 
 
 # Print the names and the bytes of each asset.
