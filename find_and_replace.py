@@ -7,11 +7,13 @@ from common import get_zettel_names
 # External
 import re
 import sys
+import os
 
 
 def main():
     try:
-        zettel_names = get_zettel_names()
+        directory = os.listdir('..')
+        zettel_names = get_zettel_names(directory)
 
         print('Find and replace a regex pattern with a')
         print('string throughout the entire zettelkasten.')
@@ -58,7 +60,7 @@ def print_matches(compiled_pattern, zettel_names):
         if len(matches) > 0:
             print(f'Matches in {zettel_name}:')
         for match in matches:
-            print(f'    {match}')
+            print(f'    \'{match}\'')
 
     print(f'\nFound {total_matches} matches.\n')
     return total_matches
