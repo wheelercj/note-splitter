@@ -9,7 +9,7 @@
 # depending on how the asset can be automatically opened and closed.
 
 # Internal
-from common import get_file_names, asset_link_pattern
+from common import get_file_names, asset_link_pattern, is_URL
 
 # External
 import os
@@ -128,6 +128,11 @@ def get_asset_links(zettel_names):
         for new_link in new_links:
             link = new_link[0]
             name = new_link[1]
+
+            # Ignore URLs, but not locally saved .html files.
+            if link.endswith('.html'):
+                if is_URL(link):
+                    continue
 
             # Remove 'file://' from the beginning of any file links that have it.
             if link.startswith('file://'):
