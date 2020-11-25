@@ -41,6 +41,9 @@ def get_asset_names(directory):
     return asset_names
 
 
+# Determine whether a link is a URL.
+# Can give false positives for some types of file links,
+# but gives the correct answer for html links (whether URL or not).
 def is_URL(link):
     for web_type in web_types:
         if web_type in link:
