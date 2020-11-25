@@ -44,6 +44,7 @@ def main():
         print(f'and {len(missing_assets)} broken asset link(s).')
 
         if len(sorted_assets) == 0:
+            print()
             return
 
         print('\nMenu:')
@@ -123,20 +124,11 @@ def get_asset_links(zettel_names):
 
         # Append this zettel's links to the list of all links.
         for new_link in new_links:
-            link = new_link[2]
-            name = new_link[3]
-
-            # Ignore zotero file links.
-            if link.startswith('zotero:'):
-                continue
+            link = new_link[0]
+            name = new_link[1]
 
             # Ignore URLs.
-            is_URL = False
-            for web_type in web_types:
-                if link.endswith(web_type) or link.endswith(web_type + '/'):
-                    is_URL = True
-                    break
-            if is_URL:
+            if is_URL(link):
                 continue
 
             # Remove 'file://' from the beginning of any file links that have it.
@@ -146,14 +138,27 @@ def get_asset_links(zettel_names):
             # Make any relative file links absolute.
             link = os.path.abspath(link)
 
-            # Replace all instances of '\\' with '/'.
+            # Replace all instances of '\' with '/'.
             link = link.replace('\\', '/')
+
+            # Move any assets in the downloads folder to the zettelkasten.
+            # if '/Downloads/' in link:
+            # TODO: change the link variable
+            # move the file
+            # update the zettel
 
             # Append the link to the list of all links.
             asset_links.append(link)
             linked_asset_names.append(name)
 
     return asset_links, linked_asset_names
+
+
+def is_URL(link):
+    for web_type in web_types:
+        if web_type in link:
+            return True
+    return False
 
 
 # Print the names and the bytes of each asset.
