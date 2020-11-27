@@ -11,8 +11,8 @@ web_types = ('.aero', '.arpa', '.biz', '.cat', '.com', '.coop', '.edu', '.firm',
 
 
 # Returns lists of the names of all zettels and assets in the zettelkasten.
-def get_file_names():
-    dir_list = os.listdir()
+def get_file_names(zettelkasten_path):
+    dir_list = os.listdir(zettelkasten_path)
     zettel_names = get_zettel_names(dir_list)
     asset_names = get_asset_names(dir_list)
 

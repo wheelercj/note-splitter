@@ -28,7 +28,7 @@ def check_media(zettelkasten_path='..'):
     try:
         # Get all the file names in the zettelkasten.
         os.chdir(zettelkasten_path)
-        zettel_names, dir_asset_names = get_file_names()
+        zettel_names, dir_asset_names = get_file_names(zettelkasten_path)
 
         # Get all the file links in the zettels.
         asset_links = get_asset_links(zettel_names)
