@@ -1,15 +1,19 @@
-# Search the zettelkasten folder for unused assets,
-# and let the user decide what to do with them.
-
-# This program does not check for broken URLs, folders, email addresses, or zotero links.
+# This program searches the zettelkasten folder for unused assets
+# and the zettelkasten for broken asset links, then helps the user
+# decide what to do with them. The types of assets and links searched
+# for are the file types listed in asset_link_pattern (the program
+# does not check for broken URLs, folder links, email addresses, or
+# zotero links).
 
 # To add support for a new asset type to the program,
 # change both the asset_types and asset_link_pattern variables
 # in the file common.py. Other changes in this file may be necessary,
 # depending on how the asset can be automatically opened and closed.
 
+
 # Internal
 from common import get_file_names, asset_link_pattern, is_URL
+from links import Links
 
 # External
 import os
@@ -20,47 +24,35 @@ import datetime
 import pyautogui
 
 
-def main():
+def check_media(zettelkasten_path='..'):
     try:
+        # Get all the file names in the zettelkasten.
+        os.chdir(zettelkasten_path)
         zettel_names, dir_asset_names = get_file_names()
-        os.chdir('..')
-        asset_links, linked_asset_names = get_asset_links(zettel_names)
 
-        unused_assets = find_unused_assets(dir_asset_names, linked_asset_names)  # A dict of unused asset names and their memory sizes.
-        missing_assets = get_broken_asset_links(asset_links)  # A list of broken asset links.
+        # Get all the file links in the zettels.
+        asset_links = get_asset_links(zettel_names)
 
-        # Sort the assets by descending value.
+        # Determine which asset files are unlinked.
+        unused_assets = find_unused_assets(dir_asset_names, asset_links.names)  # Returns a dict of unused assets' names and memory sizes.
+
+        # Sort the unused assets by descending value.
         sorted_assets = dict()
         for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
             sorted_assets[key] = value
 
-        # Print info about the assets.
-        if len(missing_assets):
-            print('\nMissing assets:')
-        for missing_asset in missing_assets:
-            print(f'   {missing_asset}')
-        print('\nUnused assets:')
-        print_assets_dict(sorted_assets)
-        total_bytes = sum(sorted_assets.values())
-        print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory,')
-        print(f'and {len(missing_assets)} broken asset link(s).')
+        # Print info about the broken links and unused assets.
+        print_summary(asset_links, sorted_assets)
 
+        # End the program if there are no unused assets to manage.
         if len(sorted_assets) == 0:
             print()
-            return
-
-        print('\nMenu:')
-        print('1. Choose what to do with each unused asset individually.')
-        print('2. Send all unused assets to the recycle bin.')
-        print('3. Exit')
-        choice = input('> ')
-
-        if choice == '1':
-            validate_unused_assets(sorted_assets)
-        elif choice == '2':
-            delete_unused_assets(sorted_assets)
-        else:
             sys.exit(0)
+
+        # Help the user manage the unused assets.
+        print_menu()
+        choice = input('> ')
+        run_menu(choice, sorted_assets)
 
     except SystemExit:
         pass
@@ -86,16 +78,6 @@ def find_unused_assets(dir_asset_names, linked_asset_names):
     return unused_assets
 
 
-# Returns a list of broken asset links.
-def get_broken_asset_links(asset_links):
-    broken_links = []
-    for asset_link in asset_links:
-        if not os.path.exists(asset_link):
-            broken_links.append(asset_link)
-
-    return broken_links
-
-
 # Get the total memory size of an entire folder.
 def get_size(start_path='.'):
     total_size = 0
@@ -109,12 +91,9 @@ def get_size(start_path='.'):
     return total_size
 
 
-# Returns a list of all asset file links in the zettels.
+# Returns all asset file links in the zettels.
 def get_asset_links(zettel_names):
-    # TODO: create asset_links dict so the output can say where the broken links are?
-    # asset_links = dict()  # A dict of zettel names and their links.
-    asset_links = []
-    linked_asset_names = []
+    links = Links()
 
     # For each zettel.
     for zettel_name in zettel_names:
@@ -126,23 +105,13 @@ def get_asset_links(zettel_names):
 
         # Append this zettel's links to the list of all links.
         for new_link in new_links:
-            link = new_link[0]
-            name = new_link[1]
-
             # Ignore URLs, but not locally saved .html files.
-            if link.endswith('.html'):
-                if is_URL(link):
+            if new_link[0].endswith('.html'):
+                if is_URL(new_link):
                     continue
 
-            # Remove 'file://' from the beginning of any file links that have it.
-            if link.startswith('file://'):
-                link = link[7:]
-
-            # Make any relative file links absolute.
-            link = os.path.abspath(link)
-
-            # Replace all instances of '\' with '/'.
-            link = link.replace('\\', '/')
+            links.append(new_link[0], new_link[1])
+            # new_link[0] is the entire file path, and new_link[1] is just the file name.
 
             # TODO: write a separate program that moves one file of the user's choice to and from anywhere, then continue working on this.
             # Move any assets in the downloads folder to the zettelkasten.
@@ -151,21 +120,51 @@ def get_asset_links(zettel_names):
             # #       move the file
             # #       update the zettel
 
-            # Append the link to the list of all links.
-            asset_links.append(link)
-            linked_asset_names.append(name)
+    return links
 
-    return asset_links, linked_asset_names
+
+# Print info about the broken links and unused assets.
+def print_summary(asset_links, unused_assets):
+    print_broken_links(asset_links.broken)
+    print_unused_assets(unused_assets)
+    total_bytes = sum(unused_assets.values())
+    print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory,')
+    print(f'and {len(asset_links.broken)} broken asset link(s).')
+
+
+def print_broken_links(links):
+    if len(links):
+        print('\nMissing assets:')
+    for link in links:
+        print(f'   {link}')
 
 
 # Print the names and the bytes of each asset.
-def print_assets_dict(assets_dict):
-    if len(assets_dict) == 0:
+def print_unused_assets(unused_assets):
+    print('\nUnused assets:')
+    if len(unused_assets) == 0:
         return
-    name_size = len(max(assets_dict.keys(), key=len))  # The size of the longest asset name.
-    for key, value in assets_dict.items():
+    name_size = len(max(unused_assets.keys(), key=len))  # The size of the longest asset name.
+    for key, value in unused_assets.items():
         Bytes = format_bytes(value)
         print(f'   {key:<{name_size}}{Bytes:>12}')
+
+
+def print_menu():
+    print('\nMenu:')
+    print('1. Choose what to do with each unused asset individually.')
+    print('2. Send all unused assets to the recycle bin.')
+    print('3. Exit')
+
+
+def run_menu(choice, sorted_assets):
+    if choice == '1':
+        validate_unused_assets(sorted_assets)
+    elif choice == '2':
+        delete_unused_assets(sorted_assets)
+    else:
+        print()
+        sys.exit(0)
 
 
 # Convert bytes to kilobytes, megabytes, etc.
@@ -196,20 +195,20 @@ def format_bytes(Bytes):
 def validate_unused_assets(unused_assets):
     print('\nChoose what to do with each unused asset.')
     print('You can enter q to quit.\n')
-    for key, value in unused_assets.items():
+    for name, Bytes in unused_assets.items():
         # Print the asset name and memory.
-        Bytes = format_bytes(value)
-        print(f'{key}{Bytes:>10}')
+        Bytes = format_bytes(Bytes)
+        print(f'{name}{Bytes:>10}')
 
         # Open the asset for the user to view.
-        os.startfile(key)
+        os.startfile(name)
         pyautogui.sleep(0.5)
         asset_window = pyautogui.getActiveWindow()
         # Bring the program's window back to the front.
         pyautogui.hotkey('alt', 'tab')
         choice = input('Send asset to the recycle bin? [y/n]: ')
         # Close the asset window.
-        if key.endswith('.html'):
+        if name.endswith('.html'):
             pyautogui.hotkey('alt', 'tab')
             pyautogui.hotkey('ctrl', 'w')
             pyautogui.hotkey('alt', 'tab')
@@ -218,10 +217,10 @@ def validate_unused_assets(unused_assets):
 
         # Respond to the user's choice.
         if choice == 'y':
-            send2trash(key)
+            send2trash(name)
             # If the asset is an .html file, move the corresponding folder.
-            if key.endswith('.html'):
-                folder_name = key[0:-5] + '_files'
+            if name.endswith('.html'):
+                folder_name = name[0:-5] + '_files'
                 if os.path.isdir(folder_name):
                     try:
                         send2trash(folder_name)
@@ -275,4 +274,4 @@ def delete_unused_assets(unused_assets):
 
 
 if __name__ == '__main__':
-    main()
+    check_media()
