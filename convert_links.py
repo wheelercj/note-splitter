@@ -7,9 +7,9 @@ import sys
 import os
 
 
-def main():
+def convert_links(zettelkasten_path='..'):
     # Get the list of names of files to convert links in.
-    os.chdir('..')
+    os.chdir(zettelkasten_path)
     file_names = get_target_file_names('.gitignore')
     print(f'Found {len(file_names)} file names:')
     print(file_names)
@@ -26,9 +26,9 @@ def main():
             choice = int(input('> '))
 
             if choice == 1:
-                convert_links(r'\[\[(\d{14})\]\]', r'[§](\1.md)', file_names)
+                convert(r'\[\[(\d{14})\]\]', r'[§](\1.md)', file_names)
             elif choice == 2:
-                convert_links(r'\[§\]\((\d{14})\.md\)', r'[[\1]]', file_names)
+                convert(r'\[§\]\((\d{14})\.md\)', r'[[\1]]', file_names)
             else:
                 sys.exit(0)
 
@@ -54,7 +54,7 @@ def get_target_file_names(file_name):
 # old_link_pattern is the regex pattern of the current links.
 # new_link_name is the string that all the links will be changed to,
 #   which can contain references to groups in old_link_pattern.
-def convert_links(old_link_pattern, new_link_name, file_names):
+def convert(old_link_pattern, new_link_name, file_names):
     file_count = len(file_names)
     total_char_count = 0
     total_n_replaced = 0
@@ -88,4 +88,4 @@ def convert_links(old_link_pattern, new_link_name, file_names):
 
 
 if __name__ == '__main__':
-    main()
+    convert_links()

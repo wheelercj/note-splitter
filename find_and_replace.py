@@ -10,10 +10,10 @@ import sys
 import os
 
 
-def main():
+def find_and_replace(zettelkasten_path='..'):
     try:
-        directory = os.listdir('..')
-        zettel_names = get_zettel_names(directory)
+        os.chdir(zettelkasten_path)
+        zettel_names = get_zettel_names(os.listdir())
 
         print('Find and replace a regex pattern with a')
         print('string throughout the entire zettelkasten.')
@@ -28,6 +28,7 @@ def main():
         total_matches = print_matches(compiled_pattern, zettel_names)
 
         if total_matches == 0:
+            print()
             sys.exit(0)
 
         replacement_string = input('Replace with string: ')
@@ -51,8 +52,7 @@ def main():
 def print_matches(compiled_pattern, zettel_names):
     total_matches = 0
     for zettel_name in zettel_names:
-        zettel_path = '../' + zettel_name
-        with open(zettel_path, 'r', encoding='utf8') as zettel:
+        with open(zettel_name, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
         matches = compiled_pattern.findall(contents)
         total_matches += len(matches)
@@ -70,17 +70,16 @@ def print_matches(compiled_pattern, zettel_names):
 def replace_pattern(compiled_pattern, replacement_string, zettel_names):
     total_replaced = 0
     for zettel_name in zettel_names:
-        zettel_path = '../' + zettel_name
-        with open(zettel_path, 'r', encoding='utf8') as zettel:
+        with open(zettel_name, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
         new_contents, n_replaced = compiled_pattern.subn(replacement_string, contents)
         total_replaced += n_replaced
         if n_replaced > 0:
-            with open(zettel_path, 'w', encoding='utf8') as zettel:
+            with open(zettel_name, 'w', encoding='utf8') as zettel:
                 zettel.write(new_contents)
 
     return total_replaced
 
 
 if __name__ == '__main__':
-    main()
+    find_and_replace()

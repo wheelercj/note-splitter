@@ -20,8 +20,9 @@ class Tags:
     adjacency = dict()
 
 
-def main():
-    zettel_names = get_zettel_names()
+def tag_stats(zettelkasten_path='..'):
+    os.chdir(zettelkasten_path)
+    zettel_names = get_zettel_names(os.listdir())
     tags, tagless_zettels = get_tags(zettel_names)
     total_tags = sum(tags.frequency.values())
     draw_graph(tags)
@@ -40,8 +41,7 @@ def get_tags(zettel_names):
     tagless_zettels = []
 
     for zettel_name in zettel_names:
-        zettel_path = '../' + zettel_name
-        with open(zettel_path, 'r', encoding='utf8') as zettel:
+        with open(zettel_name, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
             p = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
             new_tags = p.findall(contents)
@@ -79,4 +79,4 @@ def print_untagged(tagless_zettels):
 
 
 if __name__ == '__main__':
-    main()
+    tag_stats()
