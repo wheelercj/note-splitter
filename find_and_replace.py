@@ -2,7 +2,7 @@
 # throughout the entire zettelkasten.
 
 # Internal
-from common import get_zettel_names
+from common import zettelkasten_path, get_zettel_names
 
 # External
 import re
@@ -10,7 +10,7 @@ import sys
 import os
 
 
-def find_and_replace(zettelkasten_path='..'):
+def find_and_replace():
     try:
         os.chdir(zettelkasten_path)
         zettel_names = get_zettel_names(os.listdir())

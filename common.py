@@ -3,6 +3,7 @@
 import os
 import re
 
+zettelkasten_path = '..'
 zettel_types = ('.md', '.markdown')
 zettel_type_pattern = r'\.(md|markdown)'
 asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4', '.html')
@@ -11,8 +12,8 @@ web_types = ('.aero', '.arpa', '.biz', '.cat', '.com', '.coop', '.edu', '.firm',
 
 
 # Returns lists of the names of all zettels and assets in the zettelkasten.
-def get_file_names(zettelkasten_path):
-    dir_list = os.listdir(zettelkasten_path)
+def get_file_names():
+    dir_list = os.listdir()
     zettel_names = get_zettel_names(dir_list)
     asset_names = get_asset_names(dir_list)
 

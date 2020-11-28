@@ -12,7 +12,7 @@
 
 
 # Internal
-from common import get_file_names, asset_link_pattern, is_URL
+from common import zettelkasten_path, get_file_names, asset_link_pattern, is_URL
 from links import Links
 
 # External
@@ -24,11 +24,11 @@ import datetime
 import pyautogui
 
 
-def check_media(zettelkasten_path='..'):
+def check_media():
     try:
         # Get all the file names in the zettelkasten.
         os.chdir(zettelkasten_path)
-        zettel_names, dir_asset_names = get_file_names(zettelkasten_path)
+        zettel_names, dir_asset_names = get_file_names()
 
         # Get all the file links in the zettels.
         asset_links = get_asset_links(zettel_names)

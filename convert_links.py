@@ -1,13 +1,16 @@
 # Convert zettelkasten-style links to
 # markdown-style links, or vice versa.
 
+# Internal
+from common import zettelkasten_path
+
 # External
 import re
 import sys
 import os
 
 
-def convert_links(zettelkasten_path='..'):
+def convert_links():
     # Get the list of names of files to convert links in.
     os.chdir(zettelkasten_path)
     file_names = get_target_file_names('.gitignore')
