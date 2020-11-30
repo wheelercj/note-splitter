@@ -3,7 +3,9 @@
 import os
 import re
 
-zettelkasten_path = '..'
+zettelkasten_path = 'C:/Users/chris/Documents/Zettelkasten'
+assets_path = 'C:/Users/chris/Documents/Zettelkasten'
+
 zettel_types = ('.md', '.markdown')
 zettel_type_pattern = r'\.(md|markdown)'
 asset_types = ('.jpg', '.jpeg', '.png', '.pdf', '.mp4', '.html')
@@ -13,16 +15,15 @@ web_types = ('.aero', '.arpa', '.biz', '.cat', '.com', '.coop', '.edu', '.firm',
 
 # Returns lists of the names of all zettels and assets in the zettelkasten.
 def get_file_names():
-    dir_list = os.listdir()
-    zettel_names = get_zettel_names(dir_list)
-    asset_names = get_asset_names(dir_list)
-
+    zettel_names = get_zettel_names()
+    asset_names = get_asset_names()
     return zettel_names, asset_names
 
 
-# Parameter: a list of all files in the zettelkasten directory.
 # Returns a list of the names of all zettels in the zettelkasten.
-def get_zettel_names(dir_list):
+def get_zettel_names():
+    os.chdir(zettelkasten_path)
+    dir_list = os.listdir()
     zettel_names = []
     for file_name in dir_list:
         if file_name.endswith(zettel_types):
@@ -31,14 +32,17 @@ def get_zettel_names(dir_list):
     return zettel_names
 
 
-# Parameter: a list of all files in the zettelkasten directory.
 # Returns a list of the names of all assets in the zettelkasten.
-def get_asset_names(dir_list):
+def get_asset_names():
+    os.chdir(assets_path)
+    dir_list = os.listdir()
+
     asset_names = []
     for file_name in dir_list:
         if file_name.endswith(asset_types):
             asset_names.append(file_name)
 
+    os.chdir(zettelkasten_path)
     return asset_names
 
 

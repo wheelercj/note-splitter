@@ -8,7 +8,7 @@ Gathers and displays statistics about the tags throughout the zettelkasten, incl
 '''
 
 # Internal
-from common import zettelkasten_path, get_zettel_names
+from common import get_zettel_names
 
 # External
 import re
@@ -21,8 +21,7 @@ class Tags:
 
 
 def tag_stats():
-    os.chdir(zettelkasten_path)
-    zettel_names = get_zettel_names(os.listdir())
+    zettel_names = get_zettel_names()
     tags, tagless_zettels = get_tags(zettel_names)
     total_tags = sum(tags.frequency.values())
     draw_graph(tags)

@@ -2,7 +2,7 @@
 # ID in their name to just the 14-digit ID.
 
 # Internal
-from common import zettelkasten_path, get_zettel_names
+from common import get_zettel_names
 
 # External
 import os
@@ -11,8 +11,7 @@ import sys
 
 
 def rename_zettels():
-    os.chdir(zettelkasten_path)
-    zettel_names = get_zettel_names(os.listdir())
+    zettel_names = get_zettel_names()
 
     # Get a list of all zettel names that have more than just their ID.
     long_names = []

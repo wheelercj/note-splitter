@@ -12,7 +12,7 @@
 
 
 # Internal
-from common import zettelkasten_path, get_file_names, asset_link_pattern, is_URL
+from common import get_file_names, asset_link_pattern, is_URL
 from links import Links
 
 # External
@@ -27,7 +27,6 @@ import pyautogui
 def check_media():
     try:
         # Get all the file names in the zettelkasten.
-        os.chdir(zettelkasten_path)
         zettel_names, dir_asset_names = get_file_names()
 
         # Get all the file links in the zettels.
@@ -69,11 +68,10 @@ def find_unused_assets(dir_asset_names, linked_asset_names):
     unused_assets = dict()
     for dir_asset_name in dir_asset_names:
         if dir_asset_name not in linked_asset_names:
-            asset_path = dir_asset_name
-            unused_assets[dir_asset_name] = os.path.getsize(asset_path)
+            unused_assets[dir_asset_name] = os.path.getsize(dir_asset_name)
             # If the unused asset is an .html file, get the size of the corresponding folder too.
             if dir_asset_name.endswith('.html'):
-                unused_assets[dir_asset_name] += get_size(asset_path[0:-5] + '_files')
+                unused_assets[dir_asset_name] += get_size(dir_asset_name[0:-5] + '_files')
 
     return unused_assets
 
