@@ -12,7 +12,7 @@
 
 
 # Internal
-from common import get_file_names, asset_link_pattern, is_URL
+from common import get_file_paths, asset_link_pattern, is_URL
 from links import Links
 
 # External
@@ -27,13 +27,13 @@ import pyautogui
 def check_media():
     try:
         # Get all the file names in the zettelkasten.
-        zettel_names, dir_asset_names = get_file_names()
+        zettel_paths, dir_asset_paths = get_file_paths()
 
         # Get all the file links in the zettels.
-        asset_links = get_asset_links(zettel_names)
+        asset_links = get_asset_links(zettel_paths)
 
         # Determine which asset files are unlinked.
-        unused_assets = find_unused_assets(dir_asset_names, asset_links.names)  # Returns a dict of unused assets' names and memory sizes.
+        unused_assets = find_unused_assets(dir_asset_paths, asset_links.names)  # Returns a dict of unused assets' names and memory sizes.
 
         # Sort the unused assets by descending value.
         sorted_assets = dict()
@@ -63,15 +63,16 @@ def by_value(item):
 
 
 # Returns a dict with keys of asset names and values of asset file sizes.
-def find_unused_assets(dir_asset_names, linked_asset_names):
+def find_unused_assets(dir_asset_paths, linked_asset_names):
     # Find unused assets by comparing the zettelkasten's files and the file links in the zettels.
     unused_assets = dict()
-    for dir_asset_name in dir_asset_names:
+    for dir_asset_path in dir_asset_paths:
+        dir_asset_name = os.path.split(dir_asset_path)[-1]
         if dir_asset_name not in linked_asset_names:
-            unused_assets[dir_asset_name] = os.path.getsize(dir_asset_name)
+            unused_assets[dir_asset_path] = os.path.getsize(dir_asset_path)
             # If the unused asset is an .html file, get the size of the corresponding folder too.
-            if dir_asset_name.endswith('.html'):
-                unused_assets[dir_asset_name] += get_size(dir_asset_name[0:-5] + '_files')
+            if dir_asset_path.endswith('.html'):
+                unused_assets[dir_asset_path] += get_size(dir_asset_path[0:-5] + '_files')
 
     return unused_assets
 
@@ -90,13 +91,13 @@ def get_size(start_path='.'):
 
 
 # Returns all asset file links in the zettels.
-def get_asset_links(zettel_names):
+def get_asset_links(zettel_paths):
     links = Links()
 
     # For each zettel.
-    for zettel_name in zettel_names:
+    for zettel_path in zettel_paths:
         # Find all the links in the zettel.
-        with open(zettel_name, 'r', encoding='utf8') as file:
+        with open(zettel_path, 'r', encoding='utf8') as file:
             contents = file.read()
         p = re.compile(asset_link_pattern)
         new_links = p.findall(contents)
@@ -109,7 +110,7 @@ def get_asset_links(zettel_names):
                     continue
 
             links.append(new_link[0], new_link[1])
-            # new_link[0] is the entire file path, and new_link[1] is just the file name.
+            # new_link[0] is the entire file link, and new_link[1] is just the file name. These two will be the same if only the file name is given in the file link.
 
             # TODO: write a separate program that moves one file of the user's choice to and from anywhere, then continue working on this.
             # Move any assets in the downloads folder to the zettelkasten.
@@ -139,13 +140,17 @@ def print_broken_links(links):
 
 # Print the names and the bytes of each asset.
 def print_unused_assets(unused_assets):
-    print('\nUnused assets:')
     if len(unused_assets) == 0:
         return
-    name_size = len(max(unused_assets.keys(), key=len))  # The size of the longest asset name.
-    for key, value in unused_assets.items():
-        Bytes = format_bytes(value)
-        print(f'   {key:<{name_size}}{Bytes:>12}')
+
+    # Print the names and memory sizes of each unused asset.
+    print('\nUnused assets:')
+    longest_asset_path = max(unused_assets.keys(), key=len)
+    name_size = len(os.path.split(longest_asset_path)[-1])
+    for path, Bytes in unused_assets.items():
+        name = os.path.split(path)[-1]
+        Bytes = format_bytes(Bytes)
+        print(f'   {name:<{name_size}}{Bytes:>12}')
 
 
 def print_menu():
@@ -193,20 +198,21 @@ def format_bytes(Bytes):
 def validate_unused_assets(unused_assets):
     print('\nChoose what to do with each unused asset.')
     print('You can enter q to quit.\n')
-    for name, Bytes in unused_assets.items():
+    for path, Bytes in unused_assets.items():
         # Print the asset name and memory.
+        name = os.path.split(path)[-1]
         Bytes = format_bytes(Bytes)
         print(f'{name}{Bytes:>10}')
 
         # Open the asset for the user to view.
-        os.startfile(name)
+        os.startfile(path)
         pyautogui.sleep(0.5)
         asset_window = pyautogui.getActiveWindow()
         # Bring the program's window back to the front.
         pyautogui.hotkey('alt', 'tab')
         choice = input('Send asset to the recycle bin? [y/n]: ')
         # Close the asset window.
-        if name.endswith('.html'):
+        if path.endswith('.html'):
             pyautogui.hotkey('alt', 'tab')
             pyautogui.hotkey('ctrl', 'w')
             pyautogui.hotkey('alt', 'tab')
@@ -215,17 +221,17 @@ def validate_unused_assets(unused_assets):
 
         # Respond to the user's choice.
         if choice == 'y':
-            send2trash(name)
+            send2trash(path)
             # If the asset is an .html file, move the corresponding folder.
-            if name.endswith('.html'):
-                folder_name = name[0:-5] + '_files'
-                if os.path.isdir(folder_name):
+            if path.endswith('.html'):
+                folder_path = path[0:-5] + '_files'
+                if os.path.isdir(folder_path):
                     try:
-                        send2trash(folder_name)
+                        send2trash(folder_path)
                     except OSError:
                         print('OSError')
                 else:
-                    print(f'Could not find folder \'{folder_name}\'.')
+                    print(f'Could not find folder \'{folder_path}\'.')
             print('Asset sent to the recycle bin.\n')
         elif choice == 'n':
             print('Asset saved.\n')
@@ -252,16 +258,19 @@ def delete_unused_assets(unused_assets):
     os.mkdir(new_folder_name)
 
     # Move all the files into the new folder.
-    for asset_name in unused_assets.keys():
-        new_path = os.path.join(new_folder_name, asset_name)
-        os.rename(asset_name, new_path)
+    for asset_path in unused_assets.keys():
+        new_folder_path = os.path.abspath(new_folder_name)
+        base_path = os.path.commonpath(new_folder_path)
+        asset_subpath = asset_path.replace(base_path, '')
+        new_path = os.path.join(new_folder_name, asset_subpath)
+        os.rename(asset_path, new_path)
         # If the asset is an .html file, move the corresponding folder.
-        if asset_name.endswith('.html'):
-            asset_folder_name = asset_name[0:-5] + '_files'
+        if asset_path.endswith('.html'):
+            asset_folder_path = asset_path[0:-5] + '_files'
             new_path = new_path[0:-5] + '_files'
             for retry in range(100):
                 try:
-                    os.rename(asset_folder_name, new_path)
+                    os.rename(asset_folder_path, new_path)
                     break
                 except OSError:
                     pass
