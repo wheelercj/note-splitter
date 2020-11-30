@@ -1,6 +1,6 @@
 # Zettelkasten Tools
 
-These are various scripts that complement a zettelkasten stored locally in markdown files, such as with [Zettlr](https://www.zettlr.com/). To use these scripts, you can copy the folder containing this file into your zettelkasten folder and, with python installed, run your script of choice through a command line interface or IDE.
+These are various scripts that complement a zettelkasten stored locally in markdown files, such as with [Zettlr](https://www.zettlr.com/).
 
 ## check_media.py
 Searches the zettelkasten folder for broken file links and unlinked media files such as pngs, jpgs, pdfs, htmls, etc. Their names are displayed and the program assists you in choosing what to do with them.
