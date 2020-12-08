@@ -1,9 +1,9 @@
-# Settings for the location of the zettelkasten, its assets,
-# and any folders to automatically move assets from.
-# The first assets path is the default for assets to be moved to.
-# Any linked assets in a downloads path are automatically
-# moved to the default assets path.
-# The downloads_paths variable can be left empty without any issues.
+# Settings for the locations of the zettelkasten, its assets, and any
+# downloads folders to automatically move assets from. Any linked
+# assets in a downloads folder are automatically moved to whichever
+# assets folder was chosen first. Choosing a downloads folder is
+# optional. Running this program directly will let you overwrite any
+# settings you had already chosen.
 
 import os
 import sys
