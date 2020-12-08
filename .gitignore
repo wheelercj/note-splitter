@@ -1,3 +1,4 @@
 *.txt
 .ztr-directory
 *.pyc
+user_settings.yaml
