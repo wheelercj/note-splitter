@@ -55,6 +55,22 @@ def get_asset_paths():
     return asset_paths
 
 
+# Get the titles of each of a list of zettels.
+# The title of a zettel is its first header level 1.
+def get_zettel_titles(zettel_paths):
+    zettel_titles = []
+    title_pattern = re.compile(r'(?<![^\n])# .+')
+    for zettel_path in zettel_paths:
+        with open(zettel_path, 'r', encoding='utf8') as zettel:
+            contents = zettel.read()
+        title = title_pattern.search(contents)
+        if title is not None:
+            title = title[0][2:]  # Remove the '# ' from the title.
+            zettel_titles.append(title)
+
+    return zettel_titles
+
+
 # Determine whether a link is a URL.
 # Can give false positives for some types of file links,
 # but gives the correct answer for html links (whether URL or not).
