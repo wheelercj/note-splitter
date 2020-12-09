@@ -8,9 +8,8 @@
 import os
 import sys
 import yaml
-from tkinter import Tk
+from tkinter import Tk, messagebox
 from tkinter.filedialog import askdirectory
-from tkinter import messagebox
 
 
 class Settings:
