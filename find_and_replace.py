@@ -7,7 +7,6 @@ from common import get_zettel_paths
 # External
 import re
 import sys
-import os
 
 
 def find_and_replace():
@@ -57,7 +56,6 @@ def print_matches(compiled_pattern, zettel_paths):
         total_matches += len(matches)
 
         if len(matches) > 0:
-            zettel_name = os.path.split(zettel_path)[1]
             print(f'Matches in {zettel_path}:')
         for match in matches:
             print(f'    \'{match}\'')
