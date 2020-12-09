@@ -1,23 +1,18 @@
 # Convert zettelkasten-style links to
 # markdown-style links, or vice versa.
 
-# Internal
-from common import zettelkasten_path
-
 # External
 import re
 import sys
-import os
 
 
 def convert_links():
-    # Get the list of names of files to convert links in.
-    os.chdir(zettelkasten_path)
-    file_names = get_target_file_names('.gitignore')
-    print(f'Found {len(file_names)} file names:')
-    print(file_names)
+    # Get the list of names of zettels to convert links in.
+    zettel_paths = get_target_zettel_paths('../.gitignore')
+    print(f'Found {len(zettel_paths)} zettels:')
+    print(zettel_paths)
 
-    if len(file_names) == 0:
+    if len(zettel_paths) == 0:
         sys.exit(0)
 
     try:
@@ -29,9 +24,9 @@ def convert_links():
             choice = int(input('> '))
 
             if choice == 1:
-                convert(r'\[\[(\d{14})\]\]', r'[§](\1.md)', file_names)
+                convert(r'\[\[(\d{14})\]\]', r'[§](\1.md)', zettel_paths)
             elif choice == 2:
-                convert(r'\[§\]\((\d{14})\.md\)', r'[[\1]]', file_names)
+                convert(r'\[§\]\((\d{14})\.md\)', r'[[\1]]', zettel_paths)
             else:
                 sys.exit(0)
 
@@ -39,15 +34,15 @@ def convert_links():
         pass
 
 
-# Parameter: the file that contains the names of files to convert links in.
-# Returns the list of names of those files.
+# Parameter: the path to the file that contains the names of zettels to convert links in.
+# Returns the list of names of those zettels.
 # The zettel names must be the 14 digits of the file ID, followed by `.md`.
-def get_target_file_names(file_name):
+def get_target_zettel_paths(file_path):
     try:
-        with open(file_name, 'r') as file:
+        with open(file_path, 'r') as file:
             contents = file.read()
     except OSError:
-        print(f'File not found: {file_name}')
+        print(f'File not found: {file_path}')
         sys.exit(0)
     matches = re.findall(r'(\d{14}\.md)', contents)
     return matches
@@ -57,36 +52,37 @@ def get_target_file_names(file_name):
 # old_link_pattern is the regex pattern of the current links.
 # new_link_name is the string that all the links will be changed to,
 #   which can contain references to groups in old_link_pattern.
-def convert(old_link_pattern, new_link_name, file_names):
-    file_count = len(file_names)
+# zettel_paths is a list of paths to all the zettels to convert links in.
+def convert(old_link_pattern, new_link_name, zettel_paths):
+    zettel_count = len(zettel_paths)
     total_char_count = 0
     total_n_replaced = 0
 
-    for file_name in file_names:
+    for zettel_path in zettel_paths:
         try:
-            with open(file_name, 'r') as file:
-                contents = file.read()
+            with open(zettel_path, 'r') as zettel:
+                contents = zettel.read()
             char_count_1 = len(contents)
 
             # Use regex to find the links, and then convert them.
             new_contents, n_replaced = re.subn(old_link_pattern, new_link_name, contents)
             char_count_2 = len(new_contents)
 
-            # Save contents back to the file.
+            # Save contents back to the zettel.
             if n_replaced > 0:
-                with open(file_name, 'w') as file:
-                    file.write(new_contents)
+                with open(zettel_path, 'w') as zettel:
+                    zettel.write(new_contents)
 
             # Print character change stats.
             char_count = char_count_2 - char_count_1
-            print(f'Changed {file.name} by {char_count} characters with {n_replaced} links converted.')
+            print(f'Changed {zettel.name} by {char_count} characters with {n_replaced} links converted.')
             total_char_count += char_count
             total_n_replaced += n_replaced
 
         except OSError:
-            print(f'File not found: {file_name}')
+            print(f'Zettel not found: {zettel_path}')
 
-    print(f'\nChanged {file_count} files by a total of', end='', flush=True)
+    print(f'\nChanged {zettel_count} zettels by a total of', end='', flush=True)
     print(f' {total_char_count} characters with {total_n_replaced} links converted.')
 
 
