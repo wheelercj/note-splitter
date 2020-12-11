@@ -55,6 +55,14 @@ def get_asset_paths():
     return asset_paths
 
 
+# Get the title of one zettel (the first header level 1).
+def get_zettel_title(zettel_path):
+    path_list = []
+    path_list.append(zettel_path)
+    title_list = get_zettel_titles(path_list)
+    return title_list[0]
+
+
 # Get the titles of each of a list of zettels.
 # The title of a zettel is its first header level 1.
 def get_zettel_titles(zettel_paths):
