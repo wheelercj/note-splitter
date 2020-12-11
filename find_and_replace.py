@@ -2,7 +2,7 @@
 # throughout the entire zettelkasten.
 
 # Internal
-from common import get_zettel_paths, get_zettel_titles
+from common import get_zettel_paths, get_zettel_title
 
 # External
 import re
@@ -56,7 +56,7 @@ def print_matches(compiled_pattern, zettel_paths):
         total_matches += len(matches)
 
         if len(matches) > 0:
-            zettel_title = get_zettel_titles(zettel_path)[0]
+            zettel_title = get_zettel_title(zettel_path)
             print(f'Matches in {zettel_title}:')
         for match in matches:
             print(f'    \'{match}\'')
