@@ -10,8 +10,11 @@ The types of media files currently supported are:
 * .pdf
 * .png
 
+## split_zettel.py
+Splits one or more zettels each into multiple zettels. The split happens based on a header level of your choice, and the copied contents are replaced with links to the new zettels. Each new zettel has a backlink. Before running this program, put the '#split' tag in each zettel you want to split so the program knows which zettels to split. In the original zettel, any tags above the chosen header level to split by will be copied into each of the new zettels (except '#split'). The new zettels will be created in the same folder as their respective source zettel.
+
 ## check_media.py
-Searches the zettelkasten folder for broken media file links and unlinked media files. Their names are displayed and the program assists you in choosing what to do with them. Also, any linked media files in a selected downloads folder will automatically be moved to the default zettelkasten assets folder (and their links in the zettelkasten will be updated).
+Searches the zettelkasten folder(s) for broken media file links and unlinked media files. Their names are displayed and the program assists you in choosing what to do with them. Also, any linked media files in any downloads folders chosen in settings will be automatically moved to the first assets folder chosen in settings (and their links in the zettels will be updated).
 
 ## move_media.py
 Moves media files from one folder to another, and automatically updates their links within the zettelkasten.
@@ -23,4 +26,4 @@ Replaces a python regex pattern with a string throughout the entire zettelkasten
 Converts zettel links from the zettelkasten style to markdown's style, or vice versa. Currently, this only works with links that are 14-digit zettel IDs, and with double square brackets for the zettelkasten-style links, e.g. [[20201221140928]].
 
 ## settings.py
-Settings for the locations of the zettelkasten, its assets, and any downloads folders to automatically move assets from. Any linked assets in a downloads folder are automatically moved to whichever assets folder was chosen first. Choosing a downloads folder is optional. Running this program directly will let you overwrite any settings you had already chosen.
+Settings for the locations of the zettelkasten, its assets, and any downloads folders to automatically move assets from. (When check_media.py runs, any linked assets in a downloads folder are automatically moved to whichever assets folder was chosen first.) Choosing a downloads folder is optional. Running this program directly will let you overwrite any settings you had already chosen.
