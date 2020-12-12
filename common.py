@@ -57,13 +57,13 @@ def get_asset_paths():
 
 # Get the title of one zettel (the first header level 1).
 def get_zettel_title(zettel_path):
-    path_list = []
-    path_list.append(zettel_path)
-    title_list = get_zettel_titles(path_list)
-    if len(title_list) == 0:
-        return ''
+    with open(zettel_path, 'r', encoding='utf8') as zettel:
+        contents = zettel.read()
+    title_match = re.search(r'(?<![^\n])# .+', contents)
+    if title_match is not None:
+        return title_match[0][2:]  # Remove the '# ' from the title.
     else:
-        return title_list[0]
+        return ''
 
 
 # Get the titles of each of a list of zettels.
@@ -71,12 +71,13 @@ def get_zettel_title(zettel_path):
 def get_zettel_titles(zettel_paths):
     zettel_titles = []
     title_pattern = re.compile(r'(?<![^\n])# .+')
+
     for zettel_path in zettel_paths:
         with open(zettel_path, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
-        title = title_pattern.search(contents)
-        if title is not None:
-            title = title[0][2:]  # Remove the '# ' from the title.
+        title_match = title_pattern.search(contents)
+        if title_match is not None:
+            title = title_match[0][2:]  # Remove the '# ' from the title.
             zettel_titles.append(title)
 
     return zettel_titles
