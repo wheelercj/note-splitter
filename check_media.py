@@ -194,6 +194,19 @@ def print_unused_assets(unused_assets):
         print(f'   {name:<{name_size}}{Bytes:>11}')
 
 
+# Help the user decide what to do with each unused asset.
+def manage_unused_assets(unused_assets):
+    # End the program if there are no unused assets to manage.
+    if len(unused_assets) == 0:
+        print()
+        sys.exit(0)
+
+    # Help the user decide what to do with each unused asset.
+    print_menu()
+    choice = input('> ')
+    run_menu(choice, unused_assets)
+
+
 def print_menu():
     print('\nMenu:')
     print('1. Choose what to do with each unused asset individually.')
