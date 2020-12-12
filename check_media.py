@@ -16,7 +16,7 @@ import sys
 import subprocess
 import platform
 from send2trash import send2trash
-import pyautogui
+# import pyautogui
 
 
 def check_media():
@@ -24,29 +24,29 @@ def check_media():
         # Get all the file names in the zettelkasten.
         zettel_paths, dir_asset_paths = get_file_paths()
 
-        # Get all the file links in the zettels.
+        # Get all the file links in the zettels. This also finds all broken
+        # asset links, and moves any assets in a downloads folder to the
+        # default assets folder.
         asset_links = get_all_asset_links(zettel_paths)
 
-        # Determine which asset files are unlinked.
+        # Determine which assets are unlinked.
         unused_assets = find_unused_assets(dir_asset_paths, asset_links.names)  # Returns a dict of unused assets' paths and memory sizes.
 
-        # Sort the unused assets by descending value.
-        sorted_unused_assets = dict()
-        for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
-            sorted_unused_assets[key] = value
+        # Find zettels that are missing a 14-digit ID.
+        zettels_without_ID = find_zettels_without_ID(zettel_paths)
 
-        # Print info about the broken links and unused assets.
-        print_summary(asset_links, sorted_unused_assets)
+        # Find zettels that are missing a title (a header level 1).
+        zettels_without_title = find_zettels_without_title(zettel_paths)
 
-        # End the program if there are no unused assets to manage.
-        if len(sorted_unused_assets) == 0:
-            print()
-            sys.exit(0)
+        # Find zettels with titles that do not match their file names,
+        # unless the file name is the 14-digit zettel ID. Update the file names.
+        zettel_name_update_count = update_zettel_names(zettel_paths)
 
-        # Help the user manage the unused assets.
-        print_menu()
-        choice = input('> ')
-        run_menu(choice, sorted_unused_assets)
+        # Print info about what the program has done so far.
+        print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, zettel_name_update_count)
+
+        # Help the user decide what to do with each unused asset.
+        manage_unused_assets(unused_assets)
 
     except SystemExit:
         pass
@@ -69,10 +69,60 @@ def find_unused_assets(dir_asset_paths, linked_asset_names):
             if dir_asset_path.endswith('.html'):
                 unused_assets[dir_asset_path] += get_size(dir_asset_path[0:-5] + '_files')
 
-    return unused_assets
+    # Sort the unused assets by descending value.
+    sorted_unused_assets = dict()
+    for key, value in sorted(unused_assets.items(), key=by_value, reverse=True):
+        sorted_unused_assets[key] = value
+
+    return sorted_unused_assets
 
 
-# Get the total memory size of an entire folder.
+# Find all zettels that are missing a 14-digit ID.
+# Returns a list of file names.
+def find_zettels_without_ID(zettel_paths):
+    zettels_without_ID = []
+    for zettel_path in zettel_paths:
+        zettel_id = find_zettel_id(zettel_path)
+        if not zettel_id.isnumeric():
+            zettel_name = os.path.split(zettel_path)[-1]
+            zettels_without_ID.append(zettel_name)
+
+    return zettels_without_ID
+
+
+# Finds all zettels that do not have a header level 1.
+# Returns a list of file names.
+def find_zettels_without_title(zettel_paths):
+    zettels_without_title = []
+    for zettel_path in zettel_paths:
+        title = get_zettel_title(zettel_path)
+        if title == '':
+            zettel_name = os.path.split(zettel_path)[-1]
+            zettels_without_title.append(zettel_name)
+
+    return zettels_without_title
+
+
+# Find zettels with file names that don't match the zettel title,
+# unless the file name is the 14-digit zettel ID.
+# Changes the file name to match the title, and
+# returns the number of file names updated.
+def update_zettel_names(zettel_paths):
+    update_count = 0
+    for zettel_path in zettel_paths:
+        zettel_name = os.path.split(zettel_path)[-1][:-3]
+        if not zettel_name.isnumeric():
+            zettel_title = get_zettel_title(zettel_path)
+            if zettel_name != zettel_title:
+                zettel_folder = os.path.split(zettel_path)[0]
+                new_zettel_path = os.path.join(zettel_folder, zettel_title)
+                os.rename(zettel_path, new_zettel_path)
+                update_count += 1
+
+    return update_count
+
+
+# Get the total memory size of an entire folder in bytes.
 def get_size(start_path='.'):
     total_size = 0
     for dirpath, _, filenames in os.walk(start_path):
@@ -87,19 +137,39 @@ def get_size(start_path='.'):
 
 # Print info about the broken links and unused assets.
 # unused_assets is a dict of unused assets' paths and memory sizes.
-def print_summary(asset_links, unused_assets):
+def print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, zettel_name_update_count):
     print_broken_links(asset_links.broken)
+    print_zettels_without_ID(zettels_without_ID)
+    print_zettels_without_title(zettels_without_title)
     print_unused_assets(unused_assets)
     total_bytes = sum(unused_assets.values())
-    print(f'\nFound {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory,')
-    print(f'and {len(asset_links.broken)} broken asset link(s).')
+    print('\nSummary:')
+    print(f' * {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
+    print(f' * {len(asset_links.broken)} broken asset links.')
+    print(f' * {len(zettels_without_ID)} zettels without a 14-digit ID.')
+    print(f' * {len(zettels_without_title)} zettels wtihout a title.')
+    print(f' * updated {zettel_name_update_count} zettel names.')
 
 
 def print_broken_links(links):
     if len(links):
         print('\nMissing assets:')
-    for link in links:
-        print(f'   {link}')
+        for link in links:
+            print(f'   {link}')
+
+
+def print_zettels_without_ID(zettels_without_ID):
+    if len(zettels_without_ID):
+        print('\nZettels without a 14-digit ID:')
+        for zettel_name in zettels_without_ID:
+            print(f'   {zettel_name}')
+
+
+def print_zettels_without_title(zettels_without_title):
+    if len(zettels_without_title):
+        print('\nZettels without a title:')
+        for zettel_name in zettels_without_title:
+            print(f'   {zettel_name}')
 
 
 # Print the names and the bytes of each asset.
