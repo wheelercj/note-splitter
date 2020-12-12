@@ -60,7 +60,10 @@ def get_zettel_title(zettel_path):
     path_list = []
     path_list.append(zettel_path)
     title_list = get_zettel_titles(path_list)
-    return title_list[0]
+    if len(title_list) == 0:
+        return ''
+    else:
+        return title_list[0]
 
 
 # Get the titles of each of a list of zettels.
