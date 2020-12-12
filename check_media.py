@@ -1,10 +1,5 @@
-# This program searches the zettelkasten folder for unlinked assets
-# and the zettels for broken asset links, then helps the user
-# decide what to do with them. The types of assets and links searched
-# for are the file types listed in asset_link_pattern (the program
-# does not check for broken URLs, folder links, email addresses, or
-# zotero links).
-
+# This program searches the zettelkasten for missing assets, broken asset links, etc.
+# (more details in the README).
 
 # Internal
 from common import *

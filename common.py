@@ -7,11 +7,14 @@ import os
 import re
 import datetime
 
-# To add support for a new asset type to the program,
-# change both the asset_types and asset_link_pattern variables.
-# Changes in other files may be necessary.
+'''
+To add support for a new asset type to the program, change:
+* asset_types (below)
+* asset_link_pattern (below)
+* the list of supported file types in the README
+'''
 
-zettel_types = ('.md', '.markdown')
+zettel_types = ('.md')
 zettel_id_pattern = re.compile(r'(?<!\[\[)\d{14}(?!]])')
 asset_types = ('.html', '.jpeg', '.jpg', '.m4a', '.mp4', '.pdf', '.png')
 asset_link_pattern = re.compile(r'(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:)(?P<link>.*?(?P<name>[^(/|\\)]*?(\.(html|jpeg|jpg|m4a|mp4|pdf|png))))(?=\))')
