@@ -121,8 +121,8 @@ def generate_zettel_id():
     return zettel_id
 
 
-# Find the 14-digit ID of a zettel (the format is YYYYMMDDhhmmss).
-# The zettel ID can be in the file name or in the file's contents.
+# Find ID of a zettel. This function looks for a 14-digit number,
+# and only uses the zettel's name as the ID if it can't find one.
 def find_zettel_id(zettel_path):
     # Search for the zettel ID in the file's name.
     zettel_name = os.path.split(zettel_path)[1]
@@ -133,19 +133,17 @@ def find_zettel_id(zettel_path):
             contents = zettel.read()
         zettel_id_match = zettel_id_pattern.search(contents)
         if zettel_id_match is None:
-            # This zettel has no ID.
-            return -1
+            # The zettel ID is not a 14-digit number,
+            # it's the name of the file.
+            return os.path.split(zettel_path)[-1][:-3]
 
     return zettel_id_match[0]
 
 
-# Get the zettelkasten-style link to a zettel, in the format:
-# '[[20201215093128]] This is the zettel title'
+# Get the zettelkasten-style link to a zettel, such as:
+# '[[20201215093128]] This is the zettel title'.
 def get_zettel_link(zettel_path):
     zettel_id = find_zettel_id(zettel_path)
-    if zettel_id == -1:
-        raise ValueError('Zettel ID not found.')
-
     zettel_title = get_zettel_title(zettel_path)
     zettel_link = '[[' + zettel_id + ']] ' + zettel_title
 

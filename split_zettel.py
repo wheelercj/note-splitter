@@ -207,16 +207,8 @@ def insert_tags(tags, zettel_contents, title_end_pos):
 
 # Insert a backlink to the source zettel in the new zettel.
 def insert_backlink(new_zettel_contents, source_zettel_path):
-    try:
-        backlink = get_zettel_link(source_zettel_path)
-        new_zettel_contents = new_zettel_contents + '\n## see also:\n* topic outline: ' + backlink
-    except ValueError as e:
-        if e == 'Zettel ID not found.':
-            zettel_title = get_zettel_title(source_zettel_path)
-            print(f'   Could not create a backlink to \'{zettel_title}\' because it has no zettel ID.')
-        else:
-            raise
-
+    backlink = get_zettel_link(source_zettel_path)
+    new_zettel_contents = new_zettel_contents + '\n## see also:\n* topic outline: ' + backlink
     return new_zettel_contents
 
 
