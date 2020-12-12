@@ -13,6 +13,8 @@ from move_media import get_all_asset_links
 # External
 import os
 import sys
+import subprocess
+import platform
 from send2trash import send2trash
 import pyautogui
 
@@ -163,7 +165,7 @@ def format_bytes(Bytes):
 
 
 # For each asset:
-#   open the asset
+#   show the asset in file explorer / finder / etc.
 #   ask the user whether to send it to the recycle bin.
 # unused_assets is a dict of unused assets' paths and memory sizes.
 def validate_unused_assets(unused_assets):
@@ -175,20 +177,29 @@ def validate_unused_assets(unused_assets):
         Bytes = format_bytes(Bytes)
         print(f'{name}{Bytes:>10}')
 
-        # Open the asset for the user to view.
-        os.startfile(path)
-        pyautogui.sleep(0.5)
-        asset_window = pyautogui.getActiveWindow()
-        # Bring the program's window back to the front.
-        pyautogui.hotkey('alt', 'tab')
-        choice = input('Send asset to the recycle bin? [y/n]: ')
-        # Close the asset window.
-        if path.endswith('.html'):
-            pyautogui.hotkey('alt', 'tab')
-            pyautogui.hotkey('ctrl', 'w')
-            pyautogui.hotkey('alt', 'tab')
+        # # Open the asset for the user to view.
+        # os.startfile(path)
+        # pyautogui.sleep(0.5)
+        # asset_window = pyautogui.getActiveWindow()
+        # # Bring the program's window back to the front.
+        # pyautogui.hotkey('alt', 'tab')
+        # choice = input('Send asset to the recycle bin? [y/n]: ')
+        # # Close the asset window.
+        # if path.endswith('.html'):
+        #     pyautogui.hotkey('alt', 'tab')
+        #     pyautogui.hotkey('ctrl', 'w')
+        #     pyautogui.hotkey('alt', 'tab')
+        # else:
+        #     asset_window.close()
+
+        # Show the asset in the file explorer / finder / etc. if the user wants to see it.
+        if platform.system() == 'Windows':
+            temp_path = path.replace('/', '\\')
+            subprocess.Popen(['explorer', '/select,', temp_path])
+        elif platform.system() == 'Darwin':  # This is the macOS.
+            subprocess.Popen(['open', path])
         else:
-            asset_window.close()
+            subprocess.Popen(['xdg-open', path])
 
         # Respond to the user's choice.
         if choice == 'y':
