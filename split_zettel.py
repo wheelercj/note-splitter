@@ -23,7 +23,7 @@ def split_zettel_main():
     zettels_to_split = get_zettels_to_split()
     # Display the titles of the zettels found, and ask for the header level to split by.
     header_level = get_header_level(zettels_to_split)
-    # Split the zettels.
+    # Split each chosen zettel into multiple zettels.
     split_zettels(zettels_to_split, header_level)
 
 
@@ -69,80 +69,76 @@ class HeaderNotFoundError(ValueError):
     pass
 
 
-# Split the zettels by the chosen header level.
+# Split one or more zettels each into multiple zettels by the chosen header level.
 def split_zettels(zettels_to_split, header_level):
-    tag_pattern = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
-    chosen_header_pattern = re.compile(rf'^#{{{header_level}}} .+', re.MULTILINE)
-    header_pattern = re.compile(r'(^#{1,6} .+)', re.MULTILINE)
     new_zettel_id = generate_zettel_id()
     new_zettel_titles = []
 
     for source_zettel_path in zettels_to_split:
-        with open(source_zettel_path, 'r', encoding='utf8') as zettel:
-            source_zettel_contents = zettel.read()
-
         try:
-            # Find all the tags above the first of the chosen header level.
-            global_tags = find_global_tags(source_zettel_contents, chosen_header_pattern, tag_pattern)
-
-            # Find the first header of level header_level.
-            header_match1 = chosen_header_pattern.search(source_zettel_contents)
-            # TODO: ignore the contents of code blocks during all searches for headers throughout this entire program.
-
-            need_new_match1 = False
-            at_end_of_file = False
-            while not at_end_of_file:  # Each iteration of this loop creates one new zettel.
-                # If the previous header search found a header of a level larger than header_level.
-                if need_new_match1:
-                    need_new_match1 = False
-                    header_match1 = chosen_header_pattern.search(source_zettel_contents, header_match2.end())
-                    if header_match1 is None:
-                        at_end_of_file = True
-                        break
-
-                # Find the next header of any level.
-                header_match2 = header_pattern.search(source_zettel_contents, header_match1.end())
-
-                # If the search reached the end of the contents without finding a match.
-                if header_match2 is None:
-                    at_end_of_file = True
-
-                    start = header_match1.start()
-                    end = len(source_zettel_contents)
-                    split_section(source_zettel_contents, start, end, header_pattern, new_zettel_id, source_zettel_path, global_tags, header_level, new_zettel_titles)
-
-                # If the header is of a smaller level (more hashes) than header_level.
-                elif header_match2[0].count('#') > header_level:  # TODO: as this is now, it will not work correctly if the header contains hashes after the hashes that make it a header.
-                    # Ignore the match and find the next one.
-                    continue
-
-                # If the header is of level header_level or a larger level (fewer hashes).
-                else:
-                    # If the header is of a larger level (fewer hashes) than header_level.
-                    if header_match2[0].count('#') < header_level:  # TODO: as this is now, it will not work correctly if the header contains hashes after the hashes that make it a header.
-                        # A new match1 will be needed in the next loop iteration.
-                        need_new_match1 = True
-
-                    start = header_match1.start()
-                    end = header_match2.start()
-                    split_section(source_zettel_contents, start, end, header_pattern, new_zettel_id, source_zettel_path, global_tags, header_level, new_zettel_titles)
-
-                new_zettel_id = str(int(new_zettel_id) + 1)
-                header_match1 = header_match2
-
+            split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_titles)
         except HeaderNotFoundError:
             zettel_title = get_zettel_title(source_zettel_path)
             print(f'   Could not find a header of level {header_level} in \'{zettel_title}\'')
 
-    # Print a summary of what the program did.
-    message = 'New zettels created:'
-    for new_zettel_title in new_zettel_titles:
-        message = message + '\n * ' + new_zettel_title
-    messagebox.showinfo(title='Split zettel', message=message)
+    print_summary(new_zettel_titles)
 
 
-# Generate a 14-digit zettel ID that represents the current date and time.
-# The format is YYYYMMDDhhmmss.
+# Split one zettel into multiple zettels by the chosen header level.
+def split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_titles):
+    with open(source_zettel_path, 'r', encoding='utf8') as zettel:
+        source_zettel_contents = zettel.read()
+
+    tag_pattern = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
+    chosen_header_pattern = re.compile(rf'^#{{{header_level}}} .+')  # Use re.MULTILINE with this pattern.
+    header_pattern = re.compile(r'(^#{1,6} .+)')  # Use re.MULTILINE with this pattern.
+
+    # Find all the tags above the first of the chosen header level.
+    global_tags = find_global_tags(source_zettel_contents, chosen_header_pattern, tag_pattern)
+
+    # Find the first header of level header_level.
+    header_match1 = chosen_header_pattern.search(source_zettel_contents, re.MULTILINE)
+    # TODO: ignore the contents of code blocks during all searches for headers throughout this entire program.
+
+    need_new_match1 = False
+    at_end_of_file = False
+    while not at_end_of_file:  # Each iteration of this loop creates one new zettel.
+        # If the previous header search found a header of a level larger (fewer hashes) than header_level.
+        if need_new_match1:
+            need_new_match1 = False
+            header_match1 = chosen_header_pattern.search(source_zettel_contents, header_match2.end(), re.MULTILINE)
+            if header_match1 is None:
+                at_end_of_file = True
+
+        if not at_end_of_file:
+            # Find the next header of any level.
+            header_match2 = header_pattern.search(source_zettel_contents, header_match1.end(), re.MULTILINE)
+
+            # If the search reached the end of the contents without finding a match.
+            if header_match2 is None:
+                at_end_of_file = True
+
+                section_start = header_match1.start()
+                section_end = len(source_zettel_contents)
+                source_zettel_contents = split_section(source_zettel_contents, section_start, section_end, source_zettel_path, header_level, header_pattern, global_tags, new_zettel_id, new_zettel_titles)
+
+            # If the header is of level header_level or a larger level (fewer hashes).
+            elif header_match2[0].count('#') <= header_level:
+                # If the header is of a larger level (fewer hashes) than header_level.
+                if header_match2[0].count('#') < header_level:  # TODO: as this is now, it will not work correctly if the header contains hashes after the hashes that make it a header.
+                    # A new match1 will be needed in the next loop iteration.
+                    need_new_match1 = True
+
+                section_start = header_match1.start()
+                section_end = header_match2.start()
+                source_zettel_contents = split_section(source_zettel_contents, section_start, section_end, source_zettel_path, header_level, header_pattern, global_tags, new_zettel_id, new_zettel_titles)
+
+            new_zettel_id = str(int(new_zettel_id) + 1)
+            header_match1 = header_match2
+
+
+# Generate a 14-digit zettel ID that represents the current date and time
+# (the format is YYYYMMDDhhmmss).
 def generate_zettel_id():
     zettel_id = str(datetime.datetime.now())
     zettel_id = zettel_id[:19]  # Remove the microseconds.
@@ -152,13 +148,13 @@ def generate_zettel_id():
 
 # Find all the tags above the first of the chosen header level in one zettel's contents.
 def find_global_tags(source_zettel_contents, chosen_header_pattern, tag_pattern):
-    header_match = chosen_header_pattern.search(source_zettel_contents)
+    header_match = chosen_header_pattern.search(source_zettel_contents, re.MULTILINE)
     if header_match is None:
         raise HeaderNotFoundError()
 
-    global_part_end = header_match.start()
-    global_part = source_zettel_contents[:global_part_end]  # The part of the file above the chosen header level.
-    global_tags = tag_pattern.findall(global_part)
+    global_section_end = header_match.start()
+    global_section = source_zettel_contents[:global_section_end]  # The part of the file above the chosen header level.
+    global_tags = tag_pattern.findall(global_section)
     if '#split' in global_tags:
         global_tags.remove('#split')
 
@@ -198,37 +194,62 @@ def find_zettel_id(zettel_path):
     return zettel_id_match[0]
 
 
-# Split off one section of a zettel into a new zettel.
-def split_section(source_zettel_contents, start, end, header_pattern, new_zettel_id, source_zettel_path, global_tags, header_level, new_zettel_titles):
-    new_zettel_contents = source_zettel_contents[start:end]
+# Split off one section of the source zettel into a new zettel.
+def split_section(source_zettel_contents, section_start, section_end, source_zettel_path, header_level, header_pattern, global_tags, new_zettel_id, new_zettel_titles):
+    new_zettel_contents = source_zettel_contents[section_start:section_end]
+    new_zettel_contents = normalize_headers(new_zettel_contents, header_level, header_pattern)
+    new_zettel_title, title_end_pos = get_section_title(new_zettel_contents, new_zettel_titles)
+    new_zettel_contents = insert_tags(global_tags, new_zettel_contents, title_end_pos)
+    new_zettel_contents = insert_backlink(new_zettel_contents, source_zettel_path)
+    new_zettel_path = create_new_zettel(new_zettel_id, source_zettel_path)
 
-    # Get the new zettel's title.
-    end_of_title = new_zettel_contents.find('\n')
-    new_zettel_title = new_zettel_contents[:end_of_title]
+    # Remove the copied contents from the source zettel, and insert a link to the new zettel.
+    source_zettel_contents = source_zettel_contents[:section_start] + '\n[[' + new_zettel_id + ']] ' + new_zettel_title + '\n' + source_zettel_contents[section_end:]
+
+    print('Ready to save the source zettel and a new zettel, but not doing that because the program hasn\'t been tested enough yet.')
+    # save_zettels(new_zettel_path, new_zettel_contents, source_zettel_path, source_zettel_contents)
+
+    return source_zettel_contents
+
+
+# Change the top header to have 1 hash, and change all the
+# other headers by the same amount (all the other headers will
+# have more hashes since this program splits by level header_level).
+def normalize_headers(section_contents, header_level, header_pattern):
+    header_level_difference = header_level - 1
+    if header_level_difference > 0:
+        # Mark each header with a character that's not likely to already be in the contents.
+        section_contents = header_pattern.sub(r'␝\1', section_contents, re.MULTILINE)
+        # Delete each instance of the ␝ character and some following hashes.
+        landmark_pattern = re.compile('␝' + '#' * header_level_difference)
+        section_contents = landmark_pattern.sub('', section_contents)
+
+    return section_contents
+
+
+# Get the title of the first header in a zettel section.
+def get_section_title(section_contents, new_zettel_titles):
+    title_end_pos = section_contents.find('\n')
+    new_zettel_title = section_contents[:title_end_pos]
     new_zettel_title = new_zettel_title.replace('#', '')
     # Remove any spaces on either side of the string.
     new_zettel_title = new_zettel_title.strip()
     new_zettel_titles.append(new_zettel_title)
 
-    # Remove the copied contents from the source zettel, and insert a link to the new zettel.
-    source_zettel_contents = source_zettel_contents[:start] + '\n[[' + new_zettel_id + ']] ' + new_zettel_title + '\n' + source_zettel_contents[end:]
+    return new_zettel_title, title_end_pos
 
-    # Change the header levels in the new zettel contents.
-    header_level_difference = header_level - 1
-    if header_level_difference > 0:
-        # Mark each header that needs to change with a character that's not likely to already be in the file.
-        new_zettel_contents = header_pattern.sub(r'␝\1', new_zettel_contents)
-        # Delete each instance of the ␝ character and some following hashes.
-        landmark_pattern = re.compile('␝' + '#' * header_level_difference)
-        new_zettel_contents = landmark_pattern.sub('', new_zettel_contents)
 
-    # Insert the global tags into the new zettel under the title.
+# Insert tags under the title of a zettel.
+def insert_tags(tags, zettel_contents, title_end_pos):
     global_tag_str = ''
-    for tag in global_tags:
+    for tag in tags:
         global_tag_str = global_tag_str + tag + ' '
-    new_zettel_contents = new_zettel_contents[:end_of_title] + '\n' + global_tag_str + new_zettel_contents[end_of_title:]
+    zettel_contents = zettel_contents[:title_end_pos] + '\n' + global_tag_str + zettel_contents[title_end_pos:]
+    return zettel_contents
 
-    # Insert a backlink to the source zettel in the new zettel.
+
+# Insert a backlink to the source zettel in the new zettel.
+def insert_backlink(new_zettel_contents, source_zettel_path):
     try:
         backlink = get_zettel_link(source_zettel_path)
         new_zettel_contents = new_zettel_contents + '\n## see also:\n* topic outline: ' + backlink
@@ -239,17 +260,30 @@ def split_section(source_zettel_contents, start, end, header_pattern, new_zettel
         else:
             raise
 
-    # Create a new zettel using new_zettel_id, in the same folder as the source zettel.
+    return new_zettel_contents
+
+
+# Create a new zettel in the same folder as the source zettel.
+def create_new_zettel(new_zettel_id, source_zettel_path):
     new_zettel_name = new_zettel_id + '.md'
     folder_path = os.path.split(source_zettel_path)[0]
     new_zettel_path = os.path.join(folder_path, new_zettel_name)
+    return new_zettel_path
 
-    # Save both zettels.
-    print('Ready to save the source zettel and a new zettel, but not doing that because the program hasn\'t been tested enough yet.')
-    # with open(new_zettel_path, 'w', encoding='utf8') as zettel:
-    #     zettel.write(new_zettel_contents)
-    # with open(source_zettel_path, 'w', encoding='utf8') as zettel:
-    #     zettel.write(source_zettel_contents)
+
+def save_zettels(new_zettel_path, new_zettel_contents, source_zettel_path, source_zettel_contents):
+    with open(new_zettel_path, 'x', encoding='utf8') as zettel:
+        zettel.write(new_zettel_contents)
+    with open(source_zettel_path, 'w', encoding='utf8') as zettel:
+        zettel.write(source_zettel_contents)
+
+
+# Print a summary of what the program did.
+def print_summary(new_zettel_titles):
+    message = 'New zettels created:'
+    for new_zettel_title in new_zettel_titles:
+        message = message + '\n * ' + new_zettel_title
+    messagebox.showinfo(title='Split zettel', message=message)
 
 
 if __name__ == '__main__':
