@@ -8,12 +8,11 @@
 # as their respective source zettel.
 
 # Internal
-from common import get_zettel_paths, get_zettel_titles, get_zettel_title
+from common import *
 
 # External
 import os
 import re
-import datetime
 from tkinter import Tk, messagebox
 from tkinter.simpledialog import askinteger
 
@@ -137,15 +136,6 @@ def split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_tit
             header_match1 = header_match2
 
 
-# Generate a 14-digit zettel ID that represents the current date and time
-# (the format is YYYYMMDDhhmmss).
-def generate_zettel_id():
-    zettel_id = str(datetime.datetime.now())
-    zettel_id = zettel_id[:19]  # Remove the microseconds.
-    zettel_id = zettel_id.replace('-', '').replace(':', '').replace(' ', '')
-    return zettel_id
-
-
 # Find all the tags above the first of the chosen header level in one zettel's contents.
 def find_global_tags(source_zettel_contents, chosen_header_pattern, tag_pattern):
     header_match = chosen_header_pattern.search(source_zettel_contents, re.MULTILINE)
@@ -159,39 +149,6 @@ def find_global_tags(source_zettel_contents, chosen_header_pattern, tag_pattern)
         global_tags.remove('#split')
 
     return global_tags
-
-
-# Get the zettelkasten-style link to a zettel, in the format:
-# '[[20201215093128]] This is the zettel title'
-def get_zettel_link(zettel_path):
-    zettel_id = find_zettel_id(zettel_path)
-    if zettel_id == -1:
-        raise ValueError('Zettel ID not found.')
-
-    zettel_title = get_zettel_title(zettel_path)
-    zettel_link = '[[' + zettel_id + ']] ' + zettel_title
-
-    return zettel_link
-
-
-# Find the 14-digit ID of a zettel (the format is YYYYMMDDhhmmss).
-# The zettel ID can be in the file name or in the file's contents.
-def find_zettel_id(zettel_path):
-    zettel_id_pattern = re.compile(r'(?<!\[\[)\d{14}(?!]])')
-
-    # Search for the zettel ID in the file's name.
-    zettel_name = os.path.split(zettel_path)[1]
-    zettel_id_match = zettel_id_pattern.search(zettel_name)
-    if zettel_id_match is None:
-        # Search for the zettel ID in the zettel's contents.
-        with open(zettel_path, 'r', encoding='utf8') as zettel:
-            contents = zettel.read()
-        zettel_id_match = zettel_id_pattern.search(contents)
-        if zettel_id_match is None:
-            # This zettel has no ID.
-            return -1
-
-    return zettel_id_match[0]
 
 
 # Split off one section of the source zettel into a new zettel.

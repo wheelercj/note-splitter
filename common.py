@@ -5,14 +5,14 @@ from links import Links
 # External
 import os
 import re
+import datetime
 
 # To add support for a new asset type to the program,
 # change both the asset_types and asset_link_pattern variables.
-# Other changes to check_media.py may be necessary, depending
-# on how the asset can be automatically opened and closed.
+# Changes in other files may be necessary.
 
 zettel_types = ('.md', '.markdown')
-zettel_type_pattern = r'\.(md|markdown)'
+zettel_id_pattern = re.compile(r'(?<!\[\[)\d{14}(?!]])')
 asset_types = ('.html', '.jpeg', '.jpg', '.m4a', '.mp4', '.pdf', '.png')
 asset_link_pattern = re.compile(r'(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:)(?P<link>.*?(?P<name>[^(/|\\)]*?(\.(html|jpeg|jpg|m4a|mp4|pdf|png))))(?=\))')
 web_types = ('.aero', '.arpa', '.biz', '.cat', '.com', '.coop', '.edu', '.firm', '.gov', '.info', '.int', '.jobs', '.mil', '.mobi', '.museum', '.name', '.nato', '.net', '.org', '.pro', '.store', '.travel', '.web', '.ac', '.ad', '.ae', '.af', '.ag', '.ai', '.al', '.am', '.an', '.ao', '.aq', '.ar', '.as', '.at', '.au', '.aw', '.az', '.ax', '.ba', '.bb', '.bd', '.be', '.bf', '.bg', '.bh', '.bi', '.bj', '.bm', '.bn', '.bo', '.br', '.bs', '.bt', '.bv', '.bw', '.by', '.bz', '.ca', '.cc', '.cd', '.cf', '.cg', '.ch', '.ci', '.ck', '.cl', '.cm', '.cn', '.co', '.cr', '.cs', '.cu', '.cv', '.cx', '.cy', '.cz', '.de', '.dj', '.dk', '.dm', '.do', '.dz', '.ec', '.ee', '.eg', '.eh', '.er', '.es', '.et', '.eu', '.fi', '.fj', '.fk', '.fm', '.fo', '.fr', '.ga', '.gb', '.gd', '.ge', '.gf', '.gg', '.gh', '.gi', '.gl', '.gm', '.gn', '.gp', '.gq', '.gr', '.gs', '.gt', '.gu', '.gw', '.gy', '.hk', '.hm', '.hn', '.hr', '.ht', '.htm', '.hu', '.id', '.ie', '.il', '.im', '.in', '.io', '.iq', '.ir', '.is', '.it', '.je', '.jm', '.jo', '.jp', '.ke', '.kg', '.kh', '.ki', '.km', '.kn', '.kp', '.kr', '.kw', '.ky', '.kz', '.la', '.lb', '.lc', '.li', '.lk', '.lr', '.ls', '.lt', '.lu', '.lv', '.ly', '.ma', '.mc', '.md', '.mg', '.mh', '.mk', '.ml', '.mm', '.mn', '.mo', '.mp', '.mq', '.mr', '.ms', '.mt', '.mu', '.mv', '.mw', '.mx', '.my', '.mz', '.na', '.nc', '.ne', '.nf', '.ng', '.ni', '.nl', '.no', '.np', '.nr', '.nu', '.nz', '.om', '.pa', '.pe', '.pf', '.pg', '.ph', '.pk', '.pl', '.pm', '.pn', '.pr', '.ps', '.pt', '.pw', '.py', '.qa', '.re', '.ro', '.ru', '.rw', '.sa', '.sb', '.sc', '.sd', '.se', '.sg', '.sh', '.si', '.sj', '.sk', '.sl', '.sm', '.sn', '.so', '.sr', '.st', '.sv', '.sy', '.sz', '.tc', '.td', '.tf', '.tg', '.th', '.tj', '.tk', '.tl', '.tm', '.tn', '.to', '.tp', '.tr', '.tt', '.tv', '.tw', '.tz', '.ua', '.ug', '.uk', '.um', '.us', '.uy', '.uz', '.va', '.vc', '.ve', '.vg', '.vi', '.vn', '.vu', '.wf', '.ws', '.ye', '.yt', '.yu', '.za', '.zm', '.zw')
@@ -110,3 +110,43 @@ def get_asset_links(contents):
         links.append(link_dict['link'], link_dict['name'])
 
     return links
+
+
+# Generate a 14-digit zettel ID that represents the current date and time
+# (the format is YYYYMMDDhhmmss).
+def generate_zettel_id():
+    zettel_id = str(datetime.datetime.now())
+    zettel_id = zettel_id[:19]  # Remove the microseconds.
+    zettel_id = zettel_id.replace('-', '').replace(':', '').replace(' ', '')
+    return zettel_id
+
+
+# Find the 14-digit ID of a zettel (the format is YYYYMMDDhhmmss).
+# The zettel ID can be in the file name or in the file's contents.
+def find_zettel_id(zettel_path):
+    # Search for the zettel ID in the file's name.
+    zettel_name = os.path.split(zettel_path)[1]
+    zettel_id_match = zettel_id_pattern.search(zettel_name)
+    if zettel_id_match is None:
+        # Search for the zettel ID in the zettel's contents.
+        with open(zettel_path, 'r', encoding='utf8') as zettel:
+            contents = zettel.read()
+        zettel_id_match = zettel_id_pattern.search(contents)
+        if zettel_id_match is None:
+            # This zettel has no ID.
+            return -1
+
+    return zettel_id_match[0]
+
+
+# Get the zettelkasten-style link to a zettel, in the format:
+# '[[20201215093128]] This is the zettel title'
+def get_zettel_link(zettel_path):
+    zettel_id = find_zettel_id(zettel_path)
+    if zettel_id == -1:
+        raise ValueError('Zettel ID not found.')
+
+    zettel_title = get_zettel_title(zettel_path)
+    zettel_link = '[[' + zettel_id + ']] ' + zettel_title
+
+    return zettel_link
