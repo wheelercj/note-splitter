@@ -192,14 +192,14 @@ def validate_unused_assets(unused_assets):
         # else:
         #     asset_window.close()
 
-        # Show the asset in the file explorer / finder / etc. if the user wants to see it.
+        # Show the asset in the explorer/finder/etc.
         if platform.system() == 'Windows':
             temp_path = path.replace('/', '\\')
             subprocess.Popen(['explorer', '/select,', temp_path])
         elif platform.system() == 'Darwin':  # This is the macOS.
-            subprocess.Popen(['open', path])
+            subprocess.call(['open', '-R', path])
         else:
-            subprocess.Popen(['xdg-open', path])
+            subprocess.call(['xdg-open', '-R', path])
 
         # Respond to the user's choice.
         if choice == 'y':
