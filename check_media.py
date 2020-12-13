@@ -33,12 +33,11 @@ def check_media():
         # Find zettels that are missing a title (a header level 1).
         zettels_without_title = find_zettels_without_title(zettel_paths)
 
-        # Find zettels with titles that do not match their file names,
-        # unless the file name contains the 14-digit zettel ID. Update the names.
-        zettel_name_update_count = update_zettel_names(zettel_paths)
+        # Find zettels with no tags.
+        untagged_zettels = find_untagged_zettels(zettel_paths)
 
         # Print info about what the program has done so far.
-        print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, zettel_name_update_count)
+        print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, untagged_zettels)
 
         # Help the user decide what to do with each unused asset.
         manage_unused_assets(unused_assets)
@@ -98,28 +97,18 @@ def find_zettels_without_title(zettel_paths):
     return zettels_without_title
 
 
-# Find zettels whose file names don't match their title,
-# unless the file name contains the 14-digit zettel ID.
-# Change the file name to match the title, and
-# return the number of file names updated.
-def update_zettel_names(zettel_paths):
-    update_count = 0
-    id_pattern = re.compile(r'\d{14}')
+# Return a list of all zettels with no tags.
+def find_untagged_zettels(zettel_paths):
+    untagged_zettels = []
+    tag_pattern = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
     for zettel_path in zettel_paths:
-        zettel_name = os.path.split(zettel_path)[-1]
-        # If the zettel name does not contain a 14-digit number.
-        id_match = id_pattern.search(zettel_name)
-        if id_match is not None:
-            zettel_title = get_zettel_title(zettel_path)
-            # If the zettel name (not including '.md') is different than the zettel title.
-            if zettel_name[:-3] != zettel_title:
-                # Rename the zettel.
-                zettel_folder = os.path.split(zettel_path)[0]
-                new_zettel_path = os.path.join(zettel_folder, zettel_title)
-                os.rename(zettel_path, new_zettel_path)
-                update_count += 1
+        with open(zettel_path, 'r', encoding='utf8') as zettel:
+            contents = zettel.read()
+        tag_match = tag_pattern.search(contents)
+        if tag_match is None:
+            untagged_zettels.append()
 
-    return update_count
+    return untagged_zettels
 
 
 # Get the total memory size of an entire folder in bytes.
@@ -137,18 +126,21 @@ def get_size(start_path='.'):
 
 # Print info about the broken links and unused assets.
 # unused_assets is a dict of unused assets' paths and memory sizes.
-def print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, zettel_name_update_count):
+def print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, untagged_zettels):
     print_broken_links(asset_links.broken)
     print_zettels_without_ID(zettels_without_ID)
     print_zettels_without_title(zettels_without_title)
+    print_untagged_zettels(untagged_zettels)
     print_unused_assets(unused_assets)
+
     total_bytes = sum(unused_assets.values())
+
     print('\nSummary:')
-    print(f' * {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
-    print(f' * {len(asset_links.broken)} broken asset links.')
-    print(f' * {len(zettels_without_ID)} zettels without a 14-digit ID.')
-    print(f' * {len(zettels_without_title)} zettels wtihout a title.')
-    print(f' * updated {zettel_name_update_count} zettel names.')
+    print(f' * Found {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
+    print(f' * Found {len(asset_links.broken)} broken asset links.')
+    print(f' * Found {len(zettels_without_ID)} zettels without a 14-digit ID.')
+    print(f' * Found {len(zettels_without_title)} zettels without a title.')
+    print(f' * Found {len(untagged_zettels)} zettels with no tags.')
 
 
 def print_broken_links(links):
@@ -170,6 +162,13 @@ def print_zettels_without_title(zettels_without_title):
         print('\nZettels without a title:')
         for zettel_name in zettels_without_title:
             print(f'   {zettel_name}')
+
+
+def print_untagged_zettels(untagged_zettels):
+    if len(untagged_zettels) > 0:
+        print('\nZettels without any tags:')
+        for untagged_zettel in untagged_zettels:
+            print(f'   {untagged_zettel}')
 
 
 # Print the names and the bytes of each asset.
