@@ -158,9 +158,10 @@ def update_links(chosen_links, destination, zettel_paths):
                 with open(zettel_path, 'w', encoding='utf8') as zettel:
                     zettel.write(contents)
                 total_link_count += count
+                zettel_link = get_zettel_link(zettel_path)
                 print(f'   Changed \'{link_in_zettel}\'')
                 print(f'      to \'{new_link}\'')
-                print(f'      in {zettel_path}')
+                print(f'      in {zettel_link}')
 
     return total_link_count
 

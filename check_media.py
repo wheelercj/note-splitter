@@ -1,5 +1,5 @@
-# This program searches the zettelkasten for missing assets, broken asset links, etc.
-# (more details in the README).
+# This program searches a zettelkasten for unused assets,
+# broken file links, and various anti-patterns.
 
 # Internal
 from common import *
@@ -76,32 +76,33 @@ def find_unused_assets(dir_asset_paths, linked_asset_names):
 
 
 # Find all zettels that are missing a 14-digit ID.
-# Returns a list of file names.
+# Return a list of zettel links.
 def find_zettels_without_ID(zettel_paths):
     zettels_without_ID = []
     for zettel_path in zettel_paths:
         zettel_id = find_zettel_id(zettel_path)
         if not zettel_id.isnumeric():
-            zettel_name = os.path.split(zettel_path)[-1]
-            zettels_without_ID.append(zettel_name)
+            zettel_link = get_zettel_link(zettel_path)
+            zettels_without_ID.append(zettel_link)
 
     return zettels_without_ID
 
 
 # Find all zettels that do not have a header level 1.
-# Returns a list of file names.
+# Return a list of zettel links.
 def find_zettels_without_title(zettel_paths):
     zettels_without_title = []
     for zettel_path in zettel_paths:
         title = get_zettel_title(zettel_path)
         if title == '':
-            zettel_name = os.path.split(zettel_path)[-1]
-            zettels_without_title.append(zettel_name)
+            zettel_link = get_zettel_link(zettel_path)
+            zettels_without_title.append(zettel_link)
 
     return zettels_without_title
 
 
-# Return a list of all zettels with no tags.
+# Find all zettels that don't have any tags.
+# Return a list of zettel links.
 def find_untagged_zettels(zettel_paths):
     untagged_zettels = []
     tag_pattern = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
@@ -110,8 +111,8 @@ def find_untagged_zettels(zettel_paths):
             contents = zettel.read()
         tag_match = tag_pattern.search(contents)
         if tag_match is None:
-            zettel_name = os.path.split(zettel_path)[-1]
-            untagged_zettels.append(zettel_name)
+            zettel_link = get_zettel_link(zettel_path)
+            untagged_zettels.append(zettel_link)
 
     return untagged_zettels
 
@@ -159,22 +160,22 @@ def print_broken_links(links):
 def print_zettels_without_ID(zettels_without_ID):
     if len(zettels_without_ID):
         print('\nZettels without a 14-digit ID:')
-        for zettel_name in zettels_without_ID:
-            print(f'   {zettel_name}')
+        for zettel_link in zettels_without_ID:
+            print(f'   {zettel_link}')
 
 
 def print_zettels_without_title(zettels_without_title):
     if len(zettels_without_title):
         print('\nZettels without a title:')
-        for zettel_name in zettels_without_title:
-            print(f'   {zettel_name}')
+        for zettel_link in zettels_without_title:
+            print(f'   {zettel_link}')
 
 
 def print_untagged_zettels(untagged_zettels):
     if len(untagged_zettels) > 0:
         print('\nZettels without any tags:')
-        for untagged_zettel in untagged_zettels:
-            print(f'   {untagged_zettel}')
+        for zettel_link in untagged_zettels:
+            print(f'   {zettel_link}')
 
 
 # Print the names and the bytes of each asset.
