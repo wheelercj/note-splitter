@@ -110,7 +110,8 @@ def find_untagged_zettels(zettel_paths):
             contents = zettel.read()
         tag_match = tag_pattern.search(contents)
         if tag_match is None:
-            untagged_zettels.append()
+            zettel_name = os.path.split(zettel_path)[-1]
+            untagged_zettels.append(zettel_name)
 
     return untagged_zettels
 
