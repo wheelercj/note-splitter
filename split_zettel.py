@@ -23,7 +23,9 @@ def split_zettel_main():
     # Display the titles of the zettels found, and ask for the header level to split by.
     header_level = get_header_level(zettels_to_split)
     # Split each chosen zettel into multiple zettels.
-    split_zettels(zettels_to_split, header_level)
+    new_zettel_titles = split_zettels(zettels_to_split, header_level)
+
+    print_summary(new_zettel_titles)
 
 
 # Find the file paths of all zettels that contain the '#split' tag.
@@ -80,7 +82,7 @@ def split_zettels(zettels_to_split, header_level):
             zettel_title = get_zettel_title(source_zettel_path)
             print(f'   Could not find a header of level {header_level} in \'{zettel_title}\'')
 
-    print_summary(new_zettel_titles)
+    return new_zettel_titles
 
 
 # Split one zettel into multiple zettels by the chosen header level.

@@ -11,7 +11,6 @@ import sys
 import subprocess
 import platform
 from send2trash import send2trash
-# import pyautogui
 
 
 def check_media():
@@ -178,7 +177,18 @@ def print_unused_assets(unused_assets):
         return
 
     # Get the length of the longest asset name.
+    name_size = longest_name_len(unused_assets)
+
+    # Print the asset info in columns.
     print('\nUnused assets:')
+    for path, Bytes in unused_assets.items():
+        name = os.path.split(path)[-1]
+        Bytes = format_bytes(Bytes)
+        print(f'   {name:<{name_size}}{Bytes:>11}')
+
+
+# Return the length of the longest file name in a dict with keys of file paths.
+def longest_name_len(unused_assets):
     unused_asset_paths = unused_assets.keys()
     unused_asset_names = []
     for path in unused_asset_paths:
@@ -186,11 +196,7 @@ def print_unused_assets(unused_assets):
     longest_asset_path = max(unused_asset_names, key=len)
     name_size = len(os.path.split(longest_asset_path)[-1])
 
-    # Print the asset info in columns.
-    for path, Bytes in unused_assets.items():
-        name = os.path.split(path)[-1]
-        Bytes = format_bytes(Bytes)
-        print(f'   {name:<{name_size}}{Bytes:>11}')
+    return name_size
 
 
 # Help the user decide what to do with each unused asset.
@@ -201,12 +207,12 @@ def manage_unused_assets(unused_assets):
         sys.exit(0)
 
     # Help the user decide what to do with each unused asset.
-    print_menu()
+    print_unused_asset_menu()
     choice = input('> ')
-    run_menu(choice, unused_assets)
+    run_unused_asset_menu(choice, unused_assets)
 
 
-def print_menu():
+def print_unused_asset_menu():
     print('\nMenu:')
     print('1. Choose what to do with each unused asset individually.')
     print('2. Send all unused assets to the recycle bin.')
@@ -214,7 +220,7 @@ def print_menu():
 
 
 # unused_assets is a dict of unused assets' paths and memory sizes.
-def run_menu(choice, unused_assets):
+def run_unused_asset_menu(choice, unused_assets):
     if choice == '1':
         validate_unused_assets(unused_assets)
     elif choice == '2':
@@ -259,29 +265,8 @@ def validate_unused_assets(unused_assets):
         Bytes = format_bytes(Bytes)
         print(f'{name}{Bytes:>10}')
 
-        # # Open the asset for the user to view.
-        # os.startfile(path)
-        # pyautogui.sleep(0.5)
-        # asset_window = pyautogui.getActiveWindow()
-        # # Bring the program's window back to the front.
-        # pyautogui.hotkey('alt', 'tab')
-        # choice = input('Send asset to the recycle bin? [y/n]: ')
-        # # Close the asset window.
-        # if path.endswith('.html'):
-        #     pyautogui.hotkey('alt', 'tab')
-        #     pyautogui.hotkey('ctrl', 'w')
-        #     pyautogui.hotkey('alt', 'tab')
-        # else:
-        #     asset_window.close()
-
-        # Show the asset in the explorer/finder/etc.
-        if platform.system() == 'Windows':
-            temp_path = path.replace('/', '\\')
-            subprocess.Popen(['explorer', '/select,', temp_path])
-        elif platform.system() == 'Darwin':  # This is the macOS.
-            subprocess.call(['open', '-R', path])
-        else:
-            subprocess.call(['xdg-open', '-R', path])
+        # Show the asset in explorer/finder/etc.
+        show_file(path)
 
         # Respond to the user's choice.
         if choice == 'y':
@@ -324,6 +309,17 @@ def delete_unused_asset(path):
                 print('OSError')
         else:
             print(f'Could not find folder \'{folder_path}\'.')
+
+
+# Show a file in explorer/finder/etc.
+def show_file(path):
+    if platform.system() == 'Windows':
+        temp_path = path.replace('/', '\\')
+        subprocess.Popen(['explorer', '/select,', temp_path])
+    elif platform.system() == 'Darwin':  # This is the macOS.
+        subprocess.call(['open', '-R', path])
+    else:
+        subprocess.call(['xdg-open', '-R', path])
 
 
 if __name__ == '__main__':
