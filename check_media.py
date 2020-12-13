@@ -38,8 +38,13 @@ def check_media():
         # Print info about what the program has done so far.
         print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, untagged_zettels)
 
-        # Help the user decide what to do with each unused asset.
-        manage_unused_assets(unused_assets)
+        # Try to repair any broken asset links by looking at unused assets with the same name.
+        if len(asset_links.broken) > 0:
+            repair_broken_asset_links(asset_links, unused_assets)
+
+        # Help the user decide what to do with any unused assets.
+        if len(unused_assets) > 0:
+            manage_unused_assets(unused_assets)
 
     except SystemExit:
         pass
@@ -124,6 +129,7 @@ def get_size(start_path='.'):
 
 
 # Print info about the broken links and unused assets.
+# asset_links is a Links object.
 # unused_assets is a dict of unused assets' paths and memory sizes.
 def print_summary(asset_links, unused_assets, zettels_without_ID, zettels_without_title, untagged_zettels):
     print_broken_links(asset_links.broken)
@@ -177,7 +183,7 @@ def print_unused_assets(unused_assets):
         return
 
     # Get the length of the longest asset name.
-    name_size = longest_name_len(unused_assets)
+    name_size = longest_name_len(unused_assets.keys())
 
     # Print the asset info in columns.
     print('\nUnused assets:')
@@ -187,25 +193,69 @@ def print_unused_assets(unused_assets):
         print(f'   {name:<{name_size}}{Bytes:>11}')
 
 
-# Return the length of the longest file name in a dict with keys of file paths.
-def longest_name_len(unused_assets):
-    unused_asset_paths = unused_assets.keys()
-    unused_asset_names = []
-    for path in unused_asset_paths:
-        unused_asset_names.append(os.path.split(path)[-1])
-    longest_asset_path = max(unused_asset_names, key=len)
+# Return the length of the longest file name in a list of file paths.
+def longest_name_len(file_paths):
+    file_names = []
+    for path in file_paths:
+        file_names.append(os.path.split(path)[-1])
+    longest_asset_path = max(file_names, key=len)
     name_size = len(os.path.split(longest_asset_path)[-1])
 
     return name_size
 
 
-# Help the user decide what to do with each unused asset.
-def manage_unused_assets(unused_assets):
-    # End the program if there are no unused assets to manage.
-    if len(unused_assets) == 0:
-        print()
-        sys.exit(0)
+# Try to repair any broken asset links by looking at unused assets with the same name.
+# asset_links is a Links object.
+# unused_assets is a dict of unused assets' paths and memory sizes.
+def repair_broken_asset_links(asset_links, unused_assets):
+    potential_matches = []  # A list of tuples: [(path_in_file, path_in_dir)]
 
+    for path_in_file in asset_links.formatted:
+        name_in_file = os.path.split(path_in_file)[-1]
+        for path_in_dir in unused_assets.keys():
+            name_in_dir = os.path.split(path_in_dir)[-1]
+
+            if name_in_file == name_in_dir:
+                potential_matches.append((path_in_file, path_in_dir))
+
+    if len(potential_matches) > 0:
+        # Ask the user if any of the potential matches are correct.
+        print('\nPotential matches found between broken links and unused assets:')
+        for match in potential_matches:
+            print(f'   broken link:  \'{match[0]}\'')
+            print(f'   unused asset: \'{match[1]}\'')
+            print('       1. change link')
+            print('       2. ignore')
+            choice = input('>       ')
+            if choice == '1':
+                success = repair_broken_asset_link(match[0], match[1])
+                if success:
+                    # Update unused_assets.
+                    del unused_assets[match[1]]
+
+
+# Fix a broken asset link in the zettelkasten by changing zettel contents.
+def repair_broken_asset_link(incorrect_link, correct_link):
+    incorrect_pattern = rf'(?<=]\(){re.escape(incorrect_link)}(?=\))'
+    all_zettel_paths = get_zettel_paths()
+
+    for zettel_path in all_zettel_paths:
+        with open(zettel_path, 'r', encoding='utf8') as zettel:
+            contents = zettel.read()
+        contents, sub_count = re.subn(incorrect_pattern, correct_link, contents)
+        if sub_count <= 0:
+            print('       Error. Failed to fix broken link.')
+            return False
+        else:
+            with open(zettel_path, 'w', encoding='utf8') as zettel:
+                zettel.write(contents)
+            print('       Link fixed.')
+            return True
+
+
+# Help the user decide what to do with each unused asset.
+# unused_assets is a dict of unused assets' paths and memory sizes.
+def manage_unused_assets(unused_assets):
     # Help the user decide what to do with each unused asset.
     print_unused_asset_menu()
     choice = input('> ')
@@ -286,8 +336,8 @@ def validate_unused_assets(unused_assets):
 # unused_assets is a dict of unused assets' paths and memory sizes.
 def delete_all_unused_assets(unused_assets):
     print('Are you sure?')
-    number = int(input('Enter the number of unused assets to confirm: '))
-    if number != len(unused_assets):
+    number = input('Enter the number of unused assets to confirm: ')
+    if number != str(len(unused_assets)):
         print('Canceled recycling.')
         return
     for path in unused_assets.keys():
