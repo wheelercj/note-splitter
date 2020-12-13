@@ -19,7 +19,7 @@ This program searches the zettelkasten for:
 * Broken media file links. Any found are displayed in a list.
 * Zettels that are missing a 14-digit ID. Any found are displayed in a list.
 * Zettels that are missing a title (a header level 1). Any found are displayed in a list.
-* Zettels with titles (the first header level 1) that do not match their file names (unless the file name is the zettel's 14-digit ID). The zettel names are immediately updated to match the titles.
+* Zettels with titles (the first header level 1) that do not match their file names (unless the file name contains the zettel's 14-digit ID). These zettel names are immediately updated to match the titles.
 * Any linked media files in any downloads folders chosen in settings will be automatically moved to the first assets folder chosen in settings (and their links in the zettels will be updated).
 
 ## move_media.py

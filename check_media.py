@@ -21,7 +21,7 @@ def check_media():
 
         # Get all the file links in the zettels. This also finds all broken
         # asset links, and moves any assets in a downloads folder to the
-        # default assets folder.
+        # default assets folder. asset_links is a Links object.
         asset_links = get_all_asset_links(zettel_paths)
 
         # Determine which assets are unlinked.
@@ -34,7 +34,7 @@ def check_media():
         zettels_without_title = find_zettels_without_title(zettel_paths)
 
         # Find zettels with titles that do not match their file names,
-        # unless the file name is the 14-digit zettel ID. Update the file names.
+        # unless the file name contains the 14-digit zettel ID. Update the names.
         zettel_name_update_count = update_zettel_names(zettel_paths)
 
         # Print info about what the program has done so far.
@@ -52,7 +52,7 @@ def by_value(item):
     return item[1]
 
 
-# Returns a dict with keys of asset paths and values of asset file sizes.
+# Return a dict with keys of asset paths and values of asset file sizes.
 def find_unused_assets(dir_asset_paths, linked_asset_names):
     # Find unused assets by comparing the zettelkasten's files and the file links in the zettels.
     unused_assets = dict()
@@ -85,7 +85,7 @@ def find_zettels_without_ID(zettel_paths):
     return zettels_without_ID
 
 
-# Finds all zettels that do not have a header level 1.
+# Find all zettels that do not have a header level 1.
 # Returns a list of file names.
 def find_zettels_without_title(zettel_paths):
     zettels_without_title = []
@@ -98,17 +98,22 @@ def find_zettels_without_title(zettel_paths):
     return zettels_without_title
 
 
-# Find zettels with file names that don't match the zettel title,
-# unless the file name is the 14-digit zettel ID.
-# Changes the file name to match the title, and
-# returns the number of file names updated.
+# Find zettels whose file names don't match their title,
+# unless the file name contains the 14-digit zettel ID.
+# Change the file name to match the title, and
+# return the number of file names updated.
 def update_zettel_names(zettel_paths):
     update_count = 0
+    id_pattern = re.compile(r'\d{14}')
     for zettel_path in zettel_paths:
-        zettel_name = os.path.split(zettel_path)[-1][:-3]
-        if not zettel_name.isnumeric():
+        zettel_name = os.path.split(zettel_path)[-1]
+        # If the zettel name does not contain a 14-digit number.
+        id_match = id_pattern.search(zettel_name)
+        if id_match is not None:
             zettel_title = get_zettel_title(zettel_path)
-            if zettel_name != zettel_title:
+            # If the zettel name (not including '.md') is different than the zettel title.
+            if zettel_name[:-3] != zettel_title:
+                # Rename the zettel.
                 zettel_folder = os.path.split(zettel_path)[0]
                 new_zettel_path = os.path.join(zettel_folder, zettel_title)
                 os.rename(zettel_path, new_zettel_path)
