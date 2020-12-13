@@ -32,6 +32,20 @@ class Links:
         for link in links_object.broken:
             self.broken.append(link)
 
+    # If all the lists are empty, return True.
+    def isEmpty(self):
+        isempty = True
+        if len(self.originals):
+            isempty = False
+        elif len(self.formatted):
+            isempty = False
+        elif len(self.names):
+            isempty = False
+        elif len(self.broken):
+            isempty = False
+
+        return isempty
+
 
 # Get the absolute path of an asset with an unknown location.
 # The location must be one of the asset_dir_paths.
