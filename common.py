@@ -102,7 +102,7 @@ def is_URL(link):
     return False
 
 
-# Get all the links in one zettel.
+# Return a Links object of all the links in one zettel.
 # contents is a string.
 def get_asset_links(contents):
     links = Links()

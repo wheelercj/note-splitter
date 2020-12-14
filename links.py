@@ -59,6 +59,7 @@ def get_abspath(file_path):
 
 
 # Change the form of an asset link to make it easier to use.
+# Broken links will not be made absolute.
 def format_link(file_path):
     # Remove 'file://' from the beginning of any file links that have it.
     if file_path.startswith('file://'):
