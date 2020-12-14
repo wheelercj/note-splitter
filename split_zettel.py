@@ -78,6 +78,7 @@ def split_zettels(zettels_to_split, header_level):
     for source_zettel_path in zettels_to_split:
         try:
             split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_titles)
+            remove_split_tag(source_zettel_path)
         except HeaderNotFoundError:
             zettel_title = get_zettel_title(source_zettel_path)
             print(f'   Could not find a header of level {header_level} in \'{zettel_title}\'')
@@ -236,6 +237,14 @@ def print_summary(new_zettel_titles):
         message = message + '\n * ' + new_zettel_title
     messagebox.showinfo(title='Split zettel', message=message)
 
+
+# Remove all instances of the tag '#split' from a zettel.
+def remove_split_tag(zettel_path):
+    with open(zettel_path, 'r', encoding='utf8') as zettel:
+        contents = zettel.read()
+    contents = re.sub(r'#split', '', contents)
+    with open(zettel_path, 'w', encoding='utf8') as zettel:
+        zettel.write(contents)
 
 if __name__ == '__main__':
     split_zettel_main()
