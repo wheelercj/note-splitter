@@ -98,7 +98,7 @@ def get_all_asset_links(zettel_paths):
 
         # Get the asset links in the contents and save them
         # with all the other links in the Links object.
-        links = get_asset_links(contents)
+        links = get_asset_links(contents, zettel_path)
         all_links.add(links)
 
         # Move any assets in the downloads folders to the zettelkasten's
@@ -126,7 +126,7 @@ def update_links(chosen_links, destination, zettel_paths):
             contents = zettel.read()
 
         # Get all the links in this zettel as a Links object.
-        Links_in_zettel = get_asset_links(contents)
+        Links_in_zettel = get_asset_links(contents, zettel_path)
 
         # The lists in the Links_in_zettel object may contain duplicates, so
         # get a dict of each unique link and their number of occurences.
