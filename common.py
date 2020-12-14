@@ -21,12 +21,14 @@ asset_link_pattern = re.compile(r'(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:)
 web_types = ('.ac', '.ad', '.ae', '.aero', '.af', '.ag', '.ai', '.al', '.am', '.an', '.ao', '.aq', '.ar', '.arpa', '.as', '.at', '.au', '.aw', '.ax', '.az', '.ba', '.bb', '.bd', '.be', '.bf', '.bg', '.bh', '.bi', '.biz', '.bj', '.bm', '.bn', '.bo', '.br', '.bs', '.bt', '.bv', '.bw', '.by', '.bz', '.ca', '.cat', '.cc', '.cd', '.cf', '.cg', '.ch', '.ci', '.ck', '.cl', '.cm', '.cn', '.co', '.com', '.coop', '.cr', '.cs', '.cu', '.cv', '.cx', '.cy', '.cz', '.de', '.dj', '.dk', '.dm', '.do', '.dz', '.ec', '.edu', '.ee', '.eg', '.eh', '.er', '.es', '.et', '.eu', '.fi', '.firm', '.fj', '.fk', '.fm', '.fo', '.fr', '.ga', '.gb', '.gd', '.ge', '.gf', '.gg', '.gh', '.gi', '.gl', '.gm', '.gn', '.gov', '.gp', '.gq', '.gr', '.gs', '.gt', '.gu', '.gw', '.gy', '.hk', '.hm', '.hn', '.hr', '.ht', '.hu', '.id', '.ie', '.il', '.im', '.in', '.info', '.int', '.io', '.iq', '.ir', '.is', '.it', '.je', '.jm', '.jo', '.jobs', '.jp', '.ke', '.kg', '.kh', '.ki', '.km', '.kn', '.kp', '.kr', '.kw', '.ky', '.kz', '.la', '.lb', '.lc', '.li', '.lk', '.lr', '.ls', '.lt', '.lu', '.lv', '.ly', '.ma', '.mc', '.md', '.mg', '.mh', '.mil', '.mk', '.ml', '.mm', '.mn', '.mo', '.mobi', '.mp', '.mq', '.mr', '.ms', '.mt', '.mu', '.museum', '.mv', '.mw', '.mx', '.my', '.mz', '.na', '.name', '.nato', '.nc', '.ne', '.net', '.nf', '.ng', '.ni', '.nl', '.no', '.np', '.nr', '.nu', '.nz', '.om', '.org', '.pa', '.pe', '.pf', '.pg', '.ph', '.pk', '.pl', '.pm', '.pn', '.pr', '.pro', '.ps', '.pt', '.pw', '.py', '.qa', '.re', '.ro', '.ru', '.rw', '.sa', '.sb', '.sc', '.sd', '.se', '.sg', '.sh', '.si', '.sj', '.sk', '.sl', '.sm', '.sn', '.so', '.sr', '.st', '.store', '.sv', '.sy', '.sz', '.tc', '.td', '.tf', '.tg', '.th', '.tj', '.tk', '.tl', '.tm', '.tn', '.to', '.tp', '.tr', '.travel', '.tt', '.tv', '.tw', '.tz', '.ua', '.ug', '.uk', '.um', '.us', '.uy', '.uz', '.va', '.vc', '.ve', '.vg', '.vi', '.vn', '.vu', '.web', '.wf', '.ws', '.ye', '.yt', '.yu', '.za', '.zm', '.zw')
 
 
-# Returns lists of the paths of all zettels and assets in the zettelkasten.
+# Return two lists of paths of all zettels and assets in the
+# zettelkasten and assets folders chosen in settings.
 def get_file_paths():
     return get_zettel_paths(), get_asset_paths()
 
 
-# Returns a list of the paths of all zettels in the zettelkasten.
+# Return a list of paths of all zettels in the
+# zettelkasten folders chosen in settings.
 def get_zettel_paths():
     zettel_paths = []
     zettelkasten_paths = settings.get_zettelkasten_paths()
@@ -42,7 +44,8 @@ def get_zettel_paths():
     return zettel_paths
 
 
-# Returns a list of the paths of all assets in the zettelkasten.
+# Return a list of paths of all assets in the
+# assets folders chosen in settings.
 def get_asset_paths():
     asset_paths = []
     asset_dir_paths = settings.get_asset_dir_paths()
@@ -129,8 +132,9 @@ def generate_zettel_id():
     return zettel_id
 
 
-# Find ID of a zettel. This function looks for a 14-digit number,
-# and only uses the zettel's name as the ID if it can't find one.
+# Return the ID of a zettel. This function looks for a 14-digit number
+# first in the file name and then in its contents, and only uses the
+# file's full name as the ID if it can't find the 14-digit number.
 def find_zettel_id(zettel_path):
     # Search for the zettel ID in the file's name.
     zettel_name = os.path.split(zettel_path)[1]
@@ -148,7 +152,7 @@ def find_zettel_id(zettel_path):
     return zettel_id_match[0]
 
 
-# Get the zettelkasten-style link to a zettel, such as:
+# Return the zettelkasten-style link to a zettel, such as:
 # '[[20201215093128]] This is the zettel title'.
 def get_zettel_link(zettel_path):
     zettel_id = find_zettel_id(zettel_path)
