@@ -35,13 +35,6 @@ class Links:
     def isEmpty(self):
         if len(self.originals):
             return False
-        elif len(self.formatted):
-            return False
-        elif len(self.names):
-            return False
-        elif len(self.broken):
-            return False
-
         return True
 
 
