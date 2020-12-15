@@ -35,8 +35,8 @@ class Settings:
 # Check whether all the filepaths in the given list are absolute.
 def all_abs(paths):
     for path in paths:
-        if not os.path.isabs(path):
-            print('Please make any relative folder paths absolute.')
+        if not path == '' and not os.path.isabs(path):
+            print(f'Please make the relative folder path absolute: {path}')
             return False
     return True
 

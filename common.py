@@ -29,7 +29,7 @@ def get_file_paths():
 
 # Return a list of paths of all zettels in the
 # zettelkasten folders chosen in settings.
-def get_zettel_paths():
+def get_zettel_paths(settings=settings):
     zettel_paths = []
     zettelkasten_paths = settings.get_zettelkasten_paths()
     for path in zettelkasten_paths:
@@ -46,7 +46,7 @@ def get_zettel_paths():
 
 # Return a list of paths of all assets in the
 # assets folders chosen in settings.
-def get_asset_paths():
+def get_asset_paths(settings=settings):
     asset_paths = []
     asset_dir_paths = settings.get_asset_dir_paths()
     for path in asset_dir_paths:
@@ -108,6 +108,8 @@ def html_link_is_URL(link):
 # zettel_path is the abs path of the zettel that contains the
 # asset links, and is only needed if there are relative asset links.
 def get_asset_links(contents, zettel_path):
+    assert os.path.isabs(zettel_path) or zettel_path == ''
+
     links = Links()
     for link_match in re.finditer(asset_link_pattern, contents):
         link_dict = link_match.groupdict()
@@ -136,6 +138,8 @@ def generate_zettel_id():
 # first in the file name and then in its contents, and only uses the
 # file's full name as the ID if it can't find the 14-digit number.
 def find_zettel_id(zettel_path):
+    assert os.path.isabs(zettel_path)
+
     # Search for the zettel ID in the file's name.
     zettel_name = os.path.split(zettel_path)[1]
     zettel_id_match = zettel_id_pattern.search(zettel_name)
@@ -155,6 +159,8 @@ def find_zettel_id(zettel_path):
 # Return the zettelkasten-style link to a zettel, such as:
 # '[[20201215093128]] This is the zettel title'.
 def get_zettel_link(zettel_path):
+    assert os.path.isabs(zettel_path)
+
     zettel_id = find_zettel_id(zettel_path)
     zettel_title = get_zettel_title(zettel_path)
     zettel_link = '[[' + zettel_id + ']] ' + zettel_title
