@@ -20,56 +20,56 @@ def move_media_main():
 
     # Get input of paths of files to move.
     print('Select the assets you want to move.')
-    chosen_links = askopenfilenames(title='Select the asset files you want to move.')
+    chosen_paths = askopenfilenames(title='Select the asset files you want to move.')
     print('Selected assets:')
-    for chosen_link in chosen_links:
-        print(f'   {chosen_link}')
-    if len(chosen_links) == 0:
+    for chosen_path in chosen_paths:
+        print(f'   {chosen_path}')
+    if len(chosen_paths) == 0:
         print('   (none)')
 
     # Keep only files that are of type asset_types and are linked to in the zettelkasten.
-    chosen_links = validate_chosen_links(chosen_links, get_all_asset_links(zettel_paths))
+    chosen_paths = validate_chosen_paths(chosen_paths, get_all_asset_links(zettel_paths))
 
     link_count = 0
     destination = ''
-    if len(chosen_links):
+    if len(chosen_paths):
         # Get input of destination folder.
         print('\nSelect the destination folder.')
         destination = askdirectory(title='Select the destination folder.', mustexist=True)
         print(f'Selected folder {destination}')
 
         # Move the files and update the links.
-        link_count = move_media(chosen_links, destination, zettel_paths)
+        link_count = move_media(chosen_paths, destination, zettel_paths)
 
     # Print a summary of what the program did.
-    print(f'\nMoved {len(chosen_links)} assets to folder ', end='', flush=True)
+    print(f'\nMoved {len(chosen_paths)} assets to folder ', end='', flush=True)
     print(f'\'{os.path.split(destination)[-1]}\' and updated {link_count} links.\n')
 
 
 # Get parameters about which files to move where, move the files, and update links.
 # Parameters:
-#   chosen_links is a list of the absolute paths of asset files that are to be moved. They are linked to.
+#   chosen_paths is a list of the absolute paths of asset files that are to be moved. They are linked to.
 #   destination is the absolute path of a folder.
 #   zettel_paths is a list of paths to all zettels in the zettelkasten.
-def move_media(chosen_links, destination, zettel_paths):
+def move_media(chosen_paths, destination, zettel_paths):
     # Update the file links in the zettelkasten.
-    changed_link_count = update_links(chosen_links, destination, zettel_paths)
+    changed_link_count = update_links(chosen_paths, destination, zettel_paths)
 
     # Move the chosen assets.
     print('\nMoving chosen assets.')
-    for link in chosen_links:
-        new_link = os.path.join(destination, os.path.split(link)[-1])
+    for chosen_path in chosen_paths:
+        new_link = os.path.join(destination, os.path.split(chosen_path)[-1])
         try:
-            os.rename(link, new_link)
-            print(f'   Moved file {link}')
+            os.rename(chosen_path, new_link)
+            print(f'   Moved file {chosen_path}')
             print(f'      to {new_link}')
         except FileExistsError:
-            print(f'   Unable to move file {link}')
+            print(f'   Unable to move file {chosen_path}')
             print(f'      because a copy is already there.')
 
-        # If the link is to a .html file, move the corresponding folder too.
-        if link.endswith('.html'):
-            folder_path = link[0:-5] + '_files'
+        # If the chosen path is to a .html file, move the corresponding folder too.
+        if chosen_path.endswith('.html'):
+            folder_path = chosen_path[0:-5] + '_files'
             if os.path.isdir(folder_path):
                 folder_name = os.path.split(folder_path)[-1]
                 new_path = os.path.join(destination, folder_name)
@@ -86,7 +86,7 @@ def move_media(chosen_links, destination, zettel_paths):
     return changed_link_count
 
 
-# Returns all asset file links in the zettels.
+# Return all asset file links in the zettels.
 def get_all_asset_links(zettel_paths):
     all_links = Links()
 
@@ -114,7 +114,7 @@ def get_all_asset_links(zettel_paths):
 
 
 # Update the links in the zettelkasten.
-def update_links(chosen_links, destination, zettel_paths):
+def update_links(chosen_paths, destination, zettel_paths):
     total_link_count = 0
     print('\nUpdating links in the zettelkasten.')
 
@@ -132,20 +132,20 @@ def update_links(chosen_links, destination, zettel_paths):
         # get a dict of each unique link and their number of occurences.
         formatted_links_counter = Counter(Links_in_zettel.formatted)
 
-        # For each link that the user chose to change.
-        for chosen_link in chosen_links:
-            # Get the number of links to change by finding chosen_link in formatted_links_counter.
+        # For each path that the user chose to change.
+        for chosen_path in chosen_paths:
+            # Get the number of links to change by finding chosen_path in formatted_links_counter.
             try:
-                count = formatted_links_counter[chosen_link]
+                count = formatted_links_counter[chosen_path]
             except KeyError:
                 count = 0
             if count:
                 # Replace all instances of the link in the zettel with
                 # the new_link that points to the destination folder.
 
-                # The link in the zettel is chosen_link, except not necessarily formatted,
+                # The link in the zettel is chosen_path, except not necessarily formatted,
                 # so we need to get its original form from the Links_in_zettel object.
-                index = Links_in_zettel.formatted.index(chosen_link)
+                index = Links_in_zettel.formatted.index(chosen_path)
                 link_in_zettel = Links_in_zettel.originals[index]
 
                 # Create the new_link that the current (old) link will be changed to.
@@ -166,15 +166,15 @@ def update_links(chosen_links, destination, zettel_paths):
     return total_link_count
 
 
-# Ignore the filepaths of files that are not linked to in the zettelkasten,
-# and the files that are not of type asset_types.
-def validate_chosen_links(chosen_links, all_asset_links):
+# Return the given asset paths that are present in the zettels,
+# and are of a type in asset_types.
+def validate_chosen_paths(chosen_paths, all_asset_links):
     unlinked = []
     wrong_type_links = []
     valid_links = []
 
     # Determine which file paths are valid, linked assets.
-    for filepath in chosen_links:
+    for filepath in chosen_paths:
         if os.path.splitext(filepath)[1] not in asset_types:
             wrong_type_links.append(filepath)
         elif filepath not in all_asset_links.formatted:
