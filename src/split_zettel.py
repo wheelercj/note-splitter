@@ -7,12 +7,16 @@
 # zettels (except '#split'). The new zettels will be created in the same folder
 # as their respective source zettel.
 
-# Internal
-from common import *
+# Internal imports
+try:
+    from common import *
+except ModuleNotFoundError:
+    from .common import *
 
-# External
+# External imports
 import os
 import re
+import sys
 from tkinter import Tk, messagebox
 from tkinter.simpledialog import askinteger
 
@@ -23,9 +27,9 @@ def split_zettel_main():
     # Display the titles of the zettels found, and ask for the header level to split by.
     header_level = get_header_level(zettels_to_split)
     # Split each chosen zettel into multiple zettels.
-    new_zettel_titles = split_zettels(zettels_to_split, header_level)
+    new_zettel_titles, errors = split_zettels(zettels_to_split, header_level)
 
-    print_summary(new_zettel_titles)
+    print_summary(new_zettel_titles, errors)
 
 
 # Find the file paths of all zettels that contain the '#split' tag.
@@ -47,17 +51,20 @@ def get_zettels_to_split():
 # Display the titles of the zettels found, and ask for the header level to split by.
 def get_header_level(zettels_to_split):
     Tk().withdraw()
-    zettel_titles = get_zettel_titles(zettels_to_split)
+    zettel_links = get_zettel_links(zettels_to_split)
 
-    # Change the list of zettel titles into an easily readable string.
+    # Change the list of zettel links into an easily readable string.
     instructions = 'Zettels found containing \'#split\':\n'
-    for title in zettel_titles:
-        instructions = instructions + ' * ' + title + '\n'
+    for zettel_link in zettel_links:
+        instructions = instructions + ' * ' + zettel_link + '\n'
     instructions = instructions + '\nEnter the header level to split by.'
 
     invalid_input = True
     while invalid_input:
         header_level = askinteger('Split zettel', instructions)
+        if header_level is None:
+            sys.exit(0)
+
         if header_level < 1 or header_level > 6:
             messagebox.showinfo(title='Split zettel', message='Header level must be within 1-6.')
         else:
@@ -74,16 +81,19 @@ class HeaderNotFoundError(ValueError):
 def split_zettels(zettels_to_split, header_level):
     new_zettel_id = generate_zettel_id()
     new_zettel_titles = []
+    errors = []
 
     for source_zettel_path in zettels_to_split:
         try:
             split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_titles)
             remove_split_tag(source_zettel_path)
         except HeaderNotFoundError:
-            zettel_title = get_zettel_title(source_zettel_path)
-            print(f'   Could not find a header of level {header_level} in \'{zettel_title}\'')
+            zettel_link = get_zettel_link(source_zettel_path)
+            if len(errors) == 0:
+                errors.append(f'Could not find a header of level {header_level} in zettels:')
+            errors.append(f' * {zettel_link}')
 
-    return new_zettel_titles
+    return new_zettel_titles, errors
 
 
 # Split one zettel into multiple zettels by the chosen header level.
@@ -128,7 +138,7 @@ def split_zettel(source_zettel_path, header_level, new_zettel_id, new_zettel_tit
             elif header_match2[0].count('#') <= header_level:
                 # If the header is of a larger level (fewer hashes) than header_level.
                 if header_match2[0].count('#') < header_level:  # TODO: as this is now, it will not work correctly if the header contains hashes after the hashes that make it a header.
-                    # A new match1 will be needed in the next loop iteration.
+                    # A new header_match1 will be needed in the next loop iteration.
                     need_new_match1 = True
 
                 section_start = header_match1.start()
@@ -211,7 +221,7 @@ def insert_tags(tags, zettel_contents, title_end_pos):
 # Insert a backlink to the source zettel in the new zettel.
 def insert_backlink(new_zettel_contents, source_zettel_path):
     backlink = get_zettel_link(source_zettel_path)
-    new_zettel_contents = new_zettel_contents + '\n## see also:\n* topic outline: ' + backlink
+    new_zettel_contents = new_zettel_contents + '\n\n## see also:\n* topic outline: ' + backlink
     return new_zettel_contents
 
 
@@ -231,10 +241,17 @@ def save_zettels(new_zettel_path, new_zettel_contents, source_zettel_path, sourc
 
 
 # Print a summary of what the program did.
-def print_summary(new_zettel_titles):
-    message = 'New zettels created:'
-    for new_zettel_title in new_zettel_titles:
-        message = message + '\n * ' + new_zettel_title
+def print_summary(new_zettel_titles, errors):
+    message = ''
+    if len(new_zettel_titles):
+        message += 'New zettels created:'
+        for new_zettel_title in new_zettel_titles:
+            message += '\n * ' + new_zettel_title
+    if len(errors):
+        message += '\n'
+        for error in errors:
+            message += '\n' + error
+
     messagebox.showinfo(title='Split zettel', message=message)
 
 
@@ -245,6 +262,7 @@ def remove_split_tag(zettel_path):
     contents = re.sub(r'#split', '', contents)
     with open(zettel_path, 'w', encoding='utf8') as zettel:
         zettel.write(contents)
+
 
 if __name__ == '__main__':
     split_zettel_main()

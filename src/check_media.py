@@ -1,11 +1,15 @@
 # This program searches a zettelkasten for unused assets,
 # broken file links, and various anti-patterns.
 
-# Internal
-from common import *
-from move_media import get_all_asset_links
+# Internal imports
+try:
+    from common import *
+    from move_media import get_all_asset_links
+except ModuleNotFoundError:
+    from .common import *
+    from .move_media import get_all_asset_links
 
-# External
+# External imports
 import os
 import sys
 import subprocess

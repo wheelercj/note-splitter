@@ -5,6 +5,7 @@
 # optional. Running this program directly will let you overwrite any
 # settings you had already chosen.
 
+# External imports
 import os
 import sys
 import yaml
@@ -36,7 +37,7 @@ class Settings:
 def all_abs(paths):
     for path in paths:
         if not path == '' and not os.path.isabs(path):
-            print(f'Please make the relative folder path absolute: {path}')
+            print(f'In settings, all the folder paths must be absolute; please change \'{path}\'')
             return False
     return True
 
@@ -104,5 +105,3 @@ if __name__ == '__main__':
     contents = contents.replace('__main__', 'settings', 1)
     with open('user_settings.yaml', 'w') as file:
         file.write(contents)
-else:
-    settings = get_settings()

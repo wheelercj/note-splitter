@@ -1,12 +1,17 @@
 # This program can move assets of type asset_types that are linked to in the
 # zettelkasten from one folder to another, and updates their links.
 
-# Internal
-from common import *
-from links import Links, format_link
-from settings import settings
+# Internal imports
+try:
+    from common import *
+    from links import Links, format_link
+    from settings import get_settings
+except ModuleNotFoundError:
+    from .common import *
+    from .links import Links, format_link
+    from .settings import get_settings
 
-# External
+# External imports
 import os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames, askdirectory
@@ -89,6 +94,7 @@ def move_media(chosen_paths, destination, zettel_paths):
 # Return all asset file links in the zettels.
 def get_all_asset_links(zettel_paths):
     all_links = Links()
+    settings = get_settings()
 
     # For each zettel.
     for zettel_path in zettel_paths:

@@ -2,7 +2,10 @@
 # ID in their name to just the 14-digit ID.
 
 # Internal
-from common import get_zettel_paths
+if __package__ is None:
+    from common import get_zettel_paths
+else:
+    from .common import get_zettel_paths
 
 # External
 import os

@@ -1,10 +1,13 @@
 # Replaces a given regex pattern with a given string
 # throughout the entire zettelkasten.
 
-# Internal
-from common import *
+# Internal imports
+try:
+    from common import *
+except ModuleNotFoundError:
+    from .common import *
 
-# External
+# External imports
 import re
 import sys
 

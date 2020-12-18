@@ -1,6 +1,6 @@
 # This class is for storing and processing asset links.
 
-# External
+# External imports
 import os
 
 
