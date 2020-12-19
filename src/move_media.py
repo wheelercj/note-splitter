@@ -33,7 +33,9 @@ def move_media_main():
         print('   (none)')
 
     # Keep only files that are of type asset_types and are linked to in the zettelkasten.
-    chosen_paths = validate_chosen_paths(chosen_paths, get_all_asset_links(zettel_paths))
+    chosen_paths, warnings = validate_chosen_paths(chosen_paths, get_all_asset_links(zettel_paths))
+    for line in warnings:
+        print(line)
 
     link_count = 0
     destination = ''
@@ -188,17 +190,18 @@ def validate_chosen_paths(chosen_paths, all_asset_links):
         else:
             valid_links.append(filepath)
 
-    # Print any error messages needed.
+    # Prepare any warning messages needed.
+    warnings = []
     if len(wrong_type_links):
-        print('\nUnable to move some files because of their type:')
+        warnings.append('\nUnable to move some files because of their type:')
         for file in wrong_type_links:
-            print(f'   {os.path.split(file)[-1]}')
+            warnings.append(f'   {os.path.split(file)[-1]}')
     if len(unlinked):
-        print('\nUnable to move some files because they are not linked to in the zettelkasten:')
+        warnings.append('\nUnable to move some files because they are not linked to in the zettelkasten:')
         for file in unlinked:
-            print(f'   {os.path.split(file)[-1]}')
+            warnings.append(f'   {os.path.split(file)[-1]}')
 
-    return valid_links
+    return valid_links, warnings
 
 
 if __name__ == '__main__':
