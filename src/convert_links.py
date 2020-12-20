@@ -1,5 +1,7 @@
-# Convert zettelkasten-style links to
-# markdown-style links, or vice versa.
+# Converts zettel links from the zettelkasten style to markdown's style,
+# or vice versa. Currently, this only works with links that are 14-digit
+# zettel IDs, and with double square brackets for the zettelkasten-style
+# links, e.g. [[20201221140928]].
 
 # External
 import re
