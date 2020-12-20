@@ -11,7 +11,7 @@ import sys
 import re
 import yaml
 import PySimpleGUI as sg
-from tkinter import filedialog
+from tkinter.filedialog import askdirectory
 
 '''
 To add support for a new asset type to the program, change:
@@ -30,6 +30,7 @@ class Settings:
     def __init__(self, zettelkasten_paths, asset_dir_paths, downloads_paths):
         # Make sure all the paths are absolute.
         if not all_abs(zettelkasten_paths + asset_dir_paths + downloads_paths):
+            sg.Popup(f'In the zettelkasten settings in user_settings.yaml, all the folder paths must be absolute.', title='Error')
             sys.exit(0)
 
         self.__zettelkasten_paths = zettelkasten_paths
@@ -50,7 +51,6 @@ class Settings:
 def all_abs(paths):
     for path in paths:
         if not path == '' and not os.path.isabs(path):
-            sg.Popup(f'In the zettelkasten settings, all the folder paths must be absolute. Please change \'{path}\'', title='Error')
             return False
     return True
 
@@ -164,7 +164,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
     # Respond to zettelkasten directory button events.
     if event == '-zk_new-':
         # Append a new zettelkasten directory.
-        new_path = filedialog.askdirectory(title='Select the zettelkasten folder.', mustexist=True)
+        new_path = askdirectory(title='Select the zettelkasten folder.', mustexist=True)
         if new_path != '':
             zk_paths.append(new_path)
             window['-zk_paths-'].update(zk_paths)
@@ -173,7 +173,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
         if len(values['-zk_paths-']) == 0:
             sg.Popup('Please select a folder to edit in the list', title='Error')
         else:
-            new_path = filedialog.askdirectory(title='Select the zettelkasten folder.', mustexist=True)
+            new_path = askdirectory(title='Select the zettelkasten folder.', mustexist=True)
             if new_path != '':
                 # Replace the instances of values['-zk_paths-'][0] in zk_paths with the new path.
                 zk_paths = [new_path if path == values['-zk_paths-'][0] else path for path in zk_paths]
@@ -189,7 +189,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
     # Respond to asset directory button events.
     elif event == '-ad_new-':
         # Append a new assets directory.
-        new_path = filedialog.askdirectory(title='Select the assets folder.', mustexist=True)
+        new_path = askdirectory(title='Select the assets folder.', mustexist=True)
         if new_path != '':
             ad_paths.append(new_path)
             window['-ad_paths-'].update(ad_paths)
@@ -198,7 +198,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
         if len(values['-ad_paths-']) == 0:
             sg.Popup('Please select a folder to edit in the list', title='Error')
         else:
-            new_path = filedialog.askdirectory(title='Select the assets folder.', mustexist=True)
+            new_path = askdirectory(title='Select the assets folder.', mustexist=True)
             if new_path != '':
                 # Replace the instances of values['-ad_paths-'][0] in ad_paths with the new path.
                 ad_paths = [new_path if path == values['-ad_paths-'][0] else path for path in ad_paths]
@@ -222,7 +222,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
     # Respond to downloads directory button events.
     elif event == '-dl_new-':
         # Append a new downloads directory.
-        new_path = filedialog.askdirectory(title='Select the downloads folder.', mustexist=True)
+        new_path = askdirectory(title='Select the downloads folder.', mustexist=True)
         if new_path != '':
             dl_paths.append(new_path)
             window['-dl_paths-'].update(dl_paths)
@@ -231,7 +231,7 @@ def respond_to_menu_event(event, values, window, zk_paths, ad_paths, dl_paths):
         if len(values['-dl_paths-']) == 0:
             sg.Popup('Please select a folder to edit in the list', title='Error')
         else:
-            new_path = filedialog.askdirectory(title='Select the downloads folder.', mustexist=True)
+            new_path = askdirectory(title='Select the downloads folder.', mustexist=True)
             if new_path != '':
                 # Replace the instances of values['-dl_paths-'][0] in dl_paths with the new path.
                 dl_paths = [new_path if path == values['-dl_paths-'][0] else path for path in dl_paths]
