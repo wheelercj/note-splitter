@@ -58,12 +58,13 @@ def move_media_main():
 #   zettel_paths is a list of paths to all zettels in the zettelkasten.
 def move_media(chosen_paths, destination, zettel_paths):
     # Update the file links in the zettelkasten.
-    changed_link_count = update_links(chosen_paths, destination, zettel_paths)
+    changed_link_count = update_zettelkasten_links(chosen_paths, destination, zettel_paths)
 
     # Move the chosen assets.
     print('\nMoving chosen assets.')
     for chosen_path in chosen_paths:
         new_link = os.path.join(destination, os.path.split(chosen_path)[-1])
+        new_link = new_link.replace('\\', '/')
         try:
             os.rename(chosen_path, new_link)
             print(f'   Moved file {chosen_path}')
@@ -92,56 +93,70 @@ def move_media(chosen_paths, destination, zettel_paths):
 
 
 # Update the links in the zettelkasten.
-def update_links(chosen_paths, destination, zettel_paths):
+def update_zettelkasten_links(chosen_paths, destination, zettel_paths):
     total_link_count = 0
     print('\nUpdating links in the zettelkasten.')
 
     # For each zettel.
     for zettel_path in zettel_paths:
-
         # Get the contents of the zettel.
         with open(zettel_path, 'r', encoding='utf8') as zettel:
             contents = zettel.read()
-
-        # Get all the links in this zettel as a Links object.
-        Links_in_zettel = get_asset_links(contents, zettel_path)
-
-        # The lists in the Links_in_zettel object may contain duplicates, so
-        # get a dict of each unique link and their number of occurences.
-        formatted_links_counter = Counter(Links_in_zettel.formatted)
-
-        # For each path that the user chose to change.
-        for chosen_path in chosen_paths:
-            # Get the number of links to change by finding chosen_path in formatted_links_counter.
-            try:
-                count = formatted_links_counter[chosen_path]
-            except KeyError:
-                count = 0
-            if count:
-                # Replace all instances of the link in the zettel with
-                # the new_link that points to the destination folder.
-
-                # The link in the zettel is chosen_path, except not necessarily formatted,
-                # so we need to get its original form from the Links_in_zettel object.
-                index = Links_in_zettel.formatted.index(chosen_path)
-                link_in_zettel = Links_in_zettel.originals[index]
-
-                # Create the new_link that the current (old) link will be changed to.
-                asset_name = os.path.split(link_in_zettel)[-1]
-                new_link = os.path.join(destination, asset_name)
-                new_link = format_link(new_link)
-
-                # Update the contents with the new_link.
-                contents = contents.replace(link_in_zettel, new_link)
-                with open(zettel_path, 'w', encoding='utf8') as zettel:
-                    zettel.write(contents)
-                total_link_count += count
-                zettel_link = get_zettel_link(zettel_path)
-                print(f'   Changed \'{link_in_zettel}\'')
-                print(f'      to \'{new_link}\'')
-                print(f'      in {zettel_link}')
+        total_link_count += update_zettel_links(chosen_paths, destination, zettel_path, contents)
 
     return total_link_count
+
+
+# Update the links in one zettel.
+def update_zettel_links(chosen_paths, destination, zettel_path, zettel_contents):
+    # Get all the links in this zettel as a Links object.
+    Links_in_zettel = get_asset_links(zettel_contents, zettel_path)
+
+    # The lists in the Links_in_zettel object may contain duplicates, so
+    # get a dict of each unique link and their number of occurences.
+    formatted_links_counter = Counter(Links_in_zettel.formatted)
+
+    # For each path the user chose to change.
+    for chosen_path in chosen_paths:
+        # Get the number of links to change by finding chosen_path in formatted_links_counter.
+        try:
+            link_count = formatted_links_counter[chosen_path]
+        except KeyError:
+            link_count = 0
+        if link_count:
+            # Update the link in the zettel's contents.
+            zettel_contents, link_in_zettel, new_link = update_zettel_link(chosen_path, destination, zettel_path, Links_in_zettel)
+
+            # Save the changed contents.
+            with open(zettel_path, 'w', encoding='utf8') as zettel:
+                zettel.write(zettel_contents)
+
+            zettel_link = get_zettel_link(zettel_path)
+            print(f'   Changed \'{link_in_zettel}\'')
+            print(f'      to \'{new_link}\'')
+            print(f'      in {zettel_link}')
+
+    return link_count
+
+
+# Replace all instances of the link in the zettel's contents with
+# a new link that is in the destination folder.
+# Return the updated contents without saving them.
+def update_zettel_link(chosen_path, destination, zettel_path, Links_in_zettel):
+    # The link in the zettel is chosen_path, except not necessarily formatted,
+    # so we need to get its original form from the Links_in_zettel object.
+    index = Links_in_zettel.formatted.index(chosen_path)
+    link_in_zettel = Links_in_zettel.originals[index]
+
+    # Create the new_link that the current (old) link will be changed to.
+    asset_name = os.path.split(link_in_zettel)[-1]
+    new_link = os.path.join(destination, asset_name)
+    new_link = format_link(new_link, zettel_path)
+
+    # Update the zettel_contents with the new_link.
+    zettel_contents = zettel_contents.replace(link_in_zettel, new_link)
+
+    return zettel_contents, link_in_zettel, new_link
 
 
 # Return the given asset paths that are present in the zettels,
