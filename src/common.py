@@ -118,6 +118,34 @@ def get_asset_links(contents, zettel_path):
     return links
 
 
+# Return all asset file links in the zettels.
+def get_all_asset_links(zettel_paths):
+    all_links = Links()
+    settings = get_settings()
+
+    # For each zettel.
+    for zettel_path in zettel_paths:
+        # Get the contents of the zettel.
+        with open(zettel_path, 'r', encoding='utf8') as file:
+            contents = file.read()
+
+        # Get the asset links in the contents and save them
+        # with all the other links in the Links object.
+        links = get_asset_links(contents, zettel_path)
+        all_links.add(links)
+
+        # Move any assets in the downloads folders to the zettelkasten's
+        # default assets folder, and update their links in the zettelkasten.
+        for link in links.formatted:
+            downloads_paths = settings.get_downloads_paths()
+            for downloads_path in downloads_paths:
+                if downloads_path == os.path.split(link)[:-1]:
+                    move_media(list(link), asset_dir_paths[0], zettel_paths)
+                    break
+
+    return all_links
+
+
 # Generate a 14-digit zettel ID that represents the current date and time
 # (the format is YYYYMMDDhhmmss).
 def generate_zettel_id():
