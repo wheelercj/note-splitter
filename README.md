@@ -24,13 +24,10 @@ This program searches a zettelkasten for unused assets, broken file links, and v
     * Zettels with no tags are found and listed.
 
 ## move_media.py
-Moves media files from one folder to another, and automatically updates their links within the zettelkasten.
+Moves media files from one folder to another, and automatically updates their links in the zettelkasten.
 
 ## find_and_replace.py
 Replaces a python regex pattern with a string throughout the entire zettelkasten, with some safeguards but no undo option.
-
-## convert_links.py
-Converts zettel links from the zettelkasten style to markdown's style, or vice versa. Currently, this only works with links that are 14-digit zettel IDs, and with double square brackets for the zettelkasten-style links, e.g. [[20201221140928]].
 
 ## settings.py
 Settings for the locations of the zettelkasten, its assets, and any downloads folders to automatically move assets from. (When check_media.py runs, any linked assets in a downloads folder are automatically moved to whichever assets folder was chosen first.) Choosing a downloads folder is optional. Running this program directly will let you overwrite any settings you had already chosen.
