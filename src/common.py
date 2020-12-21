@@ -1,9 +1,9 @@
 # Internal imports
 try:
-    from settings import *
+    from settings_menu import *
     from links import Links
 except ModuleNotFoundError:
-    from .settings import *
+    from .settings_menu import *
     from .links import Links
 
 # External imports
