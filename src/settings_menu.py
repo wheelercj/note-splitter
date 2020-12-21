@@ -51,18 +51,18 @@ def create_settings_menu(zk_paths, ad_paths, dl_paths):
     asset_types_str = get_asset_types_str()
 
     zk_tab_layout = [[sg.Text('Choose the folder(s) where you save your zettels.')],
-                     [sg.Listbox(values=zk_paths, size=(100, 6), key='-zk_paths-')],
+                     [sg.Listbox(zk_paths, size=(100, 6), key='-zk_paths-')],
                      [sg.Button('New', key='-zk_new-'), sg.Button('Edit', key='-zk_edit-'), sg.Button('Delete', key='-zk_delete-')]]
 
     ad_tab_layout = [[sg.Text(f'Choose any folders where all the files of types {asset_types_str} are linked to in the zettelkasten.'
                               '\nThe top folder is the default folder that assets can be automatically moved to.')],
-                     [sg.Listbox(values=ad_paths, size=(100, 6), key='-ad_paths-')],
+                     [sg.Listbox(ad_paths, size=(100, 6), key='-ad_paths-')],
                      [sg.Button('New', key='-ad_new-'), sg.Button('Edit', key='-ad_edit-'), sg.Button('Delete', key='-ad_delete-'), sg.Button('Move to top', key='-ad_move_to_top-')]]
 
-    dl_tab_layout = [[sg.Text('Optionally choose folders to automatically move linked assets from. When you run \'check media\','
-                              f'\nany of these linked assets that are of type {asset_types_str} will be moved to the'
+    dl_tab_layout = [[sg.Text('Optionally choose folders to automatically move linked assets from.'
+                              f'\nAny of these linked assets that are of type {asset_types_str} will be moved to the'
                               '\ntop chosen assets folder, and their links in the zettels will be updated.')],
-                     [sg.Listbox(values=dl_paths, size=(100, 6), key='-dl_paths-')],
+                     [sg.Listbox(dl_paths, size=(100, 6), key='-dl_paths-')],
                      [sg.Button('New', key='-dl_new-'), sg.Button('Edit', key='-dl_edit-'), sg.Button('Delete', key='-dl_delete-')]]
 
     layout = [[sg.TabGroup([[sg.Tab('Zettelkasten folders', zk_tab_layout),
