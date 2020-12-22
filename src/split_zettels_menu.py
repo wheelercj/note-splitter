@@ -100,28 +100,53 @@ def create_results_menu(new_zettels, z_without_h_links, z_without_h_paths, heade
     return sg.Window('Split zettels', layout)
 
 
-def respond_to_results_menu_event(event, values, new_zettels, z_without_h_links, z_without_h_paths):
-    if event == '-open_new-':
-        if len(values['-new_zettels-']) == 0:
-            sg.Popup('Select zettels to open.', title='Error')
-        z_to_open_paths = []
-        for link in values['-new_zettels-']:
-            i = new_zettels.links.index(link)
-            z_to_open_paths.append(new_zettels.paths[i])
-        # Open the selected zettels.
-        for path in z_to_open_paths:
-            webbrowser.open('file://' + path)
+def respond_to_results_menu_event(event, values, window, new_zettels, zettels_sans_h):
+    if event.endswith('_new_z-'):
+        paths = get_listbox_paths(values['-new_z-'], new_zettels)
+        handle_subevent(event, window, paths, new_zettels)
+        window['-new_z-'].update(new_zettels.links)
+    elif event.endswith('_z_sans_h-'):
+        paths = get_listbox_paths(values['-z_sans_h-'], zettels_sans_h)
+        handle_subevent(event, window, paths, zettels_sans_h)
+        window['-z_sans_h-'].update(zettels_sans_h.links)
 
-    elif event == '-open_old-':
-        if len(values['-without_header-']) == 0:
-            sg.Popup('Select zettels to open.', title='Error')
-        z_to_open_paths = []
-        for link in values['-without_header-']:
-            i = z_without_h_links.index(link)
-            z_to_open_paths.append(z_without_h_paths[i])
-        # Open the selected zettels.
-        for path in z_to_open_paths:
-            webbrowser.open('file://' + path)
+
+def handle_subevent(event, window, paths, zettels):
+    if event.startswith('-open'):
+        for path in paths:
+            if os.path.exists(path):
+                webbrowser.open('file://' + path)
+            else:
+                sg.Popup(f'File not found: {path}')
+                zettels.remove_path(path)
+    elif event.startswith('-show'):
+        for path in paths:
+            if os.path.exists(path):
+                show_file(path)
+            else:
+                sg.Popup(f'File not found: {path}')
+                zettels.remove_path(path)
+    elif event.startswith('-move'):
+        destination = askdirectory(title='Select the destination folder.', mustexist=True)
+        if destination != '':
+            for path in paths:
+                new_path = os.path.join(destination, os.path.split(path)[-1])
+                os.rename(path, new_path)  # TODO: update any relative file links in the zettel.
+                zettels.repath(path, new_path)
+
+
+def get_listbox_paths(selected_links, listbox_zettels):
+    # Determine which links to get the paths of.
+    if len(selected_links) == 0:
+        return listbox_zettels.paths
+
+    # Convert the links to paths.
+    selected_paths = []
+    for link in selected_links:
+        path = listbox_zettels.path_of_link(link)
+        selected_paths.append(path)
+
+    return selected_paths
 
 
 if __name__ == '__main__':
