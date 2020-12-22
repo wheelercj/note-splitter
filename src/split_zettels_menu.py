@@ -26,7 +26,7 @@ def split_zettels_menu():
             window.close()
             return
 
-        respond_to_split_menu_event(event, values, window, zettels_to_split, zettel_links)
+        handle_split_menu_event(event, values, window, zettels_to_split, zettel_links)
 
 
 def create_split_menu(zettel_links):
@@ -40,7 +40,7 @@ def create_split_menu(zettel_links):
     return sg.Window('Split zettels', layout)
 
 
-def respond_to_split_menu_event(event, values, window, zettels_to_split, zettel_links):
+def handle_split_menu_event(event, values, window, zettels_to_split, zettel_links):
     header_level = values['-header_level-'].count('#')
 
     if values['-header_level-'] == '':
@@ -76,7 +76,7 @@ def display_results_menu(new_zettels, zettels_sans_h, header_level):
             window.close()
             return
 
-        respond_to_results_menu_event(event, values, window, new_zettels, zettels_sans_h)
+        handle_results_menu_event(event, values, window, new_zettels, zettels_sans_h)
 
 
 def create_results_menu(new_zettels, zettels_sans_h, header_level):
@@ -105,18 +105,18 @@ def create_results_menu(new_zettels, zettels_sans_h, header_level):
     return sg.Window('Split zettels', layout)
 
 
-def respond_to_results_menu_event(event, values, window, new_zettels, zettels_sans_h):
+def handle_results_menu_event(event, values, window, new_zettels, zettels_sans_h):
     if event.endswith('_new_z-'):
         paths = get_listbox_paths(values['-new_z-'], new_zettels)
-        handle_subevent(event, window, paths, new_zettels)
+        handle_zettel_listbox_event(event, window, paths, new_zettels)
         window['-new_z-'].update(new_zettels.links)
     elif event.endswith('_z_sans_h-'):
         paths = get_listbox_paths(values['-z_sans_h-'], zettels_sans_h)
-        handle_subevent(event, window, paths, zettels_sans_h)
+        handle_zettel_listbox_event(event, window, paths, zettels_sans_h)
         window['-z_sans_h-'].update(zettels_sans_h.links)
 
 
-def handle_subevent(event, window, paths, zettels):
+def handle_zettel_listbox_event(event, window, paths, zettels):
     if event.startswith('-open'):
         for path in paths:
             if os.path.exists(path):
