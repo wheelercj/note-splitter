@@ -12,8 +12,6 @@ except ModuleNotFoundError:
 # External imports
 import os
 import sys
-import subprocess
-import platform
 from send2trash import send2trash
 
 
@@ -365,17 +363,6 @@ def delete_unused_asset(path):
                 print('OSError')
         else:
             print(f'Could not find folder \'{folder_path}\'.')
-
-
-# Show a file in explorer/finder/etc.
-def show_file(path):
-    if platform.system() == 'Windows':
-        temp_path = path.replace('/', '\\')
-        subprocess.Popen(['explorer', '/select,', temp_path])
-    elif platform.system() == 'Darwin':  # This is the macOS.
-        subprocess.call(['open', '-R', path])
-    else:
-        subprocess.call(['xdg-open', '-R', path])
 
 
 if __name__ == '__main__':

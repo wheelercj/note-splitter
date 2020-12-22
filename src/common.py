@@ -196,3 +196,14 @@ def get_zettel_links(zettel_paths):
     for zettel_path in zettel_paths:
         zettel_links.append(get_zettel_link(zettel_path))
     return zettel_links
+
+
+# Show a file in explorer/finder/etc.
+def show_file(path):
+    if platform.system() == 'Windows':
+        temp_path = path.replace('/', '\\')
+        subprocess.Popen(['explorer', '/select,', temp_path])
+    elif platform.system() == 'Darwin':  # This is the macOS.
+        subprocess.call(['open', '-R', path])
+    else:
+        subprocess.call(['xdg-open', '-R', path])
