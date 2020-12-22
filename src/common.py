@@ -10,6 +10,8 @@ except ModuleNotFoundError:
 import os
 import re
 import datetime
+import subprocess
+import platform
 
 settings = get_settings()
 
@@ -94,6 +96,34 @@ def html_link_is_URL(link):
         return False
 
 
+# Return all asset file Links in the zettels.
+def get_all_asset_links(zettel_paths):
+    all_Links = Links()
+    settings = get_settings()
+
+    # For each zettel.
+    for zettel_path in zettel_paths:
+        # Get the contents of the zettel.
+        with open(zettel_path, 'r', encoding='utf8') as file:
+            contents = file.read()
+
+        # Get the asset links in the contents and save them
+        # with all the other links in the Links object.
+        links = get_asset_links(contents, zettel_path)
+        all_Links.add(links)
+
+        # Move any assets in the downloads folders to the zettelkasten's
+        # default assets folder, and update their links in the zettelkasten.
+        for link in links.formatted:
+            downloads_paths = settings.get_downloads_paths()
+            for downloads_path in downloads_paths:
+                if downloads_path == os.path.split(link)[:-1]:
+                    move_media(list(link), asset_dir_paths[0], zettel_paths)
+                    break
+
+    return all_Links
+
+
 # Return a Links object of all the asset links in one zettel.
 # The links returned are all of a type in asset_types; all
 # other link types are ignored.
@@ -116,34 +146,6 @@ def get_asset_links(contents, zettel_path):
         links.append(link_dict['link'], link_dict['name'], zettel_path)
 
     return links
-
-
-# Return all asset file links in the zettels.
-def get_all_asset_links(zettel_paths):
-    all_links = Links()
-    settings = get_settings()
-
-    # For each zettel.
-    for zettel_path in zettel_paths:
-        # Get the contents of the zettel.
-        with open(zettel_path, 'r', encoding='utf8') as file:
-            contents = file.read()
-
-        # Get the asset links in the contents and save them
-        # with all the other links in the Links object.
-        links = get_asset_links(contents, zettel_path)
-        all_links.add(links)
-
-        # Move any assets in the downloads folders to the zettelkasten's
-        # default assets folder, and update their links in the zettelkasten.
-        for link in links.formatted:
-            downloads_paths = settings.get_downloads_paths()
-            for downloads_path in downloads_paths:
-                if downloads_path == os.path.split(link)[:-1]:
-                    move_media(list(link), asset_dir_paths[0], zettel_paths)
-                    break
-
-    return all_links
 
 
 # Generate a 14-digit zettel ID that represents the current date and time
