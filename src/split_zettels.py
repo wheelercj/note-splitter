@@ -29,9 +29,9 @@ def split_zettel_main():
     # Display the titles of the zettels found, and ask for the header level to split by.
     header_level = get_header_level(z_to_split)
     # Split each chosen zettel into multiple zettels.
-    new_zettels, z_without_h_links, _ = split_zettels(z_to_split, header_level)
+    new_zettels, zettels_sans_h = split_zettels(z_to_split, header_level)
 
-    print_summary(new_zettels, z_without_h_links)
+    print_summary(new_zettels, zettels_sans_h.links)
 
 
 # Find the file paths of all zettels that contain the '#split' tag.
@@ -82,9 +82,8 @@ class HeaderNotFoundError(ValueError):
 # Split one or more zettels each into multiple zettels by the chosen header level.
 def split_zettels(z_to_split, header_level):
     new_zettels = Zettels()
+    zettels_sans_h = Zettels()
     new_z_id = generate_zettel_id()
-    z_without_h_links = []
-    z_without_h_paths = []
 
     for source_z_path in z_to_split:
         try:
@@ -92,10 +91,9 @@ def split_zettels(z_to_split, header_level):
             remove_split_tag(source_z_path)
         except HeaderNotFoundError:
             z_link = get_zettel_link(source_z_path)
-            z_without_h_links.append(z_link)
-            z_without_h_paths.append(source_z_path)
+            zettels_sans_h.append(link=z_link, path=source_z_path)
 
-    return new_zettels, z_without_h_links, z_without_h_paths
+    return new_zettels, zettels_sans_h
 
 
 # Split one zettel into multiple zettels by the chosen header level.

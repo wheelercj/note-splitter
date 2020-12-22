@@ -1,10 +1,12 @@
 # Internal imports
 from split_zettels import *
-from common import get_zettel_links
+from common import get_zettel_links, show_file
 
 # External imports
+import os
 import PySimpleGUI as sg
 import webbrowser
+from tkinter.filedialog import askdirectory
 
 
 def split_zettels_menu():
@@ -45,8 +47,8 @@ def respond_to_split_menu_event(event, values, window, zettels_to_split, zettel_
         sg.Popup('Please select a header level to split by.', title='Error')
     elif event == '-split_all-':
         window.close()
-        new_zettels, z_without_h_links, z_without_h_paths = split_zettels(zettels_to_split, header_level)
-        display_results_menu(new_zettels, z_without_h_links, z_without_h_paths, header_level)
+        new_zettels, zettels_sans_h = split_zettels(zettels_to_split, header_level)
+        display_results_menu(new_zettels, zettels_sans_h, header_level)
     elif event == '-split_selected-':
         if len(values['-zettels_to_split-']) == 0:
             sg.Popup('Select zettels to split or click "split all".')
@@ -60,12 +62,12 @@ def respond_to_split_menu_event(event, values, window, zettels_to_split, zettel_
                 # The lists zettels_to_split and zettel_links are parallel.
                 chosen_zettel_paths.append(zettels_to_split[i])
 
-            new_zettels, z_without_h_links, z_without_h_paths = split_zettels(chosen_zettel_paths, header_level)
-            display_results_menu(new_zettels, z_without_h_links, z_without_h_paths, header_level)
+            new_zettels, zettels_sans_h = split_zettels(chosen_zettel_paths, header_level)
+            display_results_menu(new_zettels, zettels_sans_h, header_level)
 
 
-def display_results_menu(new_zettels, z_without_h_links, z_without_h_paths, header_level):
-    window = create_results_menu(new_zettels, z_without_h_links, z_without_h_paths, header_level)
+def display_results_menu(new_zettels, zettels_sans_h, header_level):
+    window = create_results_menu(new_zettels, zettels_sans_h, header_level)
     while True:
         event, values = window.read()
 
@@ -74,27 +76,30 @@ def display_results_menu(new_zettels, z_without_h_links, z_without_h_paths, head
             window.close()
             return
 
-        respond_to_results_menu_event(event, values, new_zettels, z_without_h_links, z_without_h_paths)
+        respond_to_results_menu_event(event, values, window, new_zettels, zettels_sans_h)
 
 
-def create_results_menu(new_zettels, z_without_h_links, z_without_h_paths, header_level):
+def create_results_menu(new_zettels, zettels_sans_h, header_level):
     layout = []
 
     if len(new_zettels.links):
         layout.append([sg.Text('New zettels:')])
-        layout.append([sg.Listbox(new_zettels.links, size=(80, 6), key='-new_zettels-')])
-        layout.append([sg.Button('Open selected', key='-open_new-')])
+        layout.append([sg.Listbox(new_zettels.links, size=(80, 6), key='-new_z-')])
+        layout.append([sg.Button('Open', key='-open_new_z-'),
+                       sg.Button('Move', key='-move_new_z-'),
+                       sg.Button('Show in file browser', key='-show_new_z-')])
     else:
         layout.append([sg.Text('No zettels were changed or created.')])
 
-    layout.append([sg.HorizontalSeparator(pad=(0, 8))])
-
-    if len(z_without_h_links):
+    if len(zettels_sans_h.links):
+        layout.append([sg.HorizontalSeparator(pad=(0, 8))])
         layout.append([sg.Text(f'Could not find a header of level {header_level} in zettels:')])
-        layout.append([sg.Listbox(z_without_h_links, size=(80, 6), key='-without_header-')])
-        layout.append([sg.Button('Open selected', key='-open_old-')])
+        layout.append([sg.Listbox(zettels_sans_h.links, size=(80, 6), key='-z_sans_h-')])
+        layout.append([sg.Button('Open', key='-open_z_sans_h-'),
+                       sg.Button('Move', key='-move_z_sans_h-'),
+                       sg.Button('Show in file browser', key='-show_z_sans_h-')])
 
-    layout.append([sg.Text(' ')])
+    layout.append([sg.HorizontalSeparator(pad=(0, 8))])
     layout.append([sg.Button('Close', key='-close-')])
 
     return sg.Window('Split zettels', layout)
