@@ -8,6 +8,13 @@ import PySimpleGUI as sg
 from tkinter.filedialog import askdirectory
 
 
+def create_zettel_listbox_layout(zettel_links, key_name):
+    return [[sg.Listbox(zettel_links, size=(80, 6), key=key_name)],
+            [sg.Button('Open', key='-open_' + key_name[1:]),
+             sg.Button('Move', key='-move_' + key_name[1:]),
+             sg.Button('Show in file browser', key='-show_' + key_name[1:])]]
+
+
 def handle_zettel_listbox_event(event, window, paths, zettels):
     if event.startswith('-open'):
         for path in paths:
