@@ -88,7 +88,7 @@ def find_z_sans_ID(z_paths):
     for z_path in z_paths:
         z_id = find_zettel_id(z_path)
         if not z_id.isnumeric():
-            z_link = get_z_link(z_path)
+            z_link = get_zettel_link(z_path)
             z_sans_ID.append(z_link)
 
     return z_sans_ID
@@ -101,7 +101,7 @@ def find_untitled_z(z_paths):
     for z_path in z_paths:
         title = get_zettel_title(z_path)
         if title == '':
-            z_link = get_z_link(z_path)
+            z_link = get_zettel_link(z_path)
             untitled_z.append(z_link)
 
     return untitled_z
@@ -117,7 +117,7 @@ def find_untagged_z(z_paths):
             contents = z.read()
         tag_match = tag_pattern.search(contents)
         if tag_match is None:
-            z_link = get_z_link(z_path)
+            z_link = get_zettel_link(z_path)
             untagged_z.append(z_link)
 
     return untagged_z
