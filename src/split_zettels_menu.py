@@ -99,12 +99,10 @@ def create_results_menu(new_zettels, zettels_sans_h, header_level):
 
 def handle_results_menu_event(event, values, window, new_zettels, zettels_sans_h):
     if event.endswith('_new_z-'):
-        paths = get_zettel_listbox_paths(values['-new_z-'], new_zettels)
-        handle_zettel_listbox_event(event, window, paths, new_zettels)
+        handle_zettel_listbox_event(event, window, values['-new_z-'], new_zettels)
         window['-new_z-'].update(new_zettels.links)
     elif event.endswith('_z_sans_h-'):
-        paths = get_zettel_listbox_paths(values['-z_sans_h-'], zettels_sans_h)
-        handle_zettel_listbox_event(event, window, paths, zettels_sans_h)
+        handle_zettel_listbox_event(event, window, values['-z_sans_h-'], zettels_sans_h)
         window['-z_sans_h-'].update(zettels_sans_h.links)
 
 
