@@ -81,24 +81,18 @@ def create_results_menu(new_zettels, zettels_sans_h, header_level):
     layout = []
 
     if len(new_zettels.links):
-        layout.append([sg.Text('New zettels:')])
-        layout.append([sg.Listbox(new_zettels.links, size=(80, 6), key='-new_z-')])
-        layout.append([sg.Button('Open', key='-open_new_z-'),
-                       sg.Button('Move', key='-move_new_z-'),
-                       sg.Button('Show in file browser', key='-show_new_z-')])
+        layout += [[sg.Text('New zettels:')]]
+        layout += create_zettel_listbox_layout(new_zettels.links, '-new_z-')
     else:
-        layout.append([sg.Text('No zettels were changed or created.')])
+        layout += [[sg.Text('No zettels were changed or created.')]]
 
     if len(zettels_sans_h.links):
-        layout.append([sg.HorizontalSeparator(pad=(0, 8))])
-        layout.append([sg.Text(f'Could not find a header of level {header_level} in zettels:')])
-        layout.append([sg.Listbox(zettels_sans_h.links, size=(80, 6), key='-z_sans_h-')])
-        layout.append([sg.Button('Open', key='-open_z_sans_h-'),
-                       sg.Button('Move', key='-move_z_sans_h-'),
-                       sg.Button('Show in file browser', key='-show_z_sans_h-')])
+        layout += [[sg.HorizontalSeparator(pad=(0, 8))],
+                   [sg.Text(f'Could not find a header of level {header_level} in zettels:')]]
+        layout += create_zettel_listbox_layout(zettels_sans_h.links, '-z_sans_h-')
 
-    layout.append([sg.HorizontalSeparator(pad=(0, 8))])
-    layout.append([sg.Button('Close', key='-close-')])
+    layout += [[sg.HorizontalSeparator(pad=(0, 8))],
+               [sg.Button('Close', key='-close-')]]
 
     return sg.Window('Split zettels', layout)
 
