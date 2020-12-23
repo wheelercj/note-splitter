@@ -17,20 +17,12 @@ from send2trash import send2trash
 
 def check_media_main():
     try:
-        asset_links, unused_assets, z_sans_ID, z_sans_title, untagged_z = check_media()
+        asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z = check_media()
+        print_summary(asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z)
 
-        # Print info about what has been found.
-        print_summary(asset_links, unused_assets, z_sans_ID, z_sans_title, untagged_z)
-
-        # Move any assets in the downloads folders to the zettelkasten's
-        # default assets folder, and update their links in the zettelkasten.
-        move_downloads(asset_links)
-
-        # Try to repair any broken asset links by looking at unused assets with the same name.
-        if len(asset_links.broken) > 0:
-            repair_broken_asset_links(asset_links, unused_assets)
-
-        # Help the user decide what to do with any unused assets.
+        move_downloads(asset_Links)
+        if len(asset_Links.broken) > 0:
+            repair_broken_asset_links(asset_Links, unused_assets)
         if len(unused_assets) > 0:
             manage_unused_assets(unused_assets)
 
@@ -39,27 +31,15 @@ def check_media_main():
 
 
 def check_media():
-    # Get all the file names in the zettelkasten.
     z_paths, dir_asset_paths = get_file_paths()
+    asset_Links = get_all_asset_links(z_paths)
 
-    # Get all the file links in the zettel, and determine which links are broken.
-    # asset_links is a Links object.
-    asset_links = get_all_asset_links(z_paths)
-
-    # Determine which assets are unlinked.
-    # unused_assets is a dict of unused assets' paths and memory sizes.
-    unused_assets = find_unused_assets(dir_asset_paths, asset_links.names)
-
-    # Find zettels that are missing a 14-digit ID.
+    unused_assets = find_unused_assets(dir_asset_paths, asset_Links.names)
     z_sans_ID = find_z_sans_ID(z_paths)
-
-    # Find zettels that are missing a title (a header level 1).
-    z_sans_title = find_z_sans_title(z_paths)
-
-    # Find zettels with no tags.
+    untitled_z = find_untitled_z(z_paths)
     untagged_z = find_untagged_z(z_paths)
 
-    return asset_links, unused_assets, z_sans_ID, z_sans_title, untagged_z
+    return asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z
 
 
 # For sorting a dictionary by value with the sorted() function.
@@ -69,12 +49,12 @@ def by_value(item):
 
 # Move any assets in the downloads folders to the zettelkasten's
 # default assets folder, and update their links in the zettelkasten.
-def move_downloads(asset_links):
+def move_downloads(asset_Links):
     z_paths = settings.get_zettelkasten_paths()
     asset_dir_paths = settings.get_asset_dir_paths()
     downloads_paths = settings.get_downloads_paths()
 
-    for link in asset_links.formatted:
+    for link in asset_Links.formatted:
         for downloads_path in downloads_paths:
             if downloads_path == os.path.split(link)[:-1]:
                 move_media(list(link), asset_dir_paths[0], z_paths)
@@ -116,15 +96,15 @@ def find_z_sans_ID(z_paths):
 
 # Find all zettels that do not have a header level 1.
 # Return a list of zettel links.
-def find_z_sans_title(z_paths):
-    z_sans_title = []
+def find_untitled_z(z_paths):
+    untitled_z = []
     for z_path in z_paths:
         title = get_zettel_title(z_path)
         if title == '':
             z_link = get_z_link(z_path)
-            z_sans_title.append(z_link)
+            untitled_z.append(z_link)
 
-    return z_sans_title
+    return untitled_z
 
 
 # Find all zettels that don't have any tags.
@@ -143,7 +123,8 @@ def find_untagged_z(z_paths):
     return untagged_z
 
 
-# Get the total memory size of an entire folder in bytes.
+# Get the total memory size of an entire folder in bytes,
+# including any subfolders.
 def get_size(start_path='.'):
     total_size = 0
     for dirpath, _, filenames in os.walk(start_path):
@@ -157,12 +138,12 @@ def get_size(start_path='.'):
 
 
 # Print info about the broken links and unused assets.
-# asset_links is a Links object.
+# asset_Links is a Links object.
 # unused_assets is a dict of unused assets' paths and memory sizes.
-def print_summary(asset_links, unused_assets, z_sans_ID, z_sans_title, untagged_z):
-    print_broken_links(asset_links.broken)
+def print_summary(asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z):
+    print_broken_links(asset_Links.broken)
     print_z_without_ID(z_sans_ID)
-    print_z_without_title(z_sans_title)
+    print_z_without_title(untitled_z)
     print_untagged_z(untagged_z)
     print_unused_assets(unused_assets)
 
@@ -170,9 +151,9 @@ def print_summary(asset_links, unused_assets, z_sans_ID, z_sans_title, untagged_
 
     print('\nSummary:')
     print(f' * Found {len(unused_assets)} unused asset(s) taking {format_bytes(total_bytes)} of memory.')
-    print(f' * Found {len(asset_links.broken)} broken asset links.')
+    print(f' * Found {len(asset_Links.broken)} broken asset links.')
     print(f' * Found {len(z_sans_ID)} zettels without a 14-digit ID.')
-    print(f' * Found {len(z_sans_title)} zettels without a title.')
+    print(f' * Found {len(untitled_z)} zettels without a title.')
     print(f' * Found {len(untagged_z)} zettels with no tags.')
 
 
@@ -190,10 +171,10 @@ def print_z_without_ID(z_sans_ID):
             print(f'   {z_link}')
 
 
-def print_z_without_title(z_sans_title):
-    if len(z_sans_title):
+def print_z_without_title(untitled_z):
+    if len(untitled_z):
         print('\nzettels without a title:')
-        for z_link in z_sans_title:
+        for z_link in untitled_z:
             print(f'   {z_link}')
 
 
@@ -233,12 +214,12 @@ def longest_name_len(file_paths):
 
 
 # Try to repair any broken asset links by looking at unused assets with the same name.
-# asset_links is a Links object.
+# asset_Links is a Links object.
 # unused_assets is a dict of unused assets' paths and memory sizes.
-def repair_broken_asset_links(asset_links, unused_assets):
+def repair_broken_asset_links(asset_Links, unused_assets):
     potential_matches = []  # A list of tuples: [(path_in_file, path_in_dir)]
 
-    for path_in_file in asset_links.formatted:
+    for path_in_file in asset_Links.formatted:
         name_in_file = os.path.split(path_in_file)[-1]
         for path_in_dir in unused_assets.keys():
             name_in_dir = os.path.split(path_in_dir)[-1]
@@ -309,7 +290,7 @@ def run_unused_asset_menu(choice, unused_assets):
 
 
 # Convert bytes to kilobytes, megabytes, etc.
-# Returns a string of the converted bytes with the appropriate units.
+# Return a string of the converted bytes with the appropriate units.
 def format_bytes(Bytes):
     power = 0
     while Bytes > 1024:
