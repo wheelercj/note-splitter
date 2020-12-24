@@ -1,15 +1,17 @@
 class Zettels():
     def __init__(self):
-        # These lists are parallel, except not all are always used.
+        # These lists are parallel, except not all are always used. Paths should always be used.
         self.paths = []   # The absolute file paths.
         self.names = []   # The file names.
         self.ids = []     # The 14-digit zettel IDs.
         self.titles = []  # The first header level 1 in each file, not including the hash and leading space.
         self.links = []   # The ID and title combined, with double square brackets around the ID.
 
+    def __len__(self):
+        return len(self.paths)
+
     def append(self, path='', name='', ID='', title='', link=''):
-        if len(path):
-            self.paths.append(path)
+        self.paths.append(path)
         if len(name):
             self.names.append(name)
         if len(ID):

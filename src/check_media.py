@@ -4,10 +4,10 @@
 # Internal imports
 try:
     from common import *
-    from move_media import get_all_asset_links
+    from zettels import Zettels
 except ModuleNotFoundError:
     from .common import *
-    from .move_media import get_all_asset_links
+    from .zettels import Zettels
 
 # External imports
 import os
@@ -82,35 +82,35 @@ def find_unused_assets(dir_asset_paths, linked_asset_names):
 
 
 # Find all zettels that are missing a 14-digit ID.
-# Return a list of zettel links.
+# Return a Zettels object with paths and links.
 def find_z_sans_ID(z_paths):
-    z_sans_ID = []
+    z_sans_ID = Zettels()
     for z_path in z_paths:
         z_id = find_zettel_id(z_path)
         if not z_id.isnumeric():
             z_link = get_zettel_link(z_path)
-            z_sans_ID.append(z_link)
+            z_sans_ID.append(path=z_path, link=z_link)
 
     return z_sans_ID
 
 
 # Find all zettels that do not have a header level 1.
-# Return a list of zettel links.
+# Return a Zettels object with paths and links.
 def find_untitled_z(z_paths):
-    untitled_z = []
+    untitled_z = Zettels()
     for z_path in z_paths:
         title = get_zettel_title(z_path)
         if title == '':
             z_link = get_zettel_link(z_path)
-            untitled_z.append(z_link)
+            untitled_z.append(path=z_path, link=z_link)
 
     return untitled_z
 
 
 # Find all zettels that don't have any tags.
-# Return a list of zettel links.
+# Return a Zettels object with paths and links.
 def find_untagged_z(z_paths):
-    untagged_z = []
+    untagged_z = Zettels()
     tag_pattern = re.compile(r'(?<=\s)#[a-zA-Z0-9_-]+')
     for z_path in z_paths:
         with open(z_path, 'r', encoding='utf8') as z:
@@ -118,7 +118,7 @@ def find_untagged_z(z_paths):
         tag_match = tag_pattern.search(contents)
         if tag_match is None:
             z_link = get_zettel_link(z_path)
-            untagged_z.append(z_link)
+            untagged_z.append(path=z_path, link=z_link)
 
     return untagged_z
 
@@ -142,9 +142,9 @@ def get_size(start_path='.'):
 # unused_assets is a dict of unused assets' paths and memory sizes.
 def print_summary(asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z):
     print_broken_links(asset_Links.broken)
-    print_z_without_ID(z_sans_ID)
-    print_z_without_title(untitled_z)
-    print_untagged_z(untagged_z)
+    print_z_sans_ID(z_sans_ID.links)
+    print_untitled_z(untitled_z.links)
+    print_untagged_z(untagged_z.links)
     print_unused_assets(unused_assets)
 
     total_bytes = sum(unused_assets.values())
@@ -161,17 +161,17 @@ def print_broken_links(links):
     if len(links):
         print('\nMissing assets:')
         for link in links:
-            print(f'   {link}')
+            print(f'   {link[1]}')
 
 
-def print_z_without_ID(z_sans_ID):
+def print_z_sans_ID(z_sans_ID):
     if len(z_sans_ID):
         print('\nzettels without a 14-digit ID:')
         for z_link in z_sans_ID:
             print(f'   {z_link}')
 
 
-def print_z_without_title(untitled_z):
+def print_untitled_z(untitled_z):
     if len(untitled_z):
         print('\nzettels without a title:')
         for z_link in untitled_z:
@@ -355,9 +355,14 @@ def delete_all_unused_assets(unused_assets):
 
 
 # Send one unused asset to the recycle bin.
-# unused_asset is a dict of an unused asset's path and memory size.
 def delete_unused_asset(path):
+    if platform.system() == 'Windows':
+        path = path.replace('/', '\\')
+    else:
+        path = path.replace('\\', '/')
+
     send2trash(path)
+
     # If the asset is an .html file, move the corresponding folder.
     if path.endswith('.html'):
         folder_path = path[0:-5] + '_files'

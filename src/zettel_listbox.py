@@ -15,6 +15,7 @@ def create_zettel_listbox_layout(info_to_display, key_name):
              sg.Button('Show in file browser', key='-show_' + key_name[1:])]]
 
 
+# Parameter listbox_zettels must be a Zettels object with at least the paths and links.
 def handle_zettel_listbox_event(event, window, selected_z_links, listbox_zettels):
     selected_paths = get_zettel_listbox_paths(selected_z_links, listbox_zettels)
 
@@ -45,6 +46,7 @@ def handle_zettel_listbox_event(event, window, selected_z_links, listbox_zettels
                     listbox_zettels.remove_path(path)
 
 
+# Parameter listbox_zettels must be a Zettels object with at least the paths and links.
 def get_zettel_listbox_paths(selected_z_links, listbox_zettels):
     # Determine which links to get the paths of.
     if len(selected_z_links) == 0:
