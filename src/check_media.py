@@ -13,6 +13,7 @@ except ModuleNotFoundError:
 import os
 import sys
 from send2trash import send2trash
+import PySimpleGUI as sg
 
 
 def check_media_main():
@@ -31,15 +32,25 @@ def check_media_main():
 
 
 def check_media():
+    progress(0)
     z_paths, dir_asset_paths = get_file_paths()
     asset_Links = get_all_asset_links(z_paths)
+    progress(20)
 
     unused_assets = find_unused_assets(dir_asset_paths, asset_Links.names)
+    progress(40)
     z_sans_ID = find_z_sans_ID(z_paths)
+    progress(60)
     untitled_z = find_untitled_z(z_paths)
+    progress(80)
     untagged_z = find_untagged_z(z_paths)
+    progress(100)
 
     return asset_Links, unused_assets, z_sans_ID, untitled_z, untagged_z
+
+
+def progress(n):
+    sg.one_line_progress_meter('Loading', n, 100, '-progress_meter-')
 
 
 # For sorting a dictionary by value with the sorted() function.
