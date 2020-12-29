@@ -26,7 +26,7 @@ def get_file_paths():
 # zettelkasten folders chosen in settings.
 def get_zettel_paths(settings=settings):
     zettel_paths = []
-    zettelkasten_paths = settings.get_zettelkasten_paths()
+    zettelkasten_paths = settings['zk_paths']
     for path in zettelkasten_paths:
         os.chdir(path)
         dir_list = os.listdir()
@@ -43,7 +43,8 @@ def get_zettel_paths(settings=settings):
 # assets folders chosen in settings.
 def get_asset_paths(settings=settings):
     asset_paths = []
-    asset_dir_paths = settings.get_asset_dir_paths()
+    asset_dir_paths = settings['ad_paths']
+
     for path in asset_dir_paths:
         os.chdir(path)
         dir_list = os.listdir()
