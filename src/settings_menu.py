@@ -109,46 +109,46 @@ def respond_to_menu_event(event, values, window, settings):
             window['-ad_paths-'].update(settings['ad_paths'])
 
     elif event.endswith('_new-'):
-        settings = new_dir_setting(event[1:3], values, window, settings)
+        settings = new_dir_setting(f'{event[1:3]}_paths', values, window, settings)
     elif event.endswith('_edit-'):
-        settings = edit_dir_setting(event[1:3], values, window, settings)
+        settings = edit_dir_setting(f'{event[1:3]}_paths', values, window, settings)
     elif event.endswith('_delete-'):
-        settings = delete_dir_setting(event[1:3], values, window, settings)
+        settings = delete_dir_setting(f'{event[1:3]}_paths', values, window, settings)
 
     return settings
 
 
-def new_dir_setting(dir_type, values, window, settings):
-    # Append a new directory.
+# Append a new directory.
+def new_dir_setting(paths_type, values, window, settings):
     new_path = askdirectory(title='Select the folder.', mustexist=True)
     if new_path != '':
-        settings[f'{dir_type}_paths'].append(new_path)
-        window[f'-{dir_type}_paths-'].update(settings[f'{dir_type}_paths'])
+        settings[paths_type].append(new_path)
+        window[f'-{paths_type}-'].update(settings[paths_type])
 
     return settings
 
 
-def edit_dir_setting(dir_type, values, window, settings):
-    # Edit a previously chosen directory.
-    if len(values[f'-{dir_type}_paths-']) == 0:
+# Edit a previously chosen directory.
+def edit_dir_setting(paths_type, values, window, settings):
+    if len(values[f'-{paths_type}-']) == 0:
         sg.Popup('Please select a folder to edit in the list', title='Error')
     else:
         new_path = askdirectory(title='Select the folder.', mustexist=True)
         if new_path != '':
             # Replace the instances of the old path with the new path.
-            settings[f'{dir_type}_paths'] = [new_path if path == values[f'-{dir_type}_paths-'][0] else path for path in settings[f'{dir_type}_paths']]
-            window[f'-{dir_type}_paths-'].update(settings[f'{dir_type}_paths'])
+            settings[paths_type] = [new_path if path == values[f'-{paths_type}-'][0] else path for path in settings[paths_type]]
+            window[f'-{paths_type}-'].update(settings[paths_type])
 
     return settings
 
 
-def delete_dir_setting(dir_type, values, window, settings):
-    # Delete a previously chosen directory.
-    if len(values[f'-{dir_type}_paths-']) == 0:
+# Delete a previously chosen directory.
+def delete_dir_setting(paths_type, values, window, settings):
+    if len(values[f'-{paths_type}-']) == 0:
         sg.Popup('Please select a folder to delete in the list', title='Error')
     else:
-        settings[f'{dir_type}_paths'].remove(values[f'-{dir_type}_paths-'][0])
-        window[f'-{dir_type}_paths-'].update(settings[f'{dir_type}_paths'])
+        settings[paths_type].remove(values[f'-{paths_type}-'][0])
+        window[f'-{paths_type}-'].update(settings[paths_type])
 
     return settings
 
