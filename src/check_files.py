@@ -1,5 +1,19 @@
-# This program searches a zettelkasten for unused assets,
-# broken file links, and various anti-patterns.
+# This program searches a zettelkasten for unused assets, broken file links, and various anti-patterns.
+# * **Find unused media files**: unlinked media files are found and the program assists you in choosing what to do with them. The folder(s) searched for unused assets can be chosen in settings.
+# * **Find broken file links**: broken media file links in the zettelkasten are found and listed.
+# * **Organize downloads**: any linked assets in any downloads folders chosen in settings will be automatically moved to the first assets folder chosen in settings (and their links in the zettels will be updated).
+# * **Identify zettels**:
+#     * Zettels that are missing a 14-digit ID are found and listed. The program searches both the zettel name and contents for the ID.
+#     * Zettels that are missing a title (a header level 1) are found and listed.
+#     * Zettels with no tags are found and listed.
+# Supported asset types:
+# * .html
+# * .jpeg
+# * .jpg
+# * .m4a
+# * .mp4
+# * .pdf
+# * .png
 
 # Internal imports
 try:
