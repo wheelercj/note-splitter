@@ -147,8 +147,8 @@ def split_zettel(source_z_path, header_level, new_z_id, new_zettels):
                     section_end = header_match2.start()
                     source_z_contents = split_section(source_z_contents, section_start, section_end, source_z_path, header_level, header_pattern, global_tags, new_z_id, new_zettels)
 
-                new_z_id = str(int(new_z_id) + 1)
-                header_match1 = header_match2
+            new_z_id = str(int(new_z_id) + 1)
+            header_match1 = header_match2
 
 
 # Find all the tags above the first of the chosen header level in one zettel's contents.
