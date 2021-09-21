@@ -7,14 +7,18 @@
 #   header: Dict[str, Union[int, str]]
 #   text: str
 
-# Frontmatter must be at the top of the file, or have only empty lines
-# above it. Frontmatter always begins with '---' and ends with '---'.
-# Global tags are tags that are not below any header of level 2+.
-# There should only be a maximum of one frontmatter token and one global
-# tags token per file.
+# TODO: find out other tokens commonly needed by researchers, and 
+# whether we will need to make a separate token for each line of 
+# frontmatter.
 
 # Here's an explanation of how to create a token list and an AST:
 # https://www.twilio.com/blog/abstract-syntax-trees
+
+# Frontmatter must be at the top of the file, or have only empty lines
+# above it. Frontmatter always begins and ends with '---\n'.
+# Global tags are tags that are not below any header of level 2+.
+# There should only be a maximum of one frontmatter token and one global
+# tags token per file.
 
 
 import re
@@ -51,7 +55,6 @@ def md_to_tokens(markdown: str) -> List[Token]:
     }
 
     header_pattern = re.compile(r'(^#{1,6} .+)')  
-        # TODO: support underline headers?
     tag_pattern = re.compile(r'(.|\B)(#[a-zA-Z0-9_-]+)')
 
     for line in markdown.split('\n'):
