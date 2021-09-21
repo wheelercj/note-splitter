@@ -60,47 +60,53 @@ def md_to_tokens(markdown: str) -> List[Token]:
     for line in markdown.split('\n'):
         if can_find_frontmatter and line.startswith('---'):
             in_frontmatter = True
-        else:
-            if line != '':
-                can_find_frontmatter = False
+            can_find_frontmatter = False
+            continue
+        if line != '':
+            can_find_frontmatter = False
 
-            if in_frontmatter:
-                if line.startswith('---'):
-                    in_frontmatter = False
-                    tokens.append(Token('frontmatter', frontmatter_contents))
-                else:
-                    frontmatter_contents += line
-            elif in_codeblock:
-                if line.startswith('```'):
-                    in_codeblock = False
-                    tokens.append(Token('codeblock', codeblock))
-                    codeblock = {'language': '', 'content': ''}
-                else:
-                    codeblock['content'] += line
-            elif line.startswith('```'):
-                in_codeblock = True
-                codeblock['language'] = line.lstrip('`').strip()
+        if in_frontmatter:
+            if line.startswith('---'):
+                in_frontmatter = False
+                tokens.append(Token('frontmatter', frontmatter_contents))
             else:
-                header_match: re.Match = header_pattern.match(line)
-                if header_match:
-                    header = header_match[0]
-                    header_content = header.lstrip('#')
-                    header_level = len(header) - len(header_content)
-                    header_content = header_content.lstrip()
-                    tokens.append(Token(
-                        'header', {
-                            'level': header_level,
-                            'content': header_content
-                        }))
-                    if header_level > 1:
-                        can_find_global_tags = False
-                else:
-                    tokens.append(Token('text', line))
-                if can_find_global_tags:
-                    tag_groups: List[Tuple[str]] = tag_pattern.findall(line)
-                    for group in tag_groups:
-                        if not group[0] or group[0] == ' ':
-                            global_tags.append(group[1])
+                frontmatter_contents += line + '\n'
+        elif in_codeblock:
+            if line.startswith('```'):
+                in_codeblock = False
+                tokens.append(Token('codeblock', codeblock))
+                codeblock = {'language': '', 'content': ''}
+            else:
+                codeblock['content'] += line + '\n'
+        elif line.startswith('```'):
+            in_codeblock = True
+            codeblock['language'] = line.lstrip('`').strip()
+        else:
+            header_match: re.Match = header_pattern.match(line)
+            if header_match:
+                header = header_match[0]
+                header_content = header.lstrip('#')
+                header_level = len(header) - len(header_content)
+                header_content = header_content.lstrip()
+                tokens.append(Token(
+                    'header', {
+                        'level': header_level,
+                        'content': header_content
+                    }))
+                if header_level > 1:
+                    can_find_global_tags = False
+            else:
+                tokens.append(Token('text', line))
+            if can_find_global_tags:
+                tag_groups: List[Tuple[str]] = tag_pattern.findall(line)
+                for group in tag_groups:
+                    if group[0] in ('', ' ', '\t'):
+                        global_tags.append(group[1])
+    
+    if in_frontmatter:
+        tokens.append(Token('frontmatter', frontmatter_contents))
+    elif in_codeblock:
+        tokens.append(Token('codeblock', codeblock))
     
     tokens.append(Token('global tags', global_tags))
     return tokens
