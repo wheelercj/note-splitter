@@ -15,7 +15,7 @@
 # https://www.twilio.com/blog/abstract-syntax-trees
 
 # Frontmatter must be at the top of the file, or have only empty lines
-# above it. Frontmatter always begins and ends with '---\n'.
+# above it. Frontmatter always begins and ends with a line of '---'.
 # Global tags are tags that are not below any header of level 2+.
 # There should only be a maximum of one frontmatter token and one global
 # tags token per file.
@@ -58,7 +58,7 @@ def md_to_tokens(markdown: str) -> List[Token]:
     tag_pattern = re.compile(r'(.|\B)(#[a-zA-Z0-9_-]+)')
 
     for line in markdown.split('\n'):
-        if can_find_frontmatter and line.startswith('---'):
+        if can_find_frontmatter and line == '---':
             in_frontmatter = True
             can_find_frontmatter = False
             continue
@@ -66,7 +66,7 @@ def md_to_tokens(markdown: str) -> List[Token]:
             can_find_frontmatter = False
 
         if in_frontmatter:
-            if line.startswith('---'):
+            if line == '---':
                 in_frontmatter = False
                 tokens.append(Token('frontmatter', frontmatter_contents))
             else:
