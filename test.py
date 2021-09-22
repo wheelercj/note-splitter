@@ -1,9 +1,9 @@
 # external imports
-from typing import List
+from typing import List, Callable
 from textwrap import dedent
 
 # internal imports
-from tokens import Token, md_to_tokens
+from tokens import Token, Lexer
 
 
 def test_tokenization():
@@ -49,7 +49,8 @@ def test_tokenization():
         ```
         ''')
 
-    tokens: List[Token] = md_to_tokens(sample_markdown)
+    tokenize: Callable = Lexer()
+    tokens: List[Token] = tokenize(sample_markdown)
     for token in tokens:
         print('------------------------------')
         print(f'token._type = {token._type}')
