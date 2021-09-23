@@ -23,8 +23,11 @@
 # tags token per file.
 
 
-import re
+# external imports
 from typing import List, Tuple, Any
+
+# internal imports
+from patterns import patterns
 
 
 class Token:
@@ -80,8 +83,6 @@ class Lexer:
         
         Raises StopIteration when the end of the markdown is reached.
         """
-        header_pattern = re.compile(r'(^#{1,6} .+)')  
-
         while True:
             line = self.get_next_line()
 
@@ -89,7 +90,7 @@ class Lexer:
                 self.append_frontmatter_token()
             elif line.startswith('```'):
                 self.append_codeblock_token(line)
-            elif header_pattern.match(line):
+            elif patterns.any_header.match(line):
                 self.append_header_token(line)
             else:
                 self.append_text_token(line)
@@ -157,8 +158,7 @@ class Lexer:
 
     def find_all_tags(self, line: str) -> None:
         """Finds and appends any tags to the global_tags list."""
-        tag_pattern = re.compile(r'(.|\B)(#[a-zA-Z0-9_-]+)')
-        tag_groups: List[Tuple[str]] = tag_pattern.findall(line)
+        tag_groups: List[Tuple[str]] = patterns.tags.findall(line)
         for group in tag_groups:
             if group[0] in ('', ' ', '\t'):
                 self.global_tags.append(group[1])
