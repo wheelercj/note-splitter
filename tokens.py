@@ -85,21 +85,41 @@ class Lexer:
         """
         while True:
             line = self.get_next_line()
-
-            if self.can_find_frontmatter and line == '---':
-                self.append_frontmatter_token()
-            elif line.startswith('```'):
-                self.append_codeblock_token(line)
-            elif patterns.any_header.match(line):
-                self.append_header_token(line)
-            else:
-                self.append_text_token(line)
-
+            self.append_token(line)
             if self.can_find_global_tags:
                 self.find_all_tags(line)
-
             if line != '':
                 self.can_find_frontmatter = False
+
+
+    def append_token(self, line: str) -> None:
+        """Parses the text and appends the next token
+        
+        Raises StopIteration if the end of the markdown is reached.
+        """
+        if self.is_frontmatter(line):
+            self.append_frontmatter_token()
+        elif self.is_codeblock(line):
+            self.append_codeblock_token(line)
+        elif self.is_any_header(line):
+            self.append_header_token(line)
+        else:
+            self.append_text_token(line)
+
+
+    def is_frontmatter(self, line: str) -> bool:
+        """Determines if the line is the beginning of frontmatter."""
+        return self.can_find_frontmatter and line == '---'
+
+
+    def is_codeblock(self, line: str) -> bool:
+        """Determines if the line is the beginning of a codeblock."""
+        return line.startswith('```')
+
+
+    def is_any_header(self, line: str) -> bool:
+        """Determines if the line is a header of any level."""
+        return bool(patterns.any_header.match(line))
 
 
     def append_frontmatter_token(self) -> None:
@@ -152,7 +172,7 @@ class Lexer:
 
 
     def append_text_token(self, line: str) -> None:
-        """Parses and appends a text token."""
+        """Appends a text token."""
         self.tokens.append(Token('text', line))
 
 
