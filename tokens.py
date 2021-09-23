@@ -1,4 +1,4 @@
-# Splits raw markdown into a list of tokens.
+# Splits raw text into a list of tokens.
 
 # Token types:
 #   frontmatter: str
@@ -37,15 +37,15 @@ class Token:
 
 
 class Lexer:
-    """Creates a Callable that converts raw markdown to a list of tokens
+    """Creates a Callable that converts raw text to a list of tokens
     
     The Callable can be used multiple times.
     """
 
-    def __call__(self, markdown: str) -> List[Token]:
-        """Converts raw markdown to a list of tokens."""
+    def __call__(self, text: str) -> List[Token]:
+        """Converts raw text to a list of tokens."""
         self.tokens: List[Token] = []
-        self.lines = markdown.split('\n')
+        self.lines = text.split('\n')
         self.line_number = 0
         self.global_tags: List[str] = []
         
@@ -64,10 +64,10 @@ class Lexer:
 
 
     def get_next_line(self) -> str:
-        """Gets the next line in the given markdown
+        """Gets the next line in the given text
         
         Increments self.line_number. Raises StopIteration if the end of 
-        the markdown is reached.
+        the text is reached.
         """
         try:
             line = self.lines[self.line_number]
@@ -79,9 +79,9 @@ class Lexer:
 
 
     def tokenize(self) -> None:
-        """Converts raw markdown to a list of tokens
+        """Converts raw text to a list of tokens
         
-        Raises StopIteration when the end of the markdown is reached.
+        Raises StopIteration when the end of the text is reached.
         """
         while True:
             line = self.get_next_line()
@@ -95,7 +95,7 @@ class Lexer:
     def append_token(self, line: str) -> None:
         """Parses the text and appends the next token
         
-        Raises StopIteration if the end of the markdown is reached.
+        Raises StopIteration if the end of the text is reached.
         """
         if self.is_frontmatter(line):
             self.append_frontmatter_token()
@@ -125,7 +125,7 @@ class Lexer:
     def append_frontmatter_token(self) -> None:
         """Parses and appends a frontmatter token
         
-        Raises StopIteration if the end of the markdown is reached.
+        Raises StopIteration if the end of the text is reached.
         """
         frontmatter_contents = ''
         while True:
@@ -140,7 +140,7 @@ class Lexer:
     def append_codeblock_token(self, line: str) -> None:
         """Parses and appends a codeblock token
         
-        Raises StopIteration if the end of the markdown is reached.
+        Raises StopIteration if the end of the text is reached.
         """
         codeblock = { 'language': '', 'content': '' }
         codeblock['language'] = line.lstrip('`').strip()
