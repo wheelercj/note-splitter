@@ -37,10 +37,7 @@ class Token:
 
 
 class Lexer:
-    """Creates a Callable that converts raw text to a list of tokens
-    
-    The Callable can be used multiple times.
-    """
+    """Creates a Callable that converts raw text to a list of tokens."""
 
     def __call__(self, text: str) -> List[Token]:
         """Converts raw text to a list of tokens."""
@@ -64,10 +61,14 @@ class Lexer:
 
 
     def get_next_line(self) -> str:
-        """Gets the next line in the given text
+        """Gets the next line in the text.
         
-        Increments self.line_number. Raises StopIteration if the end of 
-        the text is reached.
+        Increments self.line_number.
+        
+        Raises
+        ------
+        StopIteration
+            If the end of the text is reached.
         """
         try:
             line = self.lines[self.line_number]
@@ -79,9 +80,12 @@ class Lexer:
 
 
     def tokenize(self) -> None:
-        """Converts raw text to a list of tokens
+        """Converts raw text to a list of tokens.
         
-        Raises StopIteration when the end of the text is reached.
+        Raises
+        ------
+        StopIteration
+            When the end of the text is reached.
         """
         while True:
             line = self.get_next_line()
@@ -93,9 +97,12 @@ class Lexer:
 
 
     def append_token(self, line: str) -> None:
-        """Parses the text and appends the next token
+        """Parses the text and appends the next token.
         
-        Raises StopIteration if the end of the text is reached.
+        Raises
+        ------
+        StopIteration
+            If the end of the text is reached.
         """
         if self.is_frontmatter(line):
             self.append_frontmatter_token()
@@ -123,9 +130,12 @@ class Lexer:
 
 
     def append_frontmatter_token(self) -> None:
-        """Parses and appends a frontmatter token
+        """Parses and appends a frontmatter token.
         
-        Raises StopIteration if the end of the text is reached.
+        Raises
+        ------
+        StopIteration
+            If the end of the text is reached.
         """
         frontmatter_contents = ''
         while True:
@@ -138,9 +148,12 @@ class Lexer:
 
 
     def append_codeblock_token(self, line: str) -> None:
-        """Parses and appends a codeblock token
+        """Parses and appends a codeblock token.
         
-        Raises StopIteration if the end of the text is reached.
+        Raises
+        ------
+        StopIteration
+            If the end of the text is reached.
         """
         codeblock = { 'language': '', 'content': '' }
         codeblock['language'] = line.lstrip('`').strip()
@@ -155,7 +168,7 @@ class Lexer:
 
 
     def append_header_token(self, line: str) -> None:
-        """Parses and appends a header token
+        """Parses and appends a header token.
         
         Also updates self.can_find_global_tags if necessary.
         """
