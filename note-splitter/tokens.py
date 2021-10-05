@@ -1,12 +1,5 @@
 # Splits raw text into a list of tokens.
 
-# Token types:
-#   frontmatter: str
-#   codeblock: Dict[str, str]
-#   global tags: List[str]
-#   header: Dict[str, Union[int, str]]
-#   text: str
-
 # TODO: find out other tokens commonly needed by researchers, and 
 # whether we will need to make a separate token for each line of 
 # frontmatter.
@@ -37,7 +30,16 @@ class Token:
 
 
 class Lexer:
-    """Creates a Callable that converts raw text to a list of tokens."""
+    """Creates a Callable that converts raw text to a list of tokens.
+    
+    token types
+    -----------
+    frontmatter : str
+    codeblock : Dict[str, str]
+    global tags : List[str]
+    header : Dict[str, Union[int, str]]
+    text : str
+    """
 
     def __call__(self, text: str) -> List[Token]:
         """Converts raw text to a list of tokens."""
@@ -46,24 +48,22 @@ class Lexer:
         self.line_number = 0
         self.global_tags: List[str] = []
         
-        # There can only be one frontmatter token and one global tags 
-        # token per file, and frontmatter and global tags can only be in
-        # certain parts of each file.
+        # There can be a maximum of only one frontmatter token and one 
+        # global tags token per file, and frontmatter and global tags 
+        # can only be in certain parts of each file.
         self.can_find_frontmatter = True
         self.can_find_global_tags = True
 
         try:
-            self.tokenize()
+            self.__tokenize()
         except StopIteration:
             if self.global_tags:
-                self.append_global_tags_token()
+                self.__append_global_tags_token()
             return self.tokens
 
 
-    def get_next_line(self) -> str:
+    def __get_next_line(self) -> str:
         """Gets the next line in the text.
-        
-        Increments self.line_number.
         
         Raises
         ------
@@ -79,7 +79,7 @@ class Lexer:
             return line
 
 
-    def tokenize(self) -> None:
+    def __tokenize(self) -> None:
         """Converts raw text to a list of tokens.
         
         Raises
@@ -88,15 +88,15 @@ class Lexer:
             When the end of the text is reached.
         """
         while True:
-            line = self.get_next_line()
-            self.append_token(line)
+            line = self.__get_next_line()
+            self.__append_token(line)
             if self.can_find_global_tags:
-                self.find_all_tags(line)
+                self.__find_all_tags(line)
             if line != '':
                 self.can_find_frontmatter = False
 
 
-    def append_token(self, line: str) -> None:
+    def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token.
         
         Raises
@@ -104,32 +104,32 @@ class Lexer:
         StopIteration
             If the end of the text is reached.
         """
-        if self.is_frontmatter(line):
-            self.append_frontmatter_token()
-        elif self.is_codeblock(line):
-            self.append_codeblock_token(line)
-        elif self.is_any_header(line):
-            self.append_header_token(line)
+        if self.__is_frontmatter(line):
+            self.__append_frontmatter_token()
+        elif self.__is_codeblock(line):
+            self.__append_codeblock_token(line)
+        elif self.__is_any_header(line):
+            self.__append_header_token(line)
         else:
-            self.append_text_token(line)
+            self.__append_text_token(line)
 
 
-    def is_frontmatter(self, line: str) -> bool:
+    def __is_frontmatter(self, line: str) -> bool:
         """Determines if the line is the beginning of frontmatter."""
         return self.can_find_frontmatter and line == '---'
 
 
-    def is_codeblock(self, line: str) -> bool:
+    def __is_codeblock(self, line: str) -> bool:
         """Determines if the line is the beginning of a codeblock."""
         return line.startswith('```')
 
 
-    def is_any_header(self, line: str) -> bool:
+    def __is_any_header(self, line: str) -> bool:
         """Determines if the line is a header of any level."""
         return bool(patterns.any_header.match(line))
 
 
-    def append_frontmatter_token(self) -> None:
+    def __append_frontmatter_token(self) -> None:
         """Parses and appends a frontmatter token.
         
         Raises
@@ -139,7 +139,7 @@ class Lexer:
         """
         frontmatter_contents = ''
         while True:
-            line = self.get_next_line()
+            line = self.__get_next_line()
             if line == '---':
                 self.tokens.append(Token('frontmatter', frontmatter_contents))
                 return
@@ -147,7 +147,7 @@ class Lexer:
                 frontmatter_contents += line + '\n'
 
 
-    def append_codeblock_token(self, line: str) -> None:
+    def __append_codeblock_token(self, line: str) -> None:
         """Parses and appends a codeblock token.
         
         Raises
@@ -159,7 +159,7 @@ class Lexer:
         codeblock['language'] = line.lstrip('`').strip()
 
         while True:
-            line = self.get_next_line()
+            line = self.__get_next_line()
             if line.startswith('```'):
                 self.tokens.append(Token('codeblock', codeblock))
                 return
@@ -167,10 +167,11 @@ class Lexer:
                 codeblock['content'] += line + '\n'
 
 
-    def append_header_token(self, line: str) -> None:
+    def __append_header_token(self, line: str) -> None:
         """Parses and appends a header token.
         
-        Also updates self.can_find_global_tags if necessary.
+        Also determines whether it is still possible to find global 
+        tags.
         """
         header_content = line.lstrip('#')
         header_level = len(line) - len(header_content)
@@ -184,19 +185,19 @@ class Lexer:
             self.can_find_global_tags = False
 
 
-    def append_text_token(self, line: str) -> None:
+    def __append_text_token(self, line: str) -> None:
         """Appends a text token."""
         self.tokens.append(Token('text', line))
 
 
-    def find_all_tags(self, line: str) -> None:
-        """Finds and appends any tags to the global_tags list."""
+    def __find_all_tags(self, line: str) -> None:
+        """Finds and appends any tags to the global tags list."""
         tag_groups: List[Tuple[str]] = patterns.tags.findall(line)
         for group in tag_groups:
             if group[0] in ('', ' ', '\t'):
                 self.global_tags.append(group[1])
 
 
-    def append_global_tags_token(self) -> None:
+    def __append_global_tags_token(self) -> None:
         """Appends a global tags token."""
         self.tokens.append(Token('global tags', self.global_tags))
