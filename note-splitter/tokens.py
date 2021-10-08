@@ -20,7 +20,7 @@
 from typing import List, Tuple, Any
 
 # internal imports
-from patterns import patterns
+import patterns
 
 
 class Token:
