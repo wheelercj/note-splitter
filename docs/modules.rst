@@ -5,6 +5,8 @@ note-splitter
    :maxdepth: 4
 
    main
+   note
    patterns
+   settings
    test
    tokens
