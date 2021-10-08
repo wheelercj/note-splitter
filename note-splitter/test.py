@@ -53,5 +53,5 @@ def test_tokenization():
     tokens: List[Token] = tokenize(sample_markdown)
     for token in tokens:
         print('------------------------------')
-        print(f'token._type = {token._type}')
+        print(f'token.type_ = {token.type_}')
         print(f'token.content = {token.content}')
