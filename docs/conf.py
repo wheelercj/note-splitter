@@ -5,9 +5,6 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-import markdown
-
-
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -25,7 +22,6 @@ master_doc = 'index'
 copyright = '2021, Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 source_suffix = ['.rst', '.md']
-source_parsers = { '.md': markdown.markdown, }
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,7 +32,7 @@ source_parsers = { '.md': markdown.markdown, }
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    #'myst_parser'  # this must be commented when committing.
+    #'myst_parser'  # this line must be commented when committing.
 ]
 
 # Add any paths that contain templates here, relative to this directory.
