@@ -21,7 +21,6 @@ project = 'note splitter'
 master_doc = 'index'
 copyright = '2021, Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
-source_suffix = ['.rst', '.md']
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +31,6 @@ source_suffix = ['.rst', '.md']
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    #'myst_parser'  # this line must be commented when committing.
 ]
 
 # Add any paths that contain templates here, relative to this directory.
