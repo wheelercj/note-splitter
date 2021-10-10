@@ -4,6 +4,10 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+
+from recommonmark.parser import CommonMarkParser
+
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -17,8 +21,11 @@ sys.path.insert(0, os.path.abspath('../note-splitter'))
 # -- Project information -----------------------------------------------------
 
 project = 'note splitter'
+master_doc = 'index'
 copyright = '2021, Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
+source_suffix = ['.rst', '.md']
+source_parsers = { '.md': CommonMarkParser, }
 
 
 # -- General configuration ---------------------------------------------------
@@ -29,7 +36,7 @@ author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'myst_parser'
+    #'myst_parser'  # this must be commented when committing.
 ]
 
 # Add any paths that contain templates here, relative to this directory.
