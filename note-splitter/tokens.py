@@ -1,7 +1,19 @@
-# Here are guides for token lists, ASTs, and lexical analysis:
-# https://www.twilio.com/blog/abstract-syntax-trees
-# https://en.wikipedia.org/wiki/Lexical_analysis
-# https://craftinginterpreters.com/scanning.html
+"""For splitting raw text into small pieces.
+
+Here are guides for token lists, ASTs, and lexical analysis:
+
+* https://www.twilio.com/blog/abstract-syntax-trees
+* https://en.wikipedia.org/wiki/Lexical_analysis
+* https://craftinginterpreters.com/scanning.html
+
+valid token types
+-----------------
+* frontmatter : str
+* codeblock : Dict[str, str]
+* global tags : List[str]
+* header : Dict[str, Union[int, str]]
+* text : str
+"""
 
 # Frontmatter must be at the top of the file, or have only empty lines
 # above it. Frontmatter always begins and ends with a line of '---'.
@@ -30,15 +42,6 @@ class Token:
         The type of the token.
     content : Any
         The content of the token.
-
-    
-    valid token types
-    -----------------
-    - frontmatter : str
-    - codeblock : Dict[str, str]
-    - global tags : List[str]
-    - header : Dict[str, Union[int, str]]
-    - text : str
     """
 
     def __init__(self, type_: str, content: Any):
