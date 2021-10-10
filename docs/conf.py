@@ -5,7 +5,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-from recommonmark.parser import CommonMarkParser
+import markdown
 
 
 # -- Path setup --------------------------------------------------------------
@@ -25,7 +25,7 @@ master_doc = 'index'
 copyright = '2021, Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 source_suffix = ['.rst', '.md']
-source_parsers = { '.md': CommonMarkParser, }
+source_parsers = { '.md': markdown.markdown, }
 
 
 # -- General configuration ---------------------------------------------------

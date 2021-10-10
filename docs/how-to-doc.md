@@ -1,4 +1,5 @@
-# how to maintain this documentation
+how to maintain this documentation
+----------------------------------
 
 ## auto-generating documentation
 Each time a new Python module is added to the project:
