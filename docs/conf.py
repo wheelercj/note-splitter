@@ -28,7 +28,8 @@ author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    #'myst_parser'  # this must be commented when committing.
 ]
 
 # Add any paths that contain templates here, relative to this directory.
