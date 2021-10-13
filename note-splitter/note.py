@@ -7,6 +7,17 @@ import settings
 
 
 class Note:
+    """Info about one of the user's note files.
+    
+    Attributes
+    ----------
+    path: str
+        The absolute path to the file.
+    folder_path : str
+        The absolute path to the folder that the file is in.
+    name : str
+        The name of the file, including the file extension.
+    """
     def __init__(self, path: str, folder_path: str, name: str):
         self.path = path
         self.folder_path = folder_path
