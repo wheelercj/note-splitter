@@ -3,7 +3,9 @@ from typing import List, Callable
 from textwrap import dedent
 
 # internal imports
-from tokens import Token, Lexer
+from tokens import Token
+from lexer import Lexer
+from parser_ import AST
 
 
 def test_tokenization():
@@ -13,7 +15,7 @@ def test_tokenization():
         '''
         ---
         title: this is a file with frontmatter
-        description: Frontmatter is used to add structured data to a note. More details here: https://assemble.io/docs/YAML-front-matter.html
+        description: Frontmatter is used to add structured data to a note. More details here https://assemble.io/docs/YAML-front-matter.html
         ---
 
         # sample markdown
@@ -51,7 +53,9 @@ def test_tokenization():
 
     tokenize: Callable = Lexer()
     tokens: List[Token] = tokenize(sample_markdown)
-    for token in tokens:
-        print('------------------------------')
-        print(f'token.type_ = {token.type_}')
-        print(f'token.content = {token.content}')
+    ast = AST(tokens)
+    print(ast)
+    # for token in tokens:
+    #     print('------------------------------')
+    #     print(f'type(token) = {type(token)}')
+    #     print(f'token.content = {token.content}')
