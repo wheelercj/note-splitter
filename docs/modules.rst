@@ -7,7 +7,7 @@ note-splitter
    lexer
    main
    note
-   parser
+   parser_
    patterns
    settings
    test
