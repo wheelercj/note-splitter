@@ -5,3 +5,4 @@ channels:
 dependencies:
   - sphinx==4.2.0
   - pip
+  - pyyaml
