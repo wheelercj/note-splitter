@@ -3,7 +3,7 @@
 
 # external imports
 import re
-from typing import List, Optional, Callable, Any
+from typing import List, Optional, Callable, Type, Any
 import yaml
 
 # internal imports
@@ -40,7 +40,7 @@ class AST:
                                                 patterns.frontmatter_fence,
                                                 tokens.Text)
         self.__contextualize_tokens()
-        # TODO: create codeblock tokens.
+        # TODO: create all block tokens here.
         self.global_tags: List[str] = self.__get_global_tags()
 
         self.content: List[tokens.Token] = []
@@ -51,14 +51,40 @@ class AST:
                 self.content.append(self.__tokens.pop(0))
 
 
+    def raw(self) -> str:
+        """Returns the original content of the AST's raw text."""
+        raw_content = []
+        for token in self.content:
+            raw_content.append(token.raw())
+        return ''.join(raw_content)
+
+
     def __contextualize_tokens(self) -> None:
         """Changes the type of some tokens based on their context."""
-        in_codeblock = False
+        types = [
+            (tokens.Text, tokens.CodeFence),
+            (tokens.Text, tokens.MathFence),
+        ]
+        for to_type, wrapper_type in types:
+            self.__change_inner_token_types(to_type, wrapper_type)
+
+
+    def __change_inner_token_types(
+            self,
+            to_type: Type[tokens.Token],
+            wrapper_type: Type[tokens.Token]) -> None:
+        """Changes the types of all tokens between tokens of a chosen type.
+        
+        Changes are made to this class' token list. This function 
+        assumes the tokens to change have a :code:`content` attribute 
+        that is of type :code:`str`.
+        """
+        in_wrapper = False
         for i, token_ in enumerate(self.__tokens):
-            if isinstance(token_, tokens.CodeFence):
-                in_codeblock = not in_codeblock
-            elif in_codeblock:
-                self.__tokens[i] = tokens.Text(token_.content)
+            if isinstance(token_, wrapper_type):
+                in_wrapper = not in_wrapper
+            elif in_wrapper:
+                self.__tokens[i] = to_type(token_.content)
 
 
     def __get_group(

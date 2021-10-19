@@ -3,7 +3,7 @@ from typing import List, Callable
 from textwrap import dedent
 
 # internal imports
-from tokens import Token
+import tokens
 from lexer import Lexer
 from parser_ import AST
 
@@ -52,10 +52,16 @@ def test_tokenization():
         ''')
 
     tokenize: Callable = Lexer()
-    tokens: List[Token] = tokenize(sample_markdown)
-    ast = AST(tokens)
-    print(ast)
-    # for token in tokens:
-    #     print('------------------------------')
-    #     print(f'type(token) = {type(token)}')
-    #     print(f'token.content = {token.content}')
+    tokens_: List[tokens.Token] = tokenize(sample_markdown)
+    ast = AST(tokens_)
+
+    if ast.frontmatter:
+        print(f'frontmatter:\n{ast.frontmatter}\n\n')
+    if ast.global_tags:
+        print(f'global tags:\n{ast.global_tags}\n\n')
+    
+    for i, token in enumerate(ast.content):
+        if isinstance(token, tokens.Section):
+            print(f'section {i}:\n{token.raw()}\n\n')
+        else:
+            print(f'{type(token)}:\n{token.raw()}\n\n')
