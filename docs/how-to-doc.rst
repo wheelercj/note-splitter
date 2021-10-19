@@ -5,9 +5,11 @@ how to maintain this documentation
 auto-generating documentation
 -----------------------------
 Each time a new Python module is added to the project:
+ 1. Add its name to the list in docs/modules.rst
+ 2. Use this command to automatically generate an rst file for the new module: :code:`sphinx-apidoc -o docs note-splitter` (while in the project's root folder)
 
-1. Add its name to the list in docs/modules.rst.
-2. Use this command to automatically generate an rst file for the new module: :code:`sphinx-apidoc -o docs note-splitter` (while in the project's root folder).
+Each time a new third-party library is added to our project:
+ 1. Add its name (the one used in the :code:`pip install` statement) to the list in docs/environment.yaml
 
 custom documentation
 --------------------
