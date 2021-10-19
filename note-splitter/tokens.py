@@ -103,6 +103,7 @@ class BlockquoteBlock(Token):
     Attributes
     ----------
     content : List[Blockquote]
+        The consecutive blockquote tokens.
     """
     def __init__(self, tokens_: List[Blockquote]):
         self.content = tokens_
@@ -248,14 +249,14 @@ class CodeBlock(Token):
     
     Attributes
     ----------
-    content : List[Text]
+    content : List[Union[CodeFence, Text]]
         The code block's code fence tokens surrounding text token(s).
     language : str
         Any text that follows the triple backticks (or tildes) on the
         line of the opening code fence. Surrounding whitespace 
         characters are removed.
     """
-    def __init__(self, language: str, tokens_: List[CodeFence, Text]):
+    def __init__(self, language: str, tokens_: List[Union[CodeFence, Text]]):
         self.content = tokens_
         self.language = language
 
@@ -331,12 +332,12 @@ class OrderedList(Token):
     
     Attributes
     ----------
-    content : List[Token]
+    content : List[OrderedListItem]
         The tokens that make up the list. Lists may have sublists.
     indent_level : int
         The number of spaces of indentation for the entire list.
     """
-    def __init__(self, indent_level: int, tokens_: List[Token] = []):
+    def __init__(self, indent_level: int, tokens_: List[OrderedListItem] = []):
         self.content = tokens_
         self.indent_level = indent_level
 
@@ -380,12 +381,15 @@ class UnorderedList(Token):
 
     Attributes
     ----------
-    content : List[Token]
+    content : List[UnorderedListItem]
         The tokens that make up the list. Lists may have sublists.
     indent_level : int
         The number of spaces of indentation for the entire list.
     """
-    def __init__(self, indent_level: int, tokens_: List[Token] = []):
+    def __init__(
+            self,
+            indent_level: int,
+            tokens_: List[UnorderedListItem] = []):
         self.content = tokens_
         self.indent_level = indent_level
 
