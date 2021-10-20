@@ -1,4 +1,4 @@
-"""For converting a list of tokens into an abstract syntax tree."""
+"""For converting a list of tokens into an abstract syntax tree (AST)."""
 
 
 # external imports
@@ -44,11 +44,10 @@ class AST:
         self.global_tags: List[str] = self.__get_global_tags()
 
         self.content: List[tokens.Token] = []
-        while self.__tokens:
-            if isinstance(self.__tokens[0], tokens.Header):
-                self.content.append(self.__get_section())
-            else:
-                self.content.append(self.__tokens.pop(0))
+        
+        split_type = tokens.Header
+        split_type_attrs = {'level': 3}  # TODO: get user input
+        self.__get_sections(split_type, split_type_attrs)
 
 
     def raw(self) -> str:
@@ -169,29 +168,100 @@ class AST:
         return tags
 
 
-    def __get_section(self) -> tokens.Section:
-        """Gets a section of the file starting with a header.
+    def __get_sections(self, split_type: Type, split_type_attrs: dict):
+        """Groups the tokens into section tokens.
         
-        Assumes the first token in the tokens list is a header token. 
-        Every header is the beginning of a new section. A section may 
-        contain other sections with greater header levels (smaller 
-        headers). Each section ends either when another header of the 
-        same or lesser level is found, or at the end of the file.
+        Attributes
+        ----------
+        split_type : Type
+            The type of the token to split by.
+        split_type_attrs : dict
+            The attributes of the token to split by. If one of the 
+            attributes is named :code:`level`, lesser levels will take
+            precedence in section creation.
         """
-        # TODO: headers aren't being saved into the AST. The problem is probably in this function.
-        # It needs to be generalized for other section starter types anyways.
-        section_header = self.__tokens.pop(0)
+        while self.__tokens:
+            if self.__is_split_type(self.__tokens[0],
+                                    split_type,
+                                    split_type_attrs):
+                new_section = self.__get_section(split_type, split_type_attrs)
+                self.content.append(new_section)
+            else:
+                first_token = self.__tokens.pop(0)
+                self.content.append(first_token)
+
+
+    def __get_section(
+            self,
+            split_type: Type,
+            split_type_attrs: dict) -> tokens.Section:
+        """Groups some of the tokens into one new section token.
+        
+        Assumes the first token in the tokens list is of the type that
+        was chosen to split by. A section may contain other sections in 
+        some cases.
+        
+        If the token type chosen as the section starter has
+        a :code:`level` attribute, it must be an integer and lower 
+        levels will take precedence over higher levels. E.g., each 
+        header token has a level, and larger headers have smaller 
+        levels (the largest header possible has a level of 1). When a 
+        file is split by headers of level 2, each section (each new 
+        file) will start with a header of level 2 and will not contain 
+        any other headers of level 2 or any of level 1, but may contain 
+        headers of level 3 or greater.
+
+        Attributes
+        ----------
+        split_type : Type
+            The type of the token to split by.
+        split_type_attrs : dict
+            The attributes of the token to split by. If one of the 
+            attributes is named :code:`level`, lesser levels will take
+            precedence in section creation.
+        """
         section_content: List[tokens.Token] = []
+        section_content.append(self.__tokens.pop(0))
         while self.__tokens:
             token = self.__tokens[0]
-            if isinstance(token, tokens.Header):
-                if token.level <= section_header.level:
-                    return tokens.Section(section_header, section_content)
-                elif token.level > section_header.level:
-                    section_content.append(self.__get_section())
+            if self.__is_split_type(token, split_type, split_type_attrs):
+                if hasattr(section_content[0], 'level') \
+                        and section_content[0].level >= token.level:
+                    return tokens.Section(section_content)
+                else:
+                    section_content.append(
+                        self.__get_section(split_type, split_type_attrs))
             else:
                 section_content.append(token)
             if self.__tokens:
                 self.__tokens.pop(0)
 
         return tokens.Section(section_content)
+
+
+    def __is_split_type(
+            self,
+            token: tokens.Token,
+            split_type: Type,
+            split_type_attrs: dict) -> bool:
+        """Determines if a token is a type with attributes and values.
+        
+        Attributes
+        ----------
+        token : tokens.Token
+            A token that may be of the type chosen to split by.
+        split_type : Type
+            The type of the token to split by.
+        split_type_attrs : dict
+            The attributes of the token to split by. If one of the 
+            attributes is named :code:`level`, lesser levels will take
+            precedence in section creation.
+        """
+        if not isinstance(token, split_type):
+            return False
+        for key, value in split_type_attrs.items():
+            if not hasattr(token, key):
+                return False
+            if getattr(token, key) != value:
+                return False
+        return True

@@ -357,7 +357,7 @@ class OrderedListItem(Token):
     ----------
     content : str
         The content of the line of text.
-    indent_level : int
+    level : int
         The number of spaces of indentation.
     pattern : re.Pattern
         The compiled regex pattern for an item in an ordered list. This 
@@ -367,10 +367,10 @@ class OrderedListItem(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.indent_level = len(line) - len(line.lstrip(' '))
-        if not self.indent_level:
+        self.level = len(line) - len(line.lstrip(' '))
+        if not self.level:
             tab_count = len(line) - len(line.lstrip('\t'))
-            self.indent_level = tab_count * 4
+            self.level = tab_count * 4
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
@@ -384,12 +384,12 @@ class OrderedList(Token):
     ----------
     content : List[OrderedListItem]
         The tokens that make up the list. Lists may have sublists.
-    indent_level : int
+    level : int
         The number of spaces of indentation for the entire list.
     """
-    def __init__(self, indent_level: int, tokens_: List[OrderedListItem] = []):
+    def __init__(self, level: int, tokens_: List[OrderedListItem] = []):
         self.content = tokens_
-        self.indent_level = indent_level
+        self.level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
@@ -407,7 +407,7 @@ class UnorderedListItem(Token):
     ----------
     content : str
         The content of the line of text.
-    indent_level : int
+    level : int
         The number of spaces of indentation.
     pattern : re.Pattern
         The compiled regex pattern for an item in an unordered list. 
@@ -417,10 +417,10 @@ class UnorderedListItem(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.indent_level = len(line) - len(line.lstrip(' '))
-        if not self.indent_level:
+        self.level = len(line) - len(line.lstrip(' '))
+        if not self.level:
             tab_count = len(line) - len(line.lstrip('\t'))
-            self.indent_level = tab_count * 4
+            self.level = tab_count * 4
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
@@ -436,15 +436,15 @@ class UnorderedList(Token):
     ----------
     content : List[UnorderedListItem]
         The tokens that make up the list. Lists may have sublists.
-    indent_level : int
+    level : int
         The number of spaces of indentation for the entire list.
     """
     def __init__(
             self,
-            indent_level: int,
+            level: int,
             tokens_: List[UnorderedListItem] = []):
         self.content = tokens_
-        self.indent_level = indent_level
+        self.level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
