@@ -128,9 +128,7 @@ class BlockquoteBlock(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -259,9 +257,7 @@ class Table(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -310,9 +306,7 @@ class CodeBlock(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -350,9 +344,7 @@ class MathBlock(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -401,9 +393,7 @@ class OrderedList(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -458,9 +448,7 @@ class UnorderedList(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
 
 
@@ -480,7 +468,5 @@ class Section(Token):
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = []
-        for token in self.content:
-            raw_content.append(token.raw())
+        raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
