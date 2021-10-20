@@ -55,6 +55,7 @@ class Lexer:
             if self.__is(line, type_.pattern):
                 self.__tokens.append(type_(line))
                 return
+        self.__tokens.append(tokens.Text(line))
 
 
     def __is(self, line: str, pattern: re.Pattern):

@@ -178,6 +178,8 @@ class AST:
         headers). Each section ends either when another header of the 
         same or lesser level is found, or at the end of the file.
         """
+        # TODO: headers aren't being saved into the AST. The problem is probably in this function.
+        # It needs to be generalized for other section starter types anyways.
         section_header = self.__tokens.pop(0)
         section_content: List[tokens.Token] = []
         while self.__tokens:
@@ -192,4 +194,4 @@ class AST:
             if self.__tokens:
                 self.__tokens.pop(0)
 
-        return tokens.Section(section_header, section_content)
+        return tokens.Section(section_content)
