@@ -1,11 +1,10 @@
 """For splitting raw text into a list of tokens.
 
-The lexer only divides lines of text into general categories without
-looking at their context. For example, a markdown codeblock will become 
-two code fence tokens surrounding one or more tokens of any type, 
-possibly "incorrect" types such as header. After lexing, the token list 
-must be parsed to ensure each token has the correct type and to further 
-organize them.
+The lexer categorizes lines of text without looking at their context. 
+For example, a markdown codeblock will become two code fence tokens 
+surrounding one or more tokens of any type, possibly "incorrect" types 
+such as header. After lexing, the token list must be parsed to ensure 
+each token has the correct type and to further organize them.
 
 Here are guides for token lists, ASTs, and lexical analysis:
 
@@ -16,6 +15,7 @@ Here are guides for token lists, ASTs, and lexical analysis:
 
 
 # external imports
+import re
 from typing import List
 
 # internal imports
@@ -36,26 +36,27 @@ class Lexer:
 
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
-        if self.__is_any_header(line):
-            self.__tokens.append(tokens.Header(line))
-        elif self.__is_horizontal_rule(line):
-            self.__tokens.append(tokens.HorizontalRule(line))
-        elif self.__is_code_fence(line):
-            self.__tokens.append(tokens.CodeFence(line))
-        else:
-            self.__tokens.append(tokens.Text(line))
+        possible_types = [
+            (tokens.Header, patterns.any_header),
+            (tokens.HorizontalRule, patterns.horizontal_rule),
+            (tokens.CodeFence, patterns.code_fence),
+            (tokens.MathFence, patterns.math_fence),
+            (tokens.Blockquote, patterns.blockquote),
+            (tokens.ToDo, patterns.todo),
+            (tokens.Done, patterns.done),
+            (tokens.Footnote, patterns.footnote),
+            (tokens.OrderedListItem, patterns.ordered_list_item),
+            (tokens.UnorderedListItem, patterns.unordered_list_item),
+            (tokens.TableDivider, patterns.table_divider),
+            (tokens.TableRow, patterns.table_row),
+        ]
+
+        for type_, pattern in possible_types:
+            if self.__is(line, pattern):
+                self.__tokens.append(type_(line))
+                return
 
 
-    def __is_any_header(self, line: str) -> bool:
-        """Determines if the line is a header of any level."""
-        return bool(patterns.any_header.match(line))
-
-
-    def __is_horizontal_rule(self, line: str) -> bool:
-        """Determines if the line is a horizontal rule."""
-        return bool(patterns.horizontal_rule.match(line))
-
-
-    def __is_code_fence(self, line: str) -> bool:
-        """Determines if the line is the start or end of a codeblock."""
-        return bool(patterns.code_fence.match(line))
+    def __is(self, line: str, pattern: re.Pattern):
+        """Determines if the line matches a pattern."""
+        return bool(pattern.match(line))
