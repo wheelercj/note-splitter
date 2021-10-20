@@ -20,7 +20,6 @@ from typing import List
 
 # internal imports
 import tokens
-import patterns
 
 
 class Lexer:
@@ -36,23 +35,24 @@ class Lexer:
 
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
+        # Some of the token types cannot be detected yet.
         possible_types = [
-            (tokens.Header, patterns.any_header),
-            (tokens.HorizontalRule, patterns.horizontal_rule),
-            (tokens.CodeFence, patterns.code_fence),
-            (tokens.MathFence, patterns.math_fence),
-            (tokens.Blockquote, patterns.blockquote),
-            (tokens.ToDo, patterns.todo),
-            (tokens.Done, patterns.done),
-            (tokens.Footnote, patterns.footnote),
-            (tokens.OrderedListItem, patterns.ordered_list_item),
-            (tokens.UnorderedListItem, patterns.unordered_list_item),
-            (tokens.TableDivider, patterns.table_divider),
-            (tokens.TableRow, patterns.table_row),
+            tokens.Header,
+            tokens.HorizontalRule,
+            tokens.CodeFence,
+            tokens.MathFence,
+            tokens.Blockquote,
+            tokens.ToDo,
+            tokens.Done,
+            tokens.Footnote,
+            tokens.OrderedListItem,
+            tokens.UnorderedListItem,
+            tokens.TableDivider,
+            tokens.TableRow,
         ]
 
-        for type_, pattern in possible_types:
-            if self.__is(line, pattern):
+        for type_ in possible_types:
+            if self.__is(line, type_.pattern):
                 self.__tokens.append(type_(line))
                 return
 

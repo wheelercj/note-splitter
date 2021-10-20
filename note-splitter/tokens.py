@@ -2,6 +2,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
+# internal imports
+import patterns
+
 
 class Token(ABC):
     """The abstract base class (ABC) for all tokens.
@@ -50,7 +53,12 @@ class Header(Token):
     level : int
         The header level. A header level of 1 is the largest possible 
         header.
+    pattern : re.Pattern
+        The compiled regex pattern for a header. This is a class 
+        attribute.
     """
+    pattern = patterns.any_header
+
     def __init__(self, line: str):
         """Parses a line of text and creates a header token."""
         self.content = line
@@ -70,7 +78,12 @@ class HorizontalRule(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a horizontal rule. This is a 
+        class attribute.
     """
+    pattern = patterns.horizontal_rule
+
     def __init__(self, line: str):
         self.content = line
 
@@ -88,7 +101,12 @@ class Blockquote(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a blockquote. This is a class 
+        attribute.
     """
+    pattern = patterns.blockquote
+
     def __init__(self, line: str):
         self.content = line
 
@@ -125,7 +143,12 @@ class Footnote(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a footnote. This is a class 
+        attribute.
     """
+    pattern = patterns.footnote
+
     def __init__(self, line: str):
         self.content = line
 
@@ -143,7 +166,12 @@ class ToDo(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a to do list item. This is a 
+        class attribute.
     """
+    pattern = patterns.todo
+
     def __init__(self, line: str):
         self.content = line
 
@@ -161,7 +189,12 @@ class Done(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a finished to do list item. This 
+        is a class attribute.
     """
+    pattern = patterns.done
+
     def __init__(self, line: str):
         self.content = line
 
@@ -177,7 +210,12 @@ class TableRow(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a table row. This is a class 
+        attribute.
     """
+    pattern = patterns.table_row
+
     def __init__(self, line: str):
         self.content = line
 
@@ -194,7 +232,12 @@ class TableDivider(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a table divider. This is a class 
+        attribute.
     """
+    pattern = patterns.table_divider
+
     def __init__(self, line: str):
         self.content = line
 
@@ -234,7 +277,12 @@ class CodeFence(Token):
         Surrounding whitespace characters are removed. This will be an 
         empty string if there are no non-whitespace characters after the
         triple backticks/tildes.
+    pattern : re.Pattern
+        The compiled regex pattern for a code fence. This is a class 
+        attribute.
     """
+    pattern = patterns.code_fence
+
     def __init__(self, line: str):
         self.content = line
         self.language = line.lstrip('~').lstrip('`').strip()
@@ -275,7 +323,12 @@ class MathFence(Token):
     ----------
     content : str
         The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for a math fence. This is a class 
+        attribute.
     """
+    pattern = patterns.math_fence
+
     def __init__(self, line: str):
         self.content = line
 
@@ -314,7 +367,12 @@ class OrderedListItem(Token):
         The content of the line of text.
     indent_level : int
         The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in an ordered list. This 
+        is a class attribute.
     """
+    pattern = patterns.ordered_list_item
+
     def __init__(self, line: str):
         self.content = line
         self.indent_level = len(line) - len(line.lstrip(' '))
@@ -361,7 +419,12 @@ class UnorderedListItem(Token):
         The content of the line of text.
     indent_level : int
         The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in an unordered list. 
+        This is a class attribute.
     """
+    pattern = patterns.unordered_list_item
+
     def __init__(self, line: str):
         self.content = line
         self.indent_level = len(line) - len(line.lstrip(' '))
