@@ -14,7 +14,7 @@ Note splitter is an application that can split notes in plaintext files (such as
    
    modules
    how-to-doc
-   testing_markdown
+   doc-setup
 
 Indices and tables
 ==================

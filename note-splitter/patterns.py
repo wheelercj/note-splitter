@@ -9,8 +9,8 @@ any_header : re.Pattern
     The pattern of a markdown header of any level.
 tags : re.Pattern
     The pattern for a tag and the character before the tag. For 
-    :code:`group[1]` to be a tag, :code:`group[0]` must be in 
-    :code:`('', ' ', '\t')`.
+    :code:`group[1]` to be a tag, :code:`group[0]` must be 
+    :code:`in ('', ' ', '\t')`.
 horizontal_rule : re.Pattern
     The pattern for a markdown-style horizontal rule, which is composed
     of three or more minuses, underscores, or asterisks. There may be 
@@ -58,6 +58,7 @@ code_fence = re.compile(r'^(?:```|~~~).*')
 math_fence = re.compile(r'.*\$\$\s*')
 blockquote = re.compile(r'^>+ .+')
 todo = re.compile(r'^- \[ \] .+')
+done = re.compile(r'^- \[x\] .+')
 footnote = re.compile(r'^\[\^.+\]: .+')
 ordered_list_item = re.compile(r'\s*\d\. [^\s].*')
 unordered_list_item = re.compile(r'\s*[*\-\+] [^\s].*')

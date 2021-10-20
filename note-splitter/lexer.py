@@ -1,11 +1,11 @@
 """For splitting raw text into a list of tokens.
 
-The lexer only assigns broad categories to tokens without looking at 
-their context. For example, a markdown codeblock will become two code
-fence tokens surrounding one or more tokens of any type, possibly 
-"incorrect" types such as header. After lexing, the token list must be
-parsed to ensure each token has the correct type and to further organize
-them.
+The lexer only divides lines of text into general categories without
+looking at their context. For example, a markdown codeblock will become 
+two code fence tokens surrounding one or more tokens of any type, 
+possibly "incorrect" types such as header. After lexing, the token list 
+must be parsed to ensure each token has the correct type and to further 
+organize them.
 
 Here are guides for token lists, ASTs, and lexical analysis:
 
