@@ -56,12 +56,9 @@ def test_tokenization():
     ast = AST(tokens_)
 
     if ast.frontmatter:
-        print(f'frontmatter:\n{ast.frontmatter}\n\n')
+        print(f'frontmatter:\n{ast.frontmatter}\n')
     if ast.global_tags:
-        print(f'global tags:\n{ast.global_tags}\n\n')
+        print(f'global tags:\n{ast.global_tags}\n')
     
-    for i, token in enumerate(ast.content):
-        if isinstance(token, tokens.Section):
-            print(f'section {i}:\n{token.raw()}\n\n')
-        else:
-            print(f'{type(token)}:\n{token.raw()}\n\n')
+    for token in ast.content:
+        print(f'{type(token)}:\n{token.raw()}\n')
