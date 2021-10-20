@@ -136,8 +136,10 @@ class AST:
         return bool(pattern.match(token.content))
 
 
-    def __load_frontmatter(self, tokens_: List[tokens.Token]) -> object:
-        """Converts frontmatter tokens into a Python object."""
+    def __load_frontmatter(
+            self,
+            tokens_: List[tokens.Text]) -> Optional[object]:
+        """Converts Text tokens into a Python object."""
         text: str = '\n'.join([t.content for t in tokens_])
         return yaml.load(text, Loader=yaml.FullLoader)
 
