@@ -60,5 +60,20 @@ def test_tokenization():
     if ast.global_tags:
         print(f'global tags:\n{ast.global_tags}\n')
     
-    for token in ast.content:
-        print(f'{str(type(token)):>34s} | {token.raw()}', end='')
+    print_ast(ast)
+
+
+def print_ast(ast: AST):
+    """Print's an ast's tokens' types and contents."""
+    tokens_: List[tokens.Token] = ast.content
+    for token in tokens_:
+        if isinstance(token, tokens.Section):
+            print(' ' * 10 + "<class 'tokens.Section'> |" + '-' * 80)
+            print_ast(token)
+        else:
+            print_token(token)
+
+
+def print_token(token: tokens.Token):
+    """Prints a token's type and content."""
+    print(f'{str(type(token)):>34s} | {token.raw()}', end='')
