@@ -25,7 +25,7 @@ math_fence : re.Pattern
     equations.
 blockquote : re.Pattern
     The pattern for a quote that takes up one entire line.
-todo : re.Pattern
+to_do : re.Pattern
     The pattern for a to do list item that is not completed.
 done : re.Pattern
     The pattern for a to do list item that is completed.
@@ -57,7 +57,7 @@ frontmatter_fence = re.compile(r'^---$')
 code_fence = re.compile(r'^(?:```|~~~).*')
 math_fence = re.compile(r'.*\$\$\s*')
 blockquote = re.compile(r'^>+ .+')
-todo = re.compile(r'^- \[ \] .+')
+to_do = re.compile(r'^- \[ \] .+')
 done = re.compile(r'^- \[x\] .+')
 footnote = re.compile(r'^\[\^.+\]: .+')
 ordered_list_item = re.compile(r'\s*\d\. [^\s].*')
