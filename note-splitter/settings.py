@@ -37,6 +37,7 @@ note_types: List[str] = ['.md', '.markdown', '.txt']
 
 
 
+
 connnection = sqlite3.connect('store-transactions.db') 
 cur = connection.cursor()
  
@@ -46,5 +47,6 @@ cur.execute("INSERT INTO settings VALUES('#split','','', 4, '.md .markdown .txt'
 connection.commit()
 
 connection.close()
+
 
 
