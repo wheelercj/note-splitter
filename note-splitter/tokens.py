@@ -201,6 +201,23 @@ class Done(Token):
         return self.content + '\n'
 
 
+class ToDoList(Token):
+    """A block of ToDo and/or Done tokens.
+    
+    Attributes
+    ----------
+    content : List[Union[ToDo, Done]]
+        The ToDo token(s) and/or Done token(s).
+    """
+    def __init__(self, tokens_: List[Union[ToDo, Done]]):
+        self.content = tokens_
+
+    def raw(self) -> str:
+        """Returns the original content of the token's raw text."""
+        raw_content = [token.raw() for token in self.content]
+        return ''.join(raw_content)
+
+
 class TableRow(Token):
     """A row of a table.
     
