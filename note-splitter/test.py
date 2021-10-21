@@ -61,4 +61,4 @@ def test_tokenization():
         print(f'global tags:\n{ast.global_tags}\n')
     
     for token in ast.content:
-        print(f'{type(token)}:\n{token.raw()}\n')
+        print(f'{str(type(token)):>34s} | {token.raw()}', end='')
