@@ -153,7 +153,7 @@ class AST:
         """
         global_tags: List[str] = []
         for token in self.__tokens:
-            if isinstance(token, tokens.Header) and token.level >= 2:
+            if isinstance(token, tokens.Header) and token.get_level() >= 2:
                 return global_tags
             elif isinstance(token, (tokens.Text, tokens.Header)):
                 global_tags.extend(self.__get_tags(token))
@@ -227,9 +227,10 @@ class AST:
         while self.__tokens:
             token = self.__tokens[0]
             if self.__is_split_type(token, split_type, split_type_attrs):
-                if hasattr(section_content[0], 'level') \
-                        and section_content[0].level >= token.level:
-                    return tokens.Section(section_content)
+                if 'level' in split_type_attrs:
+                    section_level = section_content[0].get_level()
+                    if section_level >= token.get_level():
+                        return tokens.Section(section_content)
                 else:
                     section_content.append(
                         self.__get_section(split_type, split_type_attrs))

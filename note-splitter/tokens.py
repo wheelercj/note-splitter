@@ -6,6 +6,19 @@ from typing import List, Union
 import patterns
 
 
+def get_indentation_level(line: str) -> int:
+    """Counts the spaces at the start of the line.
+    
+    If there are tabs instead, each tab is counted as 4 spaces. This
+    function assumes tabs and spaces are not mixed.
+    """
+    level = len(line) - len(line.lstrip(' '))
+    if not level:
+        tab_count = len(line) - len(line.lstrip('\t'))
+        level = tab_count * 4
+    return level
+
+
 class Token(ABC):
     """The abstract base class (ABC) for all tokens.
     
@@ -32,10 +45,14 @@ class Text(Token):
     """
     def __init__(self, line: str):
         self.content = line
-    
+
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
 
 
 class Header(Token):
@@ -50,9 +67,6 @@ class Header(Token):
     title : str
         The content of the line of text not including the header 
         symbol(s) and their following whitespace character(s).
-    level : int
-        The header level. A header level of 1 is the largest possible 
-        header.
     pattern : re.Pattern
         The compiled regex pattern for a header. This is a class 
         attribute.
@@ -63,12 +77,20 @@ class Header(Token):
         """Parses a line of text and creates a header token."""
         self.content = line
         self.title = line.lstrip('#')
-        self.level = len(line) - len(self.title)
+        self.__level = len(line) - len(self.title)
         self.title = self.title.lstrip()
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
+
+    def get_level(self) -> int:
+        """Returns the level of the header.
+        
+        A header with a level of 1 is the largest possible header.
+        Smaller headers have greater header levels.
+        """
+        return self.__level
 
 
 class HorizontalRule(Token):
@@ -114,6 +136,10 @@ class Blockquote(Token):
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
+
 
 class BlockquoteBlock(Token):
     """Multiple lines of blockquotes.
@@ -123,13 +149,18 @@ class BlockquoteBlock(Token):
     content : List[Blockquote]
         The consecutive blockquote tokens.
     """
-    def __init__(self, tokens_: List[Blockquote]):
+    def __init__(self, level: int, tokens_: List[Blockquote]):
         self.content = tokens_
+        self.__level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return self.__level
 
 
 class Footnote(Token):
@@ -168,7 +199,7 @@ class ToDo(Token):
         The compiled regex pattern for a to do list item. This is a 
         class attribute.
     """
-    pattern = patterns.todo
+    pattern = patterns.to_do
 
     def __init__(self, line: str):
         self.content = line
@@ -176,6 +207,10 @@ class ToDo(Token):
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
 
 
 class Done(Token):
@@ -200,6 +235,10 @@ class Done(Token):
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
+
 
 class ToDoList(Token):
     """A block of ToDo and/or Done tokens.
@@ -209,13 +248,18 @@ class ToDoList(Token):
     content : List[Union[ToDo, Done]]
         The ToDo token(s) and/or Done token(s).
     """
-    def __init__(self, tokens_: List[Union[ToDo, Done]]):
+    def __init__(self, level: int, tokens_: List[Union[ToDo, Done]]):
         self.content = tokens_
+        self.__level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return self.__level
 
 
 class TableRow(Token):
@@ -374,8 +418,6 @@ class OrderedListItem(Token):
     ----------
     content : str
         The content of the line of text.
-    level : int
-        The number of spaces of indentation.
     pattern : re.Pattern
         The compiled regex pattern for an item in an ordered list. This 
         is a class attribute.
@@ -384,14 +426,14 @@ class OrderedListItem(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = len(line) - len(line.lstrip(' '))
-        if not self.level:
-            tab_count = len(line) - len(line.lstrip('\t'))
-            self.level = tab_count * 4
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
 
 
 class OrderedList(Token):
@@ -401,17 +443,19 @@ class OrderedList(Token):
     ----------
     content : List[OrderedListItem]
         The tokens that make up the list. Lists may have sublists.
-    level : int
-        The number of spaces of indentation for the entire list.
     """
     def __init__(self, level: int, tokens_: List[OrderedListItem] = []):
         self.content = tokens_
-        self.level = level
+        self.__level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return self.__level
 
 
 class UnorderedListItem(Token):
@@ -424,8 +468,6 @@ class UnorderedListItem(Token):
     ----------
     content : str
         The content of the line of text.
-    level : int
-        The number of spaces of indentation.
     pattern : re.Pattern
         The compiled regex pattern for an item in an unordered list. 
         This is a class attribute.
@@ -434,14 +476,14 @@ class UnorderedListItem(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = len(line) - len(line.lstrip(' '))
-        if not self.level:
-            tab_count = len(line) - len(line.lstrip('\t'))
-            self.level = tab_count * 4
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return get_indentation_level(self.content)
 
 
 class UnorderedList(Token):
@@ -453,20 +495,22 @@ class UnorderedList(Token):
     ----------
     content : List[UnorderedListItem]
         The tokens that make up the list. Lists may have sublists.
-    level : int
-        The number of spaces of indentation for the entire list.
     """
     def __init__(
             self,
             level: int,
             tokens_: List[UnorderedListItem] = []):
         self.content = tokens_
-        self.level = level
+        self.__level = level
 
     def raw(self) -> str:
         """Returns the original content of the token's raw text."""
         raw_content = [token.raw() for token in self.content]
         return ''.join(raw_content)
+
+    def get_level(self) -> int:
+        """Returns the number of spaces of indentation."""
+        return self.__level
 
 
 class Section(Token):
