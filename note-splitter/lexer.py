@@ -36,7 +36,9 @@ class Lexer:
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
         # Some of the token types cannot be detected yet.
+        # Each type in the list below must have a pattern attribute.
         possible_types = [
+            tokens.EmptyLine,
             tokens.Header,
             tokens.HorizontalRule,
             tokens.CodeFence,

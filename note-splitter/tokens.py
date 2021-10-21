@@ -54,7 +54,25 @@ class Text(Token):
         return self.content + '\n'
 
 
-# TODO: create an EmptyLine token class.
+class EmptyLine(Token):
+    """An line in a file with either whitespace characters or nothing.
+    
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    pattern : re.Pattern
+        The compiled regex pattern for an empty line. This is a class 
+        attribute.
+    """
+    pattern = patterns.empty_line
+
+    def __init__(self, line: str):
+        self.content = line
+
+    def raw(self) -> str:
+        """Returns the original content of the token's raw text."""
+        return self.content + '\n'
 
 
 class Header(Token):
