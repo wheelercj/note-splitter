@@ -25,10 +25,26 @@ note_types : List[str]
 
 
 from typing import List
+import sqlite3
 
-
+```
 split_keyword: str = '#split'
 source_folder_path: str = ''
 destination_folder_path: str = ''
 split_header_level: int = 4
 note_types: List[str] = ['.md', '.markdown', '.txt']
+```
+
+
+
+connnection = sqlite3.connect('store-transactions.db') 
+cur = connection.cursor()
+ 
+cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text, split_header_level real, note_types text)''')
+ 
+cur.execute("INSERT INTO settings VALUES('#split','','', 4, '.md .markdown .txt')")
+connection.commit()
+
+connection.close()
+
+
