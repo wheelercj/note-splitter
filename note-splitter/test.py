@@ -8,9 +8,7 @@ from lexer import Lexer
 from parser_ import AST
 
 
-def test_tokenization():
-    # TODO: use a testing framework (pytest?) instead of this.
-
+def test():
     sample_markdown = dedent(
         '''
         ---
@@ -20,18 +18,15 @@ def test_tokenization():
 
         # sample markdown
         #first-tag #second-tag
-
         * bullet point 1
         * bullet point 2
 
         here is text
-
         1. ordered
         2. list
 
         ## second header
         #third-tag <- this tag should not be considered a global tag because it's below a header of a level > 1
-
         ```python
         print('this code is inside a code block')
         while True:
@@ -39,13 +34,13 @@ def test_tokenization():
         ```
 
         ### third header
-        - [ ] to do
-        - [x] done
-
+        - [ ] something we need to do
+        - [x] something that's done
         > this is
         > a blockquote
 
-        #### fourth header
+        # fourth header
+        The header above is a level 1 header.
         ```cpp
         cout << "here's another code block";
         ```
@@ -53,27 +48,46 @@ def test_tokenization():
 
     tokenize: Callable = Lexer()
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
+    print('**Lexer output:**\n')
+    print_tokens(tokens_)
+    input('**Press any key to continue**')
+
     ast = AST(tokens_)
-
+    print('**Parser output:**\n')
     if ast.frontmatter:
-        print(f'frontmatter:\n{ast.frontmatter}\n')
+        print(f'frontmatter: {ast.frontmatter}\n')
     if ast.global_tags:
-        print(f'global tags:\n{ast.global_tags}\n')
-    
-    print_ast(ast)
+        print(f'global tags: {ast.global_tags}\n')
+    print_tokens(ast.content)
+    # input('**Press any key to continue**')
+
+    # split: Callable = Splitter()
+    # split_text = split(ast)
+    # print('**Splitter output:**\n')
+    # print_tokens(split_text)
 
 
-def print_ast(ast: AST):
-    """Print's an ast's tokens' types and contents."""
-    tokens_: List[tokens.Token] = ast.content
+def print_tokens(tokens_: List[tokens.Token]) -> None:
+    """Prints tokens' types and contents."""
     for token in tokens_:
-        if isinstance(token, tokens.Section):
-            print(' ' * 10 + "<class 'tokens.Section'> |" + '-' * 80)
-            print_ast(token)
+        if isinstance(token.content, list):
+            block = format_tokens(token.content)
+            print_token(token, block)
         else:
-            print_token(token)
+            print_token(token, str(token))
 
 
-def print_token(token: tokens.Token):
-    """Prints a token's type and content."""
-    print(f'{str(type(token)):>34s} | {str(token)}', end='')
+def print_token(token: tokens.Token, token_content: str) -> None:
+    """Prints a token's types and content."""
+    print(f'{str(type(token)):>34s} | {token_content}', end='')
+
+
+def format_tokens(tokens_: List[tokens.Token]) -> str:
+    """Formats tokens' contents for test output."""
+    block = []
+    for token in tokens_:
+        if isinstance(token.content, list):
+            block.extend(format_tokens(token.content))
+        else:
+            block.append(str(token))
+    return (' ' * 34 + ' | ').join(block)
