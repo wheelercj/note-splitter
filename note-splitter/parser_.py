@@ -50,11 +50,11 @@ class AST:
         self.__get_sections(split_type, split_attrs)
 
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the AST's raw text."""
         raw_content = []
         for token in self.content:
-            raw_content.append(token.raw())
+            raw_content.append(str(token))
         return ''.join(raw_content)
 
 

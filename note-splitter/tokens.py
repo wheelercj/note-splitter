@@ -28,7 +28,7 @@ class Token(ABC):
     Otherwise, the :code:`content` attribute is the list of subtokens.
     """
     @abstractmethod
-    def raw(self):
+    def __str__(self):
         """Returns the original content of the token's raw text."""
         pass
 
@@ -49,7 +49,7 @@ class Text(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -70,7 +70,7 @@ class EmptyLine(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -103,7 +103,7 @@ class Header(Token):
         self.level = len(line) - len(self.title)
         self.title = self.title.lstrip()
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -124,7 +124,7 @@ class HorizontalRule(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -150,7 +150,7 @@ class Blockquote(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -170,9 +170,9 @@ class BlockquoteBlock(Token):
         self.content = tokens_
         self.level = tokens_[0].level
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -194,7 +194,7 @@ class Footnote(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -220,7 +220,7 @@ class ToDo(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -246,7 +246,7 @@ class Done(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -266,9 +266,9 @@ class ToDoList(Token):
         self.content = tokens_
         self.level = tokens_[0].level
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -288,7 +288,7 @@ class TableRow(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -310,7 +310,7 @@ class TableDivider(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -326,9 +326,9 @@ class Table(Token):
     def __init__(self, tokens_: List[Union[TableRow, TableDivider]]):
         self.content = tokens_
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -354,7 +354,7 @@ class CodeFence(Token):
         self.content = line
         self.language = line.lstrip('~').lstrip('`').strip()
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -375,9 +375,9 @@ class CodeBlock(Token):
         self.content = tokens_
         self.language = tokens_[0].language
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -397,7 +397,7 @@ class MathFence(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -413,9 +413,9 @@ class MathBlock(Token):
     def __init__(self, tokens_: List[Union[MathFence, Text]]):
         self.content = tokens_
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -440,7 +440,7 @@ class OrderedListItem(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -460,9 +460,9 @@ class OrderedList(Token):
         self.content = tokens_
         self.level = tokens_[0].level
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -488,7 +488,7 @@ class UnorderedListItem(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
@@ -510,9 +510,9 @@ class UnorderedList(Token):
         self.content = tokens_
         self.level = tokens_[0].level
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
 
 
@@ -530,7 +530,7 @@ class Section(Token):
     def __init__(self, tokens_: List[Token] = []):
         self.content = tokens_
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
-        raw_content = [token.raw() for token in self.content]
+        raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)

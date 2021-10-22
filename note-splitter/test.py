@@ -76,4 +76,4 @@ def print_ast(ast: AST):
 
 def print_token(token: tokens.Token):
     """Prints a token's type and content."""
-    print(f'{str(type(token)):>34s} | {token.raw()}', end='')
+    print(f'{str(type(token)):>34s} | {str(token)}', end='')
