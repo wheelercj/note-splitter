@@ -10,5 +10,6 @@ note-splitter
    parser_
    patterns
    settings
+   splitter
    test
    tokens
