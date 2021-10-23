@@ -7,6 +7,7 @@ import tokens
 from lexer import Lexer
 from parser_ import AST
 from splitter import Splitter
+from formatter_ import Formatter
 
 
 def test():
@@ -66,6 +67,14 @@ def test():
     sections: List[tokens.Section] = split(ast)
     print('\n**Splitter output:**\n')
     print_tokens(sections)
+
+    # format: Callable = Formatter()
+    # split_contents: List[str] = format(sections,
+    #                                    ast.global_tags,
+    #                                    ast.frontmatter)
+    # print('\n**Formatter output:**\n')
+    # for i, text in enumerate(split_contents):
+    #     print(f'**file {i}:\n{text}')
 
 
 def print_tokens(tokens_: List[tokens.Token]) -> None:
