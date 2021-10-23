@@ -6,6 +6,7 @@ from textwrap import dedent
 import tokens
 from lexer import Lexer
 from parser_ import AST
+from splitter import Splitter
 
 
 def test():
@@ -53,18 +54,18 @@ def test():
     input('**Press any key to continue**')
 
     ast = AST(tokens_)
-    print('**Parser output:**\n')
+    print('\n**Parser output:**\n')
     if ast.frontmatter:
         print(f'frontmatter: {ast.frontmatter}\n')
     if ast.global_tags:
         print(f'global tags: {ast.global_tags}\n')
     print_tokens(ast.content)
-    # input('**Press any key to continue**')
+    input('**Press any key to continue**')
 
-    # split: Callable = Splitter()
-    # split_text = split(ast)
-    # print('**Splitter output:**\n')
-    # print_tokens(split_text)
+    split: Callable = Splitter()
+    sections: List[tokens.Section] = split(ast)
+    print('\n**Splitter output:**\n')
+    print_tokens(sections)
 
 
 def print_tokens(tokens_: List[tokens.Token]) -> None:

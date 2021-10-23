@@ -519,7 +519,7 @@ class UnorderedList(Token):
 class Section(Token):
     """A section of a file, starting with a token of a chosen type.
     
-    Section tokens may also contain section tokens in some cases.
+    Section tokens never contain section tokens.
 
     Attributes
     ----------
