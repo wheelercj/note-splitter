@@ -33,7 +33,7 @@ class AST:
     def __init__(self, tokens_: List[tokens.Token]):
         if not tokens_:
             return
-        self.__tokens = tokens_
+        self.content = tokens_
 
         self.frontmatter: Optional[object] = self.__get_group(
                                                 self.__load_frontmatter,
@@ -42,12 +42,6 @@ class AST:
         self.__contextualize_tokens()
         # TODO: create all block tokens here.
         self.global_tags: List[str] = self.__get_global_tags()
-
-        self.content: List[tokens.Token] = []
-        
-        split_type = tokens.Header
-        split_attrs = {'level': 3}  # TODO: get user input
-        self.__get_sections(split_type, split_attrs)
 
 
     def __str__(self) -> str:
@@ -78,7 +72,7 @@ class AST:
         assumes the tokens to change have a :code:`content` attribute 
         that is of type :code:`str`.
 
-        Attributes
+        Parameters
         ----------
         to_type : Type[tokens.Token]
             The type to change the inner tokens to.
@@ -86,11 +80,11 @@ class AST:
             The type of the first and last token.
         """
         in_wrapper = False
-        for i, token_ in enumerate(self.__tokens):
+        for i, token_ in enumerate(self.content):
             if isinstance(token_, wrapper_type):
                 in_wrapper = not in_wrapper
             elif in_wrapper:
-                self.__tokens[i] = to_type(token_.content)
+                self.content[i] = to_type(token_.content)
 
 
     def __get_group(
@@ -116,14 +110,14 @@ class AST:
         """
         group_tokens = []
         in_group = False
-        while self.__tokens:
-            token = self.__tokens[0]
+        while self.content:
+            token = self.content[0]
 
             if token.content == '':
                 pass
             elif self.__is(token, delimiter_pattern):
                 if in_group:
-                    self.__tokens.pop(0)
+                    self.content.pop(0)
                     return group_constructor(group_tokens)
                 else:
                     in_group = True
@@ -135,7 +129,7 @@ class AST:
             else:
                 return None
             
-            self.__tokens.pop(0)
+            self.content.pop(0)
 
 
     def __is(self, token: tokens.Token, pattern: re.Pattern) -> bool:
@@ -159,7 +153,7 @@ class AST:
         of level 2 or greater.
         """
         global_tags: List[str] = []
-        for token in self.__tokens:
+        for token in self.content:
             if isinstance(token, tokens.Header) and token.level >= 2:
                 return global_tags
             elif isinstance(token, (tokens.Text, tokens.Header)):
@@ -175,109 +169,3 @@ class AST:
             if group[0] in ('', ' ', '\t'):
                 tags.append(group[1])
         return tags
-
-
-    def __get_sections(self, split_type: Type, split_attrs: dict):
-        """Groups the tokens into section tokens.
-        
-        Attributes
-        ----------
-        split_type : Type
-            The type of the token to split by.
-        split_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        """
-        is_splitting = False
-        while self.__tokens:
-            token = self.__tokens[0]
-            if isinstance(token, split_type) \
-                    and self.__should_split(token, split_attrs, is_splitting):
-                is_splitting = True
-                new_section = self.__get_section(split_type, split_attrs)
-                self.content.append(new_section)
-            else:
-                is_splitting = False
-                self.__tokens.pop(0)
-                self.content.append(token)
-
-
-    def __get_section(
-            self,
-            split_type: Type,
-            split_attrs: dict) -> tokens.Section:
-        """Groups some of the tokens into one new section token.
-        
-        Assumes the first token in the tokens list is of the type that
-        was chosen to split by. A section may contain other sections in 
-        some cases.
-        
-        If the token type chosen as the section starter has
-        a :code:`level` attribute, it must be an integer and lower 
-        levels will take precedence over higher levels. E.g., each 
-        header token has a level, and larger headers have smaller 
-        levels (the largest header possible has a level of 1). When a 
-        file is split by headers of level 2, each section (each new 
-        file) will start with a header of level 2 and will not contain 
-        any other headers of level 2 or any of level 1, but may contain 
-        headers of level 3 or greater.
-
-        Attributes
-        ----------
-        split_type : Type
-            The type of the token to split by.
-        split_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        """
-        section_content: List[tokens.Token] = []
-        section_content.append(self.__tokens.pop(0))
-
-        while self.__tokens:
-            token = self.__tokens[0]
-            if isinstance(token, split_type):
-                if self.__should_split(token, split_attrs):
-                    return tokens.Section(section_content)
-                else:
-                    new_section = self.__get_section(split_type, split_attrs)
-                    section_content.append(new_section)
-            else:
-                section_content.append(token)
-            if self.__tokens:
-                self.__tokens.pop(0)
-
-        return tokens.Section(section_content)
-
-
-    def __should_split(
-            self,
-            token: tokens.Token,
-            split_attrs: dict,
-            is_splitting: bool = True) -> bool:
-        """Determines if a token has certain attributes and values.
-
-        Assumes the token is of the type that was chosen to split by,
-        and that the given split attributes exist.
-
-        Attributes
-        ----------
-        token : tokens.Token
-            A token that may be of the type chosen to split by.
-        split_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        is_splitting : bool
-            A boolean for whether splitting has already begun. Used to 
-            determine if levels of a lower level than the chosen split 
-            level should be split.
-        """
-        for key, value in split_attrs.items():
-            if is_splitting and key == 'level':
-                if token.level > value:
-                    return False
-            elif getattr(token, key) != value:
-                return False
-        return True
