@@ -13,6 +13,7 @@ Note splitter is an application that can split notes in plaintext files (such as
    :caption: Contents:
    
    modules
+   references
    how-to-doc
    doc-setup
 
