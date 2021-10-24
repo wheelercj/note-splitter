@@ -38,4 +38,8 @@ class Formatter:
         #   If there is frontmatter, it should go at the very top of the file. 
         #   The global tags should go under the first header.
 
+        # TODO:
+        # For each section, combine its tokens into one string.
+        # Each string in the split_contents list will be from one section.
+
         # See test.py for an example of how this class can be used.
