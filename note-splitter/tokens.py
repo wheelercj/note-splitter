@@ -160,13 +160,13 @@ class BlockquoteBlock(Token):
     
     Attributes
     ----------
-    content : List[Blockquote]
+    content : List[Union[Blockquote, BlockquoteBlock]]
         The consecutive blockquote tokens.
     level : int
         The number of spaces of indentation of the first item in the 
         consecutive blockquotes.
     """
-    def __init__(self, tokens_: List[Blockquote]):
+    def __init__(self, tokens_: List[Token]):
         self.content = tokens_
         self.level = tokens_[0].level
 
@@ -256,13 +256,13 @@ class ToDoList(Token):
     
     Attributes
     ----------
-    content : List[Union[ToDo, Done]]
+    content : List[Union[ToDo, Done, ToDoList]]
         The ToDo token(s) and/or Done token(s).
     level : int
         The number of spaces of indentation of the first item in the 
         list.
     """
-    def __init__(self, tokens_: List[Union[ToDo, Done]]):
+    def __init__(self, tokens_: List[Token]):
         self.content = tokens_
         self.level = tokens_[0].level
 
@@ -450,13 +450,13 @@ class OrderedList(Token):
     
     Attributes
     ----------
-    content : List[OrderedListItem]
+    content : List[Union[OrderedListItem, OrderedList]]
         The tokens that make up the list. Lists may have sublists.
     level : int
         The number of spaces of indentation of the first item in the 
         list.
     """
-    def __init__(self, tokens_: List[OrderedListItem] = []):
+    def __init__(self, tokens_: List[Token] = []):
         self.content = tokens_
         self.level = tokens_[0].level
 
@@ -500,13 +500,13 @@ class UnorderedList(Token):
 
     Attributes
     ----------
-    content : List[UnorderedListItem]
+    content : List[Union[UnorderedListItem, UnorderedList]]
         The tokens that make up the list. Lists may have sublists.
     level : int
         The number of spaces of indentation of the first item in the 
         list.
     """
-    def __init__(self, tokens_: List[UnorderedListItem] = []):
+    def __init__(self, tokens_: List[Token] = []):
         self.content = tokens_
         self.level = tokens_[0].level
 

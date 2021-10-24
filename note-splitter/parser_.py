@@ -4,7 +4,7 @@
 # external imports
 import re
 from typing import List, Optional, Callable, Type, Any
-import yaml
+import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 
 # internal imports
 import tokens

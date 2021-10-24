@@ -36,7 +36,9 @@ class Lexer:
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
         # Some of the token types cannot be detected yet.
-        # Each type in the list below must have a pattern attribute.
+        # Each type in the list below must have a pattern attribute, 
+        # but not all types that must have a pattern attribute should be
+        # in this list.
         possible_types = [
             tokens.EmptyLine,
             tokens.Header,
@@ -54,12 +56,12 @@ class Lexer:
         ]
 
         for type_ in possible_types:
-            if self.__is(line, type_.pattern):
+            if self.__matches(line, type_.pattern):
                 self.__tokens.append(type_(line))
                 return
         self.__tokens.append(tokens.Text(line))
 
 
-    def __is(self, line: str, pattern: re.Pattern):
+    def __matches(self, line: str, pattern: re.Pattern):
         """Determines if the line matches a pattern."""
         return bool(pattern.match(line))
