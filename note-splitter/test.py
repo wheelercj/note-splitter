@@ -64,7 +64,7 @@ def test():
     input('**Press enter to continue**')
 
     split: Callable = Splitter()
-    sections: List[tokens.Section] = split(ast)
+    sections: List[tokens.Section] = split(ast.content)
     print('\n**Splitter output:**\n')
     print_tokens(sections)
 
