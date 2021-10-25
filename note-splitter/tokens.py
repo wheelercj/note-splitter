@@ -37,8 +37,8 @@ class TextListItem(Token):
     """The abstract base class (ABC) for text list item tokens.
     
     This is inherited by ToDo, Done, OrderedListItem, and 
-    UnorderedListItem. Each child class must have a :code:`content` 
-    attribute.
+    UnorderedListItem. Each child class must have :code:`content` and 
+    :code:`level` attributes.
     """
     @abstractmethod
     def __str__(self):
@@ -46,13 +46,23 @@ class TextListItem(Token):
         pass
 
 
-class BlockToken(Token):
-    """The ABC for tokens that blocks are specifically made out of.
+class TablePart(Token):
+    """The ABC for tokens that tables are made out of.
     
-    Here, "blocks" refers to code blocks, math blocks, tables, and 
-    blockquote blocks. This class is inherited by CodeFence, MathFence, 
-    TableRow, TableDivider, and Blockquote. Each child class must have a
-    :code:`content` attribute.
+    This class is inherited by TableRow and TableDivider. Each child 
+    class must have a :code:`content` attribute.
+    """
+    @abstractmethod
+    def __str__(self):
+        """Returns the original content of the token's raw text."""
+        pass
+
+
+class Fence(Token):
+    """The ABC for tokens that block fences are made out of.
+    
+    This class is inherited by CodeFence and MathFence. Each child class
+    must have a :code:`content` attribute.
     """
     @abstractmethod
     def __str__(self):
@@ -156,7 +166,7 @@ class HorizontalRule(Token):
         return self.content + '\n'
 
 
-class Blockquote(BlockToken):
+class Blockquote(Token):
     """A quote taking up one entire line of text.
     
     May contain tags.
@@ -350,7 +360,7 @@ class TextList(Token):
         return ''.join(raw_content)
 
 
-class TableRow(BlockToken):
+class TableRow(TablePart):
     """A row of a table.
     
     Attributes
@@ -371,7 +381,7 @@ class TableRow(BlockToken):
         return self.content + '\n'
 
 
-class TableDivider(BlockToken):
+class TableDivider(TablePart):
     """The part of a table that divides the table's header from its 
     body.
     
@@ -410,7 +420,7 @@ class Table(Token):
         return ''.join(raw_content)
 
 
-class CodeFence(BlockToken):
+class CodeFence(Fence):
     """The delimiter of a multi-line code block.
     
     Attributes
@@ -459,7 +469,7 @@ class CodeBlock(Token):
         return ''.join(raw_content)
 
 
-class MathFence(BlockToken):
+class MathFence(Fence):
     """The delimiter of a multi-line mathblock.
     
     Attributes
@@ -500,15 +510,16 @@ class MathBlock(Token):
 
 
 class Section(Token):
-    """A section of a file, starting with a token of a chosen type.
+    """A file section starting with a token of the chosen split type.
     
-    Section tokens never contain section tokens.
+    Section tokens never contain section tokens, but may contain tokens 
+    of any and all other types.
 
     Attributes
     ----------
     content : List[Token]
-        The tokens in this section, starting with a token of a chosen 
-        type.
+        The tokens in this section, starting with a token of the chosen 
+        split type.
     """
     def __init__(self, tokens_: List[Token] = []):
         self.content = tokens_

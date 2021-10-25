@@ -3,7 +3,7 @@
 
 # external imports
 import re
-from typing import List, Optional, Callable, Type, Any
+from typing import List, Optional, Callable, Type, Union
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 
 # internal imports
@@ -33,15 +33,13 @@ class AST:
     def __init__(self, tokens_: List[tokens.Token]):
         if not tokens_:
             return
-        self.content = tokens_
+        self.__tokens = tokens_
 
-        self.frontmatter: Optional[object] = self.__get_group(
-                                                self.__load_frontmatter,
-                                                patterns.frontmatter_fence,
-                                                tokens.Text)
+        self.frontmatter: Optional[object] = self.__get_frontmatter()
         self.__contextualize_tokens()
-        # TODO: create all block tokens here.
         self.global_tags: List[str] = self.__get_global_tags()
+        self.content: List[tokens.Token] = []
+        self.__create_groups()
 
 
     def __str__(self) -> str:
@@ -50,6 +48,41 @@ class AST:
         for token in self.content:
             raw_content.append(str(token))
         return ''.join(raw_content)
+
+
+    def __get_frontmatter(self) -> Optional[object]:
+        """Gets frontmatter from the tokens list, if it has frontmatter.
+        
+        If the tokens list does have frontmatter, those tokens are 
+        removed from the list and not replaced. Empty lines at the top 
+        of the tokens list are discarded.
+
+        Returns
+        -------
+        Optional[object]
+            YAML frontmatter loaded as a Python object. If there is no 
+            frontmatter, None will be returned.
+        """
+        frontmatter_tokens: List[tokens.Token] = []
+        in_frontmatter = False
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, tokens.EmptyLine):
+                self.__tokens.pop(0)
+            elif self.__matches(token, patterns.frontmatter_fence):
+                self.__tokens.pop(0)
+                if in_frontmatter:
+                    # Remove empty lines below where the frontmatter was.
+                    while isinstance(self.__tokens[0], tokens.EmptyLine):
+                        self.__tokens.pop(0)
+                    return self.__load_frontmatter(frontmatter_tokens)
+                else:
+                    in_frontmatter = True
+            elif in_frontmatter:
+                self.__tokens.pop(0)
+                frontmatter_tokens.append(token)
+            else:
+                return None
 
 
     def __contextualize_tokens(self) -> None:
@@ -80,59 +113,120 @@ class AST:
             The type of the first and last token.
         """
         in_wrapper = False
-        for i, token_ in enumerate(self.content):
+        for i, token_ in enumerate(self.__tokens):
             if isinstance(token_, wrapper_type):
                 in_wrapper = not in_wrapper
             elif in_wrapper:
-                self.content[i] = to_type(token_.content)
+                self.__tokens[i] = to_type(token_.content)
 
 
-    def __get_group(
-            self,
-            group_constructor: Callable,
-            delimiter_pattern: re.Pattern,
-            inner_token_type: Optional[tokens.Token] = None) -> Optional[Any]:
-        """Attempts to get a group of related tokens.
+    def __create_groups(self) -> None:
+        """Groups together all tokens that should be grouped together.
+        
+        No tokens are changed, some are only put together into new 
+        tokens.
+        """
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, tokens.TextListItem):
+                self.content.append(self.__get_text_list(token.level))
+            elif isinstance(token, tokens.Blockquote):
+                self.content.append(self.__get_block_of_unique_tokens(
+                                        tokens.BlockquoteBlock,
+                                        tokens.Blockquote))
+            elif isinstance(token, tokens.TablePart):
+                self.content.append(self.__get_block_of_unique_tokens(
+                                        tokens.Table,
+                                        tokens.TablePart))
+            elif isinstance(token, tokens.Fence):
+                self.content.append(self.__get_fenced_block())
+            else:
+                self.content.append(token)
+                self.__tokens.pop(0)
 
-        E.g. frontmatter is a "group" because it is two frontmatter 
-        fence tokens surrounding one or more text tokens.
+
+    def __get_text_list(self, list_level: int) -> tokens.TextList:
+        """Creates a token that is a combination of related tokens.
         
         Parameters
         ----------
-        group_constructor : Callable
-            The callable that will be used on the list of the group's 
-            tokens, the return value of which will be returned.
-        delimiter_pattern : re.Pattern
-            The compiled regex pattern of the group's delimiter.
-        inner_token_type : Optional[tokens.Token]
-            The token type that each token between the group's 
-            delimiters should be converted to.
+        list_level : int
+            The indentation level (in spaces) of the first item in the 
+            list.
         """
-        group_tokens = []
-        in_group = False
-        while self.content:
-            token = self.content[0]
+        block_tokens: List[tokens.TextListItem] = []
+        block_tokens.append(self.__tokens.pop(0))
 
-            if token.content == '':
-                pass
-            elif self.__is(token, delimiter_pattern):
-                if in_group:
-                    self.content.pop(0)
-                    return group_constructor(group_tokens)
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, tokens.TextListItem):
+                if token.level > list_level:
+                    new_block = self.__get_text_list(token.level)
+                    block_tokens.append(new_block)
+                elif token.level < list_level:
+                    return tokens.TextList(block_tokens)
                 else:
-                    in_group = True
-            elif in_group:
-                if inner_token_type:
-                    group_tokens.append(inner_token_type(token.content))
-                else:
-                    group_tokens.append(token)
+                    block_tokens.append(token)
+                    self.__tokens.pop(0)
             else:
-                return None
-            
-            self.content.pop(0)
+                break
+
+        return tokens.TextList(block_tokens)
 
 
-    def __is(self, token: tokens.Token, pattern: re.Pattern) -> bool:
+    def __get_block_of_unique_tokens(
+            self,
+            block_constructor: Callable,
+            sub_token_type: Type[tokens.Token]) -> tokens.Token:
+        """Creates a token that is a block of specialized tokens.
+        
+        This is for tokens that have only one purpose: to be part of a 
+        block of related tokens. For example, Table tokens are made of 
+        TableRow and TableDivider tokens, and those two will never be 
+        used for anything else.
+
+        Parameters
+        ----------
+        block_constructor : Callable
+            The constructor for the block of related tokens.
+        sub_token_type : Type[tokens.Token]
+            The type of the tokens within the block.
+        """
+        block_tokens: List[sub_token_type] = []
+        block_tokens.append(self.__tokens.pop(0))
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, sub_token_type):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+            else:
+                break
+        return block_constructor(block_tokens)
+
+
+    def __get_fenced_block(self) -> Union[tokens.CodeBlock, tokens.MathBlock]:
+        """Creates a code block token or a math block token."""
+        block_tokens: List[Union[tokens.Fence, tokens.Text]] = []
+        block_tokens.append(self.__tokens.pop(0))
+
+        while self.__tokens:
+            token = self.__tokens[0]
+            if type(token) == type(block_tokens[0]):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+                break
+            elif isinstance(token, tokens.Text):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+            else:
+                print('Error: closing fence not found.')
+
+        if isinstance(block_tokens[0], tokens.CodeFence):
+            return tokens.CodeBlock(block_tokens)
+        return tokens.MathBlock(block_tokens)
+
+
+    def __matches(self, token: tokens.Token, pattern: re.Pattern) -> bool:
         """Determines if a token matches a given pattern."""
         return bool(pattern.match(token.content))
 
@@ -148,21 +242,24 @@ class AST:
     def __get_global_tags(self) -> List[str]:
         """Finds all the global tags within the token list.
         
-        Assumes the tokens have been contextualized but not yet split 
-        into sections. Global tags are tags that are above all headers 
+        Assumes the tokens have been contextualized but not yet combined
+        into blocks. Global tags are tags that are above all headers 
         of level 2 or greater.
         """
         global_tags: List[str] = []
-        for token in self.content:
+        for token in self.__tokens:
             if isinstance(token, tokens.Header) and token.level >= 2:
                 return global_tags
-            elif isinstance(token, (tokens.Text, tokens.Header)):
+            elif isinstance(token, tokens.tag_containing_types):
                 global_tags.extend(self.__get_tags(token))
         return global_tags
 
 
     def __get_tags(self, token: tokens.Token) -> List[str]:
-        """Gets the tags in one token."""
+        """Gets the tags in one token.
+        
+        Assumes the token's content attribute is a string.
+        """
         tags = []
         groups = patterns.tags.findall(token.content)
         for group in groups:
