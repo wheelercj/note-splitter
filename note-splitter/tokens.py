@@ -33,6 +33,33 @@ class Token(ABC):
         pass
 
 
+class TextListItem(Token):
+    """The abstract base class (ABC) for text list item tokens.
+    
+    This is inherited by ToDo, Done, OrderedListItem, and 
+    UnorderedListItem. Each child class must have a :code:`content` 
+    attribute.
+    """
+    @abstractmethod
+    def __str__(self):
+        """Returns the original content of the token's raw text."""
+        pass
+
+
+class BlockToken(Token):
+    """The ABC for tokens that blocks are specifically made out of.
+    
+    Here, "blocks" refers to code blocks, math blocks, tables, and 
+    blockquote blocks. This class is inherited by CodeFence, MathFence, 
+    TableRow, TableDivider, and Blockquote. Each child class must have a
+    :code:`content` attribute.
+    """
+    @abstractmethod
+    def __str__(self):
+        """Returns the original content of the token's raw text."""
+        pass
+
+
 class Text(Token):
     """Normal text.
     
@@ -129,7 +156,7 @@ class HorizontalRule(Token):
         return self.content + '\n'
 
 
-class Blockquote(Token):
+class Blockquote(BlockToken):
     """A quote taking up one entire line of text.
     
     May contain tags.
@@ -160,15 +187,11 @@ class BlockquoteBlock(Token):
     
     Attributes
     ----------
-    content : List[Union[Blockquote, BlockquoteBlock]]
+    content : List[Blockquote]
         The consecutive blockquote tokens.
-    level : int
-        The number of spaces of indentation of the first item in the 
-        consecutive blockquotes.
     """
-    def __init__(self, tokens_: List[Token]):
+    def __init__(self, tokens_: List[Blockquote]):
         self.content = tokens_
-        self.level = tokens_[0].level
 
     def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
@@ -199,7 +222,7 @@ class Footnote(Token):
         return self.content + '\n'
 
 
-class ToDo(Token):
+class ToDo(TextListItem):
     """A to do list item that is not completed.
     
     May contain tags.
@@ -225,7 +248,7 @@ class ToDo(Token):
         return self.content + '\n'
 
 
-class Done(Token):
+class Done(TextListItem):
     """A to do list item that is completed.
     
     May contain tags.
@@ -251,18 +274,73 @@ class Done(Token):
         return self.content + '\n'
 
 
-class ToDoList(Token):
-    """A block of ToDo and/or Done tokens.
+class OrderedListItem(TextListItem):
+    """An item in a numbered list.
     
+    May contain tags.
+
     Attributes
     ----------
-    content : List[Union[ToDo, Done, ToDoList]]
-        The ToDo token(s) and/or Done token(s).
+    content : str
+        The content of the line of text.
+    level : int
+        The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in an ordered list. This 
+        is a class attribute.
+    """
+    pattern = patterns.ordered_list_item
+
+    def __init__(self, line: str):
+        self.content = line
+        self.level = get_indentation_level(line)
+
+    def __str__(self) -> str:
+        """Returns the original content of the token's raw text."""
+        return self.content + '\n'
+
+
+class UnorderedListItem(TextListItem):
+    """An item in a bullet point list.
+    
+    May contain tags. The list can have bullet points as asterisks, 
+    minuses, and/or pluses.
+
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    level : int
+        The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in an unordered list. 
+        This is a class attribute.
+    """
+    pattern = patterns.unordered_list_item
+
+    def __init__(self, line: str):
+        self.content = line
+        self.level = get_indentation_level(line)
+
+    def __str__(self) -> str:
+        """Returns the original content of the token's raw text."""
+        return self.content + '\n'
+
+
+class TextList(Token):
+    """A list that is numbered, bullet-pointed, and/or checkboxed.
+    
+    A single text list may have any combination of ordered list items, 
+    unordered list items, to dos, and other text lists with more 
+    indentation.
+
+    content : List[Union[TextListItem, 'TextList']]
+        The tokens that make up the list. Lists may have sublists.
     level : int
         The number of spaces of indentation of the first item in the 
         list.
     """
-    def __init__(self, tokens_: List[Token]):
+    def __init__(self, tokens_: List[Union[TextListItem, 'TextList']] = []):
         self.content = tokens_
         self.level = tokens_[0].level
 
@@ -272,7 +350,7 @@ class ToDoList(Token):
         return ''.join(raw_content)
 
 
-class TableRow(Token):
+class TableRow(BlockToken):
     """A row of a table.
     
     Attributes
@@ -293,7 +371,7 @@ class TableRow(Token):
         return self.content + '\n'
 
 
-class TableDivider(Token):
+class TableDivider(BlockToken):
     """The part of a table that divides the table's header from its 
     body.
     
@@ -332,7 +410,7 @@ class Table(Token):
         return ''.join(raw_content)
 
 
-class CodeFence(Token):
+class CodeFence(BlockToken):
     """The delimiter of a multi-line code block.
     
     Attributes
@@ -381,7 +459,7 @@ class CodeBlock(Token):
         return ''.join(raw_content)
 
 
-class MathFence(Token):
+class MathFence(BlockToken):
     """The delimiter of a multi-line mathblock.
     
     Attributes
@@ -404,6 +482,8 @@ class MathFence(Token):
 
 class MathBlock(Token):
     """A multi-line mathblock.
+
+    Inline mathblocks are not supported.
     
     Attributes
     ----------
@@ -412,103 +492,6 @@ class MathBlock(Token):
     """
     def __init__(self, tokens_: List[Union[MathFence, Text]]):
         self.content = tokens_
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
-
-
-class OrderedListItem(Token):
-    """An item in a numbered list.
-    
-    May contain tags.
-
-    Attributes
-    ----------
-    content : str
-        The content of the line of text.
-    level : int
-        The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for an item in an ordered list. This 
-        is a class attribute.
-    """
-    pattern = patterns.ordered_list_item
-
-    def __init__(self, line: str):
-        self.content = line
-        self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
-
-class OrderedList(Token):
-    """An entire numbered list.
-    
-    Attributes
-    ----------
-    content : List[Union[OrderedListItem, OrderedList]]
-        The tokens that make up the list. Lists may have sublists.
-    level : int
-        The number of spaces of indentation of the first item in the 
-        list.
-    """
-    def __init__(self, tokens_: List[Token] = []):
-        self.content = tokens_
-        self.level = tokens_[0].level
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
-
-
-class UnorderedListItem(Token):
-    """An item in a bullet point list.
-    
-    May contain tags. The list can have bullet points as asterisks, 
-    minuses, and/or pluses.
-
-    Attributes
-    ----------
-    content : str
-        The content of the line of text.
-    level : int
-        The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for an item in an unordered list. 
-        This is a class attribute.
-    """
-    pattern = patterns.unordered_list_item
-
-    def __init__(self, line: str):
-        self.content = line
-        self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
-
-class UnorderedList(Token):
-    """An entire bullet point list.
-    
-    The list can have bullet points as asterisks, minuses, and/or pluses.
-
-    Attributes
-    ----------
-    content : List[Union[UnorderedListItem, UnorderedList]]
-        The tokens that make up the list. Lists may have sublists.
-    level : int
-        The number of spaces of indentation of the first item in the 
-        list.
-    """
-    def __init__(self, tokens_: List[Token] = []):
-        self.content = tokens_
-        self.level = tokens_[0].level
 
     def __str__(self) -> str:
         """Returns the original content of the token's raw text."""
@@ -534,3 +517,34 @@ class Section(Token):
         """Returns the original content of the token's raw text."""
         raw_content = [str(token) for token in self.content]
         return ''.join(raw_content)
+
+
+# Some lines of text can be categorized without looking at their 
+# context. Each type in the list below must have a pattern attribute.
+simple_token_types = [
+    EmptyLine,
+    Header,
+    HorizontalRule,
+    CodeFence,
+    MathFence,
+    Blockquote,
+    ToDo,
+    Done,
+    Footnote,
+    OrderedListItem,
+    UnorderedListItem,
+    TableDivider,
+    TableRow,
+]
+
+
+tag_containing_types = (
+    Text,
+    Header,
+    Blockquote,
+    Footnote,
+    ToDo,
+    Done,
+    OrderedListItem,
+    UnorderedListItem
+)
