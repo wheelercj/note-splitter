@@ -52,7 +52,7 @@ def test():
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
     print('**Lexer output:**\n')
     print_tokens(tokens_)
-    input('**Press any key to continue**')
+    input('**Press enter to continue**')
 
     ast = AST(tokens_)
     print('\n**Parser output:**\n')
@@ -61,7 +61,7 @@ def test():
     if ast.global_tags:
         print(f'global tags: {ast.global_tags}\n')
     print_tokens(ast.content)
-    input('**Press any key to continue**')
+    input('**Press enter to continue**')
 
     split: Callable = Splitter()
     sections: List[tokens.Section] = split(ast)
@@ -97,7 +97,7 @@ def format_tokens(tokens_: List[tokens.Token]) -> str:
     block = []
     for token in tokens_:
         if isinstance(token.content, list):
-            block.extend(format_tokens(token.content))
+            block.append(format_tokens(token.content))
         else:
             block.append(str(token))
     return (' ' * 34 + ' | ').join(block)
