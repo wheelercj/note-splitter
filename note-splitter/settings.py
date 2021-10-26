@@ -23,30 +23,28 @@ note_types : List[str]
 # this design pattern here: 
 # https://python-patterns.guide/python/module-globals/#id1
 
-
 from typing import List
 import sqlite3
+import os
 
-```
 split_keyword: str = '#split'
-source_folder_path: str = ''
+source_folder_path: str = os.path.abspath(os.curdir)
 destination_folder_path: str = ''
-split_header_level: int = 4
-note_types: List[str] = ['.md', '.markdown', '.txt']
-```
+split_header_level: int  = 4 
+note_types: str = '.md .markdown .txt'
+
+
+def initialize_settings():
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
+    cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text, split_header_level real, note_types text)''')
+    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types) VALUES(?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types))
+    connection.commit()
+    connection.close()
 
 
 
 
-connnection = sqlite3.connect('store-transactions.db') 
-cur = connection.cursor()
- 
-cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text, split_header_level real, note_types text)''')
- 
-cur.execute("INSERT INTO settings VALUES('#split','','', 4, '.md .markdown .txt')")
-connection.commit()
-
-connection.close()
 
 
 
