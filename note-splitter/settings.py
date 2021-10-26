@@ -34,6 +34,7 @@ split_header_level: int  = 4
 note_types: str = '.md .markdown .txt'
 
 
+    
 def initialize_settings():
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
@@ -42,7 +43,16 @@ def initialize_settings():
     connection.commit()
     connection.close()
 
+def get_current_settings():
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
+    cur.execute("SELECT * from settings")
+    result = cur.fetchall()
+    print(result)
 
+
+    
+  
 
 
 
