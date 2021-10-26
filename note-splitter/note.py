@@ -1,7 +1,7 @@
 # external imports
 import os
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # internal imports
 import settings
@@ -64,11 +64,17 @@ def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
     now = datetime.now()
     file_names.append(create_time_id_file_name(now, file_ext))
     for _ in range(file_count):
-        now += datetime.timedelta(seconds=1)
+        now += timedelta(seconds=1)
         file_names.append(create_time_id_file_name(now, file_ext))
     return file_names
 
 
 def create_time_id_file_name(dt: datetime, file_ext: str) -> str:
     """Creates a file name with the given datetime."""
-    return f'{dt.year}{dt.month}{dt.day}{dt.hour}{dt.minute}{dt.second}{file_ext}'
+    year = str(dt.year)
+    month = str(dt.month).zfill(2)
+    day = str(dt.day).zfill(2)
+    hour = str(dt.hour).zfill(2)
+    minute = str(dt.minute).zfill(2)
+    second = str(dt.second).zfill(2)
+    return f'{year}{month}{day}{hour}{minute}{second}{file_ext}'
