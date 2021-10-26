@@ -3,6 +3,7 @@ from typing import List, Callable
 from textwrap import dedent
 
 # internal imports
+import settings
 import tokens
 from lexer import Lexer
 from parser_ import AST
@@ -63,6 +64,8 @@ def test():
     print_tokens(ast.content)
     input('**Press enter to continue**')
 
+    settings.split_type = tokens.Header
+    settings.split_attrs = {'level': 3}
     split: Callable = Splitter()
     sections: List[tokens.Section] = split(ast.content)
     print('\n**Splitter output:**\n')
