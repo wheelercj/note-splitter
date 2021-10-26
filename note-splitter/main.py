@@ -6,6 +6,7 @@ from datetime import datetime
 # internal imports
 # from note import Note, get_chosen_notes
 import settings
+from note import create_time_id_file_names
 import tokens
 from lexer import Lexer
 from parser_ import AST
@@ -26,14 +27,12 @@ def main():
     # sections = split(ast.content)
     sections = split(tokens_)
     
-    now = datetime.now()
-    zk_id_now = int(f'{now.year}{now.month}{now.day}{now.hour}{now.minute}{now.second}')
     folder_path, _ = os.path.split(file_path)
+    new_file_names = create_time_id_file_names('.md', len(sections))
 
-    for section in sections:
-        new_file_name = f'{zk_id_now}.md'
+    for i, section in enumerate(sections):
+        new_file_name = new_file_names[i]
         new_file_path = os.path.join(folder_path, new_file_name)
-        zk_id_now += 1
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(str(section))
     print(f'Created {len(sections)} new files.')
