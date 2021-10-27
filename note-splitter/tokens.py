@@ -1,5 +1,5 @@
 # external imports
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import List, Union
 
 # internal imports
@@ -27,10 +27,9 @@ class Token(ABC):
     must be a string of the original content of the raw line of text.
     Otherwise, the :code:`content` attribute is the list of subtokens.
     """
-    @abstractmethod
     def __str__(self):
         """Returns the original content of the token's raw text."""
-        pass
+        return self.content + '\n'
 
 
 class TextListItem(Token):
@@ -40,10 +39,7 @@ class TextListItem(Token):
     UnorderedListItem. Each child class must have :code:`content` and 
     :code:`level` attributes.
     """
-    @abstractmethod
-    def __str__(self):
-        """Returns the original content of the token's raw text."""
-        pass
+    pass
 
 
 class TablePart(Token):
@@ -52,10 +48,7 @@ class TablePart(Token):
     This class is inherited by TableRow and TableDivider. Each child 
     class must have a :code:`content` attribute.
     """
-    @abstractmethod
-    def __str__(self):
-        """Returns the original content of the token's raw text."""
-        pass
+    pass
 
 
 class Fence(Token):
@@ -64,10 +57,7 @@ class Fence(Token):
     This class is inherited by CodeFence and MathFence. Each child class
     must have a :code:`content` attribute.
     """
-    @abstractmethod
-    def __str__(self):
-        """Returns the original content of the token's raw text."""
-        pass
+    pass
 
 
 class Text(Token):
@@ -86,10 +76,6 @@ class Text(Token):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class EmptyLine(Token):
     """A line in a file with either whitespace characters or nothing.
@@ -106,10 +92,6 @@ class EmptyLine(Token):
 
     def __init__(self, line: str):
         self.content = line
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class Header(Token):
@@ -140,10 +122,6 @@ class Header(Token):
         self.level = len(line) - len(self.title)
         self.title = self.title.lstrip()
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class HorizontalRule(Token):
     """A horizontal rule.
@@ -160,10 +138,6 @@ class HorizontalRule(Token):
 
     def __init__(self, line: str):
         self.content = line
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class Blockquote(Token):
@@ -186,10 +160,6 @@ class Blockquote(Token):
     def __init__(self, line: str):
         self.content = line
         self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class BlockquoteBlock(Token):
@@ -227,10 +197,6 @@ class Footnote(Token):
     def __init__(self, line: str):
         self.content = line
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class ToDo(TextListItem):
     """A to do list item that is not completed.
@@ -252,10 +218,6 @@ class ToDo(TextListItem):
     def __init__(self, line: str):
         self.content = line
         self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class Done(TextListItem):
@@ -279,10 +241,6 @@ class Done(TextListItem):
         self.content = line
         self.level = get_indentation_level(line)
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class OrderedListItem(TextListItem):
     """An item in a numbered list.
@@ -304,10 +262,6 @@ class OrderedListItem(TextListItem):
     def __init__(self, line: str):
         self.content = line
         self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class UnorderedListItem(TextListItem):
@@ -331,10 +285,6 @@ class UnorderedListItem(TextListItem):
     def __init__(self, line: str):
         self.content = line
         self.level = get_indentation_level(line)
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class TextList(Token):
@@ -376,10 +326,6 @@ class TableRow(TablePart):
     def __init__(self, line: str):
         self.content = line
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class TableDivider(TablePart):
     """The part of a table that divides the table's header from its 
@@ -397,10 +343,6 @@ class TableDivider(TablePart):
 
     def __init__(self, line: str):
         self.content = line
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class Table(Token):
@@ -442,10 +384,6 @@ class CodeFence(Fence):
         self.content = line
         self.language = line.lstrip('~').lstrip('`').strip()
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
-
 
 class CodeBlock(Token):
     """A multi-line code block.
@@ -484,10 +422,6 @@ class MathFence(Fence):
 
     def __init__(self, line: str):
         self.content = line
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        return self.content + '\n'
 
 
 class MathBlock(Token):
