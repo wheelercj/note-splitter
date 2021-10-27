@@ -124,7 +124,7 @@ class Header(Token):
     ----------
     content : str
         The content of the line of text.
-    title : str
+    body : str
         The content of the line of text not including the header 
         symbol(s) and their following whitespace character(s).
     level : int
@@ -139,9 +139,9 @@ class Header(Token):
     def __init__(self, line: str):
         """Parses a line of text and creates a header token."""
         self.content = line
-        self.title = line.lstrip('#')
-        self.level = len(line) - len(self.title)
-        self.title = self.title.lstrip()
+        self.body = line.lstrip('#')
+        self.level = len(line) - len(self.body)
+        self.body = self.body.lstrip()
 
 
 class HorizontalRule(Token):
