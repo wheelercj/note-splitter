@@ -1,5 +1,5 @@
 # external imports
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Union
 
 # internal imports
@@ -27,37 +27,58 @@ class Token(ABC):
     must be a string of the original content of the raw line of text.
     Otherwise, the :code:`content` attribute is the list of subtokens.
     """
+    @abstractmethod
+    def __init__(self):
+        pass
+
     def __str__(self):
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
 
+class Block(Token):
+    """The ABC for tokens that are each a combination of tokens.
+    
+    Each child class must have a :code:`content` attribute.
+    """
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        """Returns the original content of the token's raw text."""
+        return ''.join([str(token) for token in self.content])
+
+
 class TextListItem(Token):
     """The abstract base class (ABC) for text list item tokens.
     
-    This is inherited by ToDo, Done, OrderedListItem, and 
-    UnorderedListItem. Each child class must have :code:`content` and 
-    :code:`level` attributes.
+    Each child class must have :code:`content` and :code:`level` 
+    attributes.
     """
-    pass
+    @abstractmethod
+    def __init__(self):
+        pass
 
 
 class TablePart(Token):
     """The ABC for tokens that tables are made out of.
     
-    This class is inherited by TableRow and TableDivider. Each child 
-    class must have a :code:`content` attribute.
+    Each child class must have a :code:`content` attribute.
     """
-    pass
+    @abstractmethod
+    def __init__(self):
+        pass
 
 
 class Fence(Token):
     """The ABC for tokens that block fences are made out of.
     
-    This class is inherited by CodeFence and MathFence. Each child class
-    must have a :code:`content` attribute.
+    Each child class must have a :code:`content` attribute.
     """
-    pass
+    @abstractmethod
+    def __init__(self):
+        pass
 
 
 class Text(Token):
@@ -162,7 +183,7 @@ class Blockquote(Token):
         self.level = get_indentation_level(line)
 
 
-class BlockquoteBlock(Token):
+class BlockquoteBlock(Block):
     """Multiple lines of blockquotes.
     
     Attributes
@@ -172,11 +193,6 @@ class BlockquoteBlock(Token):
     """
     def __init__(self, tokens_: List[Blockquote]):
         self.content = tokens_
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
 
 class Footnote(Token):
@@ -287,7 +303,7 @@ class UnorderedListItem(TextListItem):
         self.level = get_indentation_level(line)
 
 
-class TextList(Token):
+class TextList(Block):
     """A list that is numbered, bullet-pointed, and/or checkboxed.
     
     A single text list may have any combination of ordered list items, 
@@ -303,11 +319,6 @@ class TextList(Token):
     def __init__(self, tokens_: List[Union[TextListItem, 'TextList']] = []):
         self.content = tokens_
         self.level = tokens_[0].level
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
 
 class TableRow(TablePart):
@@ -345,7 +356,7 @@ class TableDivider(TablePart):
         self.content = line
 
 
-class Table(Token):
+class Table(Block):
     """A table.
     
     Attributes
@@ -355,11 +366,6 @@ class Table(Token):
     """
     def __init__(self, tokens_: List[Union[TableRow, TableDivider]]):
         self.content = tokens_
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
 
 class CodeFence(Fence):
@@ -385,7 +391,7 @@ class CodeFence(Fence):
         self.language = line.lstrip('~').lstrip('`').strip()
 
 
-class CodeBlock(Token):
+class CodeBlock(Block):
     """A multi-line code block.
     
     Attributes
@@ -400,11 +406,6 @@ class CodeBlock(Token):
     def __init__(self, tokens_: List[Union[CodeFence, Text]]):
         self.content = tokens_
         self.language = tokens_[0].language
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
 
 class MathFence(Fence):
@@ -424,7 +425,7 @@ class MathFence(Fence):
         self.content = line
 
 
-class MathBlock(Token):
+class MathBlock(Block):
     """A multi-line mathblock.
 
     Inline mathblocks are not supported (the opening and closing math 
@@ -438,13 +439,8 @@ class MathBlock(Token):
     def __init__(self, tokens_: List[Union[MathFence, Text]]):
         self.content = tokens_
 
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
-
-class Section(Token):
+class Section(Block):
     """A file section starting with a token of the chosen split type.
     
     The Splitter returns a list of Sections. Section tokens never 
@@ -459,11 +455,6 @@ class Section(Token):
     """
     def __init__(self, tokens_: List[Token] = []):
         self.content = tokens_
-
-    def __str__(self) -> str:
-        """Returns the original content of the token's raw text."""
-        raw_content = [str(token) for token in self.content]
-        return ''.join(raw_content)
 
 
 # Some lines of text can be categorized without looking at their 
