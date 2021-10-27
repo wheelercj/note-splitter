@@ -1,5 +1,5 @@
-note-splitter
-=============
+note-splitter modules
+=====================
 
 .. toctree::
    :maxdepth: 4
@@ -10,5 +10,6 @@ note-splitter
    parser_
    patterns
    settings
+   splitter
    test
    tokens

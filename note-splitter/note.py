@@ -1,6 +1,7 @@
 # external imports
 import os
 from typing import List
+from datetime import datetime, timedelta
 
 # internal imports
 import settings
@@ -49,3 +50,31 @@ def get_all_notes() -> List[Note]:
                 notes.append(Note(file_path, folder_path, file_name))
 
     return notes
+
+
+def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
+    """Creates file names with increasing 14-digit numbers.
+    
+    The file extension must start with a period. The numbers in the 
+    returned file names represent the time in the format YYYYMMDDhhmmss,
+    starting with the current time and increasing by one second for each
+    file created.
+    """
+    file_names = []
+    now = datetime.now()
+    file_names.append(create_time_id_file_name(now, file_ext))
+    for _ in range(file_count):
+        now += timedelta(seconds=1)
+        file_names.append(create_time_id_file_name(now, file_ext))
+    return file_names
+
+
+def create_time_id_file_name(dt: datetime, file_ext: str) -> str:
+    """Creates a file name with the given datetime."""
+    year = str(dt.year)
+    month = str(dt.month).zfill(2)
+    day = str(dt.day).zfill(2)
+    hour = str(dt.hour).zfill(2)
+    minute = str(dt.minute).zfill(2)
+    second = str(dt.second).zfill(2)
+    return f'{year}{month}{day}{hour}{minute}{second}{file_ext}'

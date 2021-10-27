@@ -5,12 +5,6 @@ For example, a markdown codeblock will become two code fence tokens
 surrounding one or more tokens of any type, possibly "incorrect" types 
 such as header. After lexing, the token list must be parsed to ensure 
 each token has the correct type and to further organize them.
-
-Here are guides for token lists, ASTs, and lexical analysis:
-
-* https://www.twilio.com/blog/abstract-syntax-trees
-* https://en.wikipedia.org/wiki/Lexical_analysis
-* https://craftinginterpreters.com/scanning.html
 """
 
 
@@ -35,29 +29,13 @@ class Lexer:
 
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
-        # Some of the token types cannot be detected yet.
-        possible_types = [
-            tokens.Header,
-            tokens.HorizontalRule,
-            tokens.CodeFence,
-            tokens.MathFence,
-            tokens.Blockquote,
-            tokens.ToDo,
-            tokens.Done,
-            tokens.Footnote,
-            tokens.OrderedListItem,
-            tokens.UnorderedListItem,
-            tokens.TableDivider,
-            tokens.TableRow,
-        ]
-
-        for type_ in possible_types:
-            if self.__is(line, type_.pattern):
+        for type_ in tokens.simple_token_types:
+            if self.__matches(line, type_.pattern):
                 self.__tokens.append(type_(line))
                 return
         self.__tokens.append(tokens.Text(line))
 
 
-    def __is(self, line: str, pattern: re.Pattern):
+    def __matches(self, line: str, pattern: re.Pattern):
         """Determines if the line matches a pattern."""
         return bool(pattern.match(line))

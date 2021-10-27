@@ -50,6 +50,7 @@ table_row : re.Pattern
 import re
 
 
+empty_line = re.compile(r'^\s*$')
 any_header = re.compile(r'^#+ .+')
 tags = re.compile(r'(.|\B)(#[a-zA-Z0-9_-]+)')
 horizontal_rule = re.compile(r'\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})')

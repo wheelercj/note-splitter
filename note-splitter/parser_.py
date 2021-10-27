@@ -3,8 +3,8 @@
 
 # external imports
 import re
-from typing import List, Optional, Callable, Type, Any
-import yaml
+from typing import List, Optional, Callable, Type, Union
+import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 
 # internal imports
 import tokens
@@ -35,27 +35,54 @@ class AST:
             return
         self.__tokens = tokens_
 
-        self.frontmatter: Optional[object] = self.__get_group(
-                                                self.__load_frontmatter,
-                                                patterns.frontmatter_fence,
-                                                tokens.Text)
+        self.frontmatter: Optional[object] = self.__get_frontmatter()
         self.__contextualize_tokens()
-        # TODO: create all block tokens here.
         self.global_tags: List[str] = self.__get_global_tags()
-
         self.content: List[tokens.Token] = []
-        
-        split_type = tokens.Header
-        split_type_attrs = {'level': 3}  # TODO: get user input
-        self.__get_sections(split_type, split_type_attrs)
+        self.__create_groups()
 
 
-    def raw(self) -> str:
+    def __str__(self) -> str:
         """Returns the original content of the AST's raw text."""
         raw_content = []
         for token in self.content:
-            raw_content.append(token.raw())
+            raw_content.append(str(token))
         return ''.join(raw_content)
+
+
+    def __get_frontmatter(self) -> Optional[object]:
+        """Gets frontmatter from the tokens list, if it has frontmatter.
+        
+        If the tokens list does have frontmatter, those tokens are 
+        removed from the list and not replaced. Empty lines at the top 
+        of the tokens list are discarded.
+
+        Returns
+        -------
+        Optional[object]
+            YAML frontmatter loaded as a Python object. If there is no 
+            frontmatter, None will be returned.
+        """
+        frontmatter_tokens: List[tokens.Token] = []
+        in_frontmatter = False
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, tokens.EmptyLine):
+                self.__tokens.pop(0)
+            elif self.__matches(token, patterns.frontmatter_fence):
+                self.__tokens.pop(0)
+                if in_frontmatter:
+                    # Remove empty lines below where the frontmatter was.
+                    while isinstance(self.__tokens[0], tokens.EmptyLine):
+                        self.__tokens.pop(0)
+                    return self.__load_frontmatter(frontmatter_tokens)
+                else:
+                    in_frontmatter = True
+            elif in_frontmatter:
+                self.__tokens.pop(0)
+                frontmatter_tokens.append(token)
+            else:
+                return None
 
 
     def __contextualize_tokens(self) -> None:
@@ -77,6 +104,13 @@ class AST:
         Changes are made to this class' token list. This function 
         assumes the tokens to change have a :code:`content` attribute 
         that is of type :code:`str`.
+
+        Parameters
+        ----------
+        to_type : Type[tokens.Token]
+            The type to change the inner tokens to.
+        wrapper_type : Type[tokens.Token]
+            The type of the first and last token.
         """
         in_wrapper = False
         for i, token_ in enumerate(self.__tokens):
@@ -86,52 +120,113 @@ class AST:
                 self.__tokens[i] = to_type(token_.content)
 
 
-    def __get_group(
-            self,
-            group_constructor: Callable,
-            delimiter_pattern: re.Pattern,
-            inner_token_type: Optional[tokens.Token] = None) -> Optional[Any]:
-        """Attempts to get a group of related tokens.
+    def __create_groups(self) -> None:
+        """Groups together all tokens that should be grouped together.
+        
+        No tokens are changed, some are only put together into new 
+        tokens.
+        """
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, tokens.TextListItem):
+                self.content.append(self.__get_text_list(token.level))
+            elif isinstance(token, tokens.Blockquote):
+                self.content.append(self.__get_block_of_unique_tokens(
+                                        tokens.BlockquoteBlock,
+                                        tokens.Blockquote))
+            elif isinstance(token, tokens.TablePart):
+                self.content.append(self.__get_block_of_unique_tokens(
+                                        tokens.Table,
+                                        tokens.TablePart))
+            elif isinstance(token, tokens.Fence):
+                self.content.append(self.__get_fenced_block())
+            else:
+                self.content.append(token)
+                self.__tokens.pop(0)
 
-        E.g. frontmatter is a "group" because it is two frontmatter 
-        fence tokens surrounding one or more text tokens.
+
+    def __get_text_list(self, list_level: int) -> tokens.TextList:
+        """Creates a token that is a combination of related tokens.
         
         Parameters
         ----------
-        group_constructor : Callable
-            The callable that will be used on the list of the group's 
-            tokens, the return value of which will be returned.
-        delimiter_pattern : re.Pattern
-            The compiled regex pattern of the group's delimiter.
-        inner_token_type : Optional[tokens.Token]
-            The token type that each token between the group's 
-            delimiters should be converted to.
+        list_level : int
+            The indentation level (in spaces) of the first item in the 
+            list.
         """
-        group_tokens = []
-        in_group = False
+        block_tokens: List[tokens.TextListItem] = []
+        block_tokens.append(self.__tokens.pop(0))
+
         while self.__tokens:
             token = self.__tokens[0]
-
-            if token.content == '':
-                pass
-            elif self.__is(token, delimiter_pattern):
-                if in_group:
+            if isinstance(token, tokens.TextListItem):
+                if token.level > list_level:
+                    new_block = self.__get_text_list(token.level)
+                    block_tokens.append(new_block)
+                elif token.level < list_level:
+                    return tokens.TextList(block_tokens)
+                else:
+                    block_tokens.append(token)
                     self.__tokens.pop(0)
-                    return group_constructor(group_tokens)
-                else:
-                    in_group = True
-            elif in_group:
-                if inner_token_type:
-                    group_tokens.append(inner_token_type(token.content))
-                else:
-                    group_tokens.append(token)
             else:
-                return None
-            
-            self.__tokens.pop(0)
+                break
+
+        return tokens.TextList(block_tokens)
 
 
-    def __is(self, token: tokens.Token, pattern: re.Pattern) -> bool:
+    def __get_block_of_unique_tokens(
+            self,
+            block_constructor: Callable,
+            sub_token_type: Type[tokens.Token]) -> tokens.Token:
+        """Creates a token that is a block of specialized tokens.
+        
+        This is for tokens that have only one purpose: to be part of a 
+        block of related tokens. For example, Table tokens are made of 
+        TableRow and TableDivider tokens, and those two will never be 
+        used for anything else.
+
+        Parameters
+        ----------
+        block_constructor : Callable
+            The constructor for the block of related tokens.
+        sub_token_type : Type[tokens.Token]
+            The type of the tokens within the block.
+        """
+        block_tokens: List[sub_token_type] = []
+        block_tokens.append(self.__tokens.pop(0))
+        while self.__tokens:
+            token = self.__tokens[0]
+            if isinstance(token, sub_token_type):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+            else:
+                break
+        return block_constructor(block_tokens)
+
+
+    def __get_fenced_block(self) -> Union[tokens.CodeBlock, tokens.MathBlock]:
+        """Creates a code block token or a math block token."""
+        block_tokens: List[Union[tokens.Fence, tokens.Text]] = []
+        block_tokens.append(self.__tokens.pop(0))
+
+        while self.__tokens:
+            token = self.__tokens[0]
+            if type(token) == type(block_tokens[0]):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+                break
+            elif isinstance(token, tokens.Text):
+                block_tokens.append(token)
+                self.__tokens.pop(0)
+            else:
+                print('Error: closing fence not found.')
+
+        if isinstance(block_tokens[0], tokens.CodeFence):
+            return tokens.CodeBlock(block_tokens)
+        return tokens.MathBlock(block_tokens)
+
+
+    def __matches(self, token: tokens.Token, pattern: re.Pattern) -> bool:
         """Determines if a token matches a given pattern."""
         return bool(pattern.match(token.content))
 
@@ -147,124 +242,27 @@ class AST:
     def __get_global_tags(self) -> List[str]:
         """Finds all the global tags within the token list.
         
-        Assumes the tokens have been contextualized but not yet split 
-        into sections. Global tags are tags that are above all headers 
+        Assumes the tokens have been contextualized but not yet combined
+        into blocks. Global tags are tags that are above all headers 
         of level 2 or greater.
         """
         global_tags: List[str] = []
         for token in self.__tokens:
-            if isinstance(token, tokens.Header) and token.get_level() >= 2:
+            if isinstance(token, tokens.Header) and token.level >= 2:
                 return global_tags
-            elif isinstance(token, (tokens.Text, tokens.Header)):
+            elif isinstance(token, tokens.tag_containing_types):
                 global_tags.extend(self.__get_tags(token))
         return global_tags
 
 
     def __get_tags(self, token: tokens.Token) -> List[str]:
-        """Gets the tags in one token."""
+        """Gets the tags in one token.
+        
+        Assumes the token's content attribute is a string.
+        """
         tags = []
         groups = patterns.tags.findall(token.content)
         for group in groups:
             if group[0] in ('', ' ', '\t'):
                 tags.append(group[1])
         return tags
-
-
-    def __get_sections(self, split_type: Type, split_type_attrs: dict):
-        """Groups the tokens into section tokens.
-        
-        Attributes
-        ----------
-        split_type : Type
-            The type of the token to split by.
-        split_type_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        """
-        while self.__tokens:
-            if self.__is_split_type(self.__tokens[0],
-                                    split_type,
-                                    split_type_attrs):
-                new_section = self.__get_section(split_type, split_type_attrs)
-                self.content.append(new_section)
-            else:
-                first_token = self.__tokens.pop(0)
-                self.content.append(first_token)
-
-
-    def __get_section(
-            self,
-            split_type: Type,
-            split_type_attrs: dict) -> tokens.Section:
-        """Groups some of the tokens into one new section token.
-        
-        Assumes the first token in the tokens list is of the type that
-        was chosen to split by. A section may contain other sections in 
-        some cases.
-        
-        If the token type chosen as the section starter has
-        a :code:`level` attribute, it must be an integer and lower 
-        levels will take precedence over higher levels. E.g., each 
-        header token has a level, and larger headers have smaller 
-        levels (the largest header possible has a level of 1). When a 
-        file is split by headers of level 2, each section (each new 
-        file) will start with a header of level 2 and will not contain 
-        any other headers of level 2 or any of level 1, but may contain 
-        headers of level 3 or greater.
-
-        Attributes
-        ----------
-        split_type : Type
-            The type of the token to split by.
-        split_type_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        """
-        section_content: List[tokens.Token] = []
-        section_content.append(self.__tokens.pop(0))
-        while self.__tokens:
-            token = self.__tokens[0]
-            if self.__is_split_type(token, split_type, split_type_attrs):
-                if 'level' in split_type_attrs:
-                    section_level = section_content[0].get_level()
-                    if section_level >= token.get_level():
-                        return tokens.Section(section_content)
-                else:
-                    section_content.append(
-                        self.__get_section(split_type, split_type_attrs))
-            else:
-                section_content.append(token)
-            if self.__tokens:
-                self.__tokens.pop(0)
-
-        return tokens.Section(section_content)
-
-
-    def __is_split_type(
-            self,
-            token: tokens.Token,
-            split_type: Type,
-            split_type_attrs: dict) -> bool:
-        """Determines if a token is a type with attributes and values.
-        
-        Attributes
-        ----------
-        token : tokens.Token
-            A token that may be of the type chosen to split by.
-        split_type : Type
-            The type of the token to split by.
-        split_type_attrs : dict
-            The attributes of the token to split by. If one of the 
-            attributes is named :code:`level`, lesser levels will take
-            precedence in section creation.
-        """
-        if not isinstance(token, split_type):
-            return False
-        for key, value in split_type_attrs.items():
-            if not hasattr(token, key):
-                return False
-            if getattr(token, key) != value:
-                return False
-        return True
