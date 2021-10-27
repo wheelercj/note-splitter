@@ -13,6 +13,9 @@ Each time a new Python module is added to the project:
 Each time a new third-party library is added to our project:
  1. Add its name (the one used in the :code:`pip install` statement) to the list in docs/environment.yaml
 
+If a new token type is created and/or the inheritance between token types changes:
+ 1. Run token_hierarchy_script.py to automatically update the token_hierarchy.rst file
+
 custom documentation
 --------------------
 We can also add our own manually written documentation files. Read The Docs supports both markdown (`MyST's version <https://myst-parser.readthedocs.io/en/latest/>`_) and `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ files. Just put the files in the docs folder and add the file's name to the list in docs/index.rst. `Here's <http://rst.ninjs.org/#>`_ a reStructuredText renderer for previewing rst files.
