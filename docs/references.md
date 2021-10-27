@@ -15,6 +15,7 @@ Here are various guides, tools, etc. that were helpful to us while building Note
 * [Structuring Your Project — The Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/structure/)
 * [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/)
 * [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
+* [design patterns](https://python-patterns.guide/) (singletons, factory methods, global objects, etc.)
 
 ## testing
 * [Automated Testing in Python with pytest, tox, and GitHub Actions](https://www.youtube.com/watch?v=DhUpxWjOhME)
