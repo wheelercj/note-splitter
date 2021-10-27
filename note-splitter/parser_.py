@@ -36,7 +36,6 @@ class AST:
         self.__tokens = tokens_
 
         self.frontmatter: Optional[object] = self.__get_frontmatter()
-        self.__contextualize_tokens()
         self.global_tags: List[str] = self.__get_global_tags()
         self.content: List[tokens.Token] = []
         self.__create_groups()
@@ -83,41 +82,6 @@ class AST:
                 frontmatter_tokens.append(token)
             else:
                 return None
-
-
-    def __contextualize_tokens(self) -> None:
-        """Changes the type of some tokens based on their context."""
-        types = [
-            (tokens.Text, tokens.CodeFence),
-            (tokens.Text, tokens.MathFence),
-        ]
-        for to_type, wrapper_type in types:
-            self.__change_inner_token_types(to_type, wrapper_type)
-
-
-    def __change_inner_token_types(
-            self,
-            to_type: Type[tokens.Token],
-            wrapper_type: Type[tokens.Token]) -> None:
-        """Changes the types of all tokens between tokens of a chosen type.
-        
-        Changes are made to this class' token list. This function 
-        assumes the tokens to change have a :code:`content` attribute 
-        that is of type :code:`str`.
-
-        Parameters
-        ----------
-        to_type : Type[tokens.Token]
-            The type to change the inner tokens to.
-        wrapper_type : Type[tokens.Token]
-            The type of the first and last token.
-        """
-        in_wrapper = False
-        for i, token_ in enumerate(self.__tokens):
-            if isinstance(token_, wrapper_type):
-                in_wrapper = not in_wrapper
-            elif in_wrapper:
-                self.__tokens[i] = to_type(token_.content)
 
 
     def __create_groups(self) -> None:

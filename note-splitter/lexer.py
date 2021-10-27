@@ -1,16 +1,17 @@
 """For splitting raw text into a list of tokens.
 
-The lexer categorizes lines of text without looking at their context. 
-For example, a markdown codeblock will become two code fence tokens 
-surrounding one or more tokens of any type, possibly "incorrect" types 
-such as header. After lexing, the token list must be parsed to ensure 
-each token has the correct type and to further organize them.
+The lexer categorizes lines of text first without looking at their 
+context. For example, a markdown codeblock will become two code fence 
+tokens surrounding one or more tokens of any type, possibly "incorrect" 
+types such as header. Then the lexer makes a quick pass over the token 
+list while looking at each token's context to ensure they have the 
+correct type.
 """
 
 
 # external imports
 import re
-from typing import List
+from typing import List, Type
 
 # internal imports
 import tokens
@@ -24,6 +25,7 @@ class Lexer:
         self.__tokens: List[tokens.Token] = []
         for line in text.split('\n'):
             self.__append_token(line)
+        self.__contextualize_tokens()
         return self.__tokens
 
 
@@ -39,3 +41,38 @@ class Lexer:
     def __matches(self, line: str, pattern: re.Pattern):
         """Determines if the line matches a pattern."""
         return bool(pattern.match(line))
+
+
+    def __contextualize_tokens(self) -> None:
+        """Changes the type of some tokens based on their context."""
+        types = [
+            (tokens.Text, tokens.CodeFence),
+            (tokens.Text, tokens.MathFence),
+        ]
+        for to_type, wrapper_type in types:
+            self.__change_inner_token_types(to_type, wrapper_type)
+
+
+    def __change_inner_token_types(
+            self,
+            to_type: Type[tokens.Token],
+            wrapper_type: Type[tokens.Token]) -> None:
+        """Changes the types of all tokens between tokens of a chosen type.
+        
+        Changes are made to this class' token list. This function 
+        assumes the tokens to change have a :code:`content` attribute 
+        that is of type :code:`str`.
+
+        Parameters
+        ----------
+        to_type : Type[tokens.Token]
+            The type to change the inner tokens to.
+        wrapper_type : Type[tokens.Token]
+            The type of the first and last token.
+        """
+        in_wrapper = False
+        for i, token_ in enumerate(self.__tokens):
+            if isinstance(token_, wrapper_type):
+                in_wrapper = not in_wrapper
+            elif in_wrapper:
+                self.__tokens[i] = to_type(token_.content)
