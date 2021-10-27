@@ -1,14 +1,12 @@
-"""For splitting an AST's tokens into Sections tokens.
-
-Settings Needed
----------------
-split_type : Type
-    The type of the token to split by.
-split_attrs : dict
-    The attributes of the token to split by. If one of the 
-    attributes is named :code:`level`, lesser levels will take
-    precedence in section creation.
-"""
+"""For splitting an AST's tokens into Sections tokens."""
+# settings the splitter requires
+# ------------------------------
+# split_type : Type
+#     The type of the token to split by.
+# split_attrs : dict
+#     The attributes of the token to split by. If one of the 
+#     attributes is named :code:`level`, lesser levels will take
+#     precedence in section creation.
 
 
 # external imports

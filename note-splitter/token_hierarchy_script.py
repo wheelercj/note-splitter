@@ -1,6 +1,7 @@
 """This script detects and displays the hierarchy of all the tokens.
 
-More indentation means that the token is a child of the previous token.
+More indentation means that the token is a child of the previous token 
+with less indentation.
 """
 
 # external imports
@@ -14,7 +15,7 @@ import tokens
 def print_children(class_tree: list, indentation: str = ''):
     for c in class_tree:
         if isinstance(c, list):
-            print_children(c, indentation + '  ')
+            print_children(c, indentation + '    ')
         else:
             abstract = '(abstract)' if inspect.isabstract(c[0]) else ''
             print(indentation + c[0].__name__ + ' ' + abstract)

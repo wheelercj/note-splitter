@@ -16,7 +16,7 @@ def test():
         '''
         ---
         title: this is a file with frontmatter
-        description: Frontmatter is used to add structured data to a note. More details here https://assemble.io/docs/YAML-front-matter.html
+        description: Frontmatter is used to add structured data to a note.
         ---
 
         # sample markdown
@@ -29,7 +29,7 @@ def test():
         2. list
 
         ## second header
-        #third-tag <- this tag should not be considered a global tag because it's below a header of a level > 1
+        #third-tag <- not a global tag
         ```python
         print('this code is inside a code block')
         while True:
@@ -65,7 +65,7 @@ def test():
     input('**Press enter to continue**')
 
     settings.split_type = tokens.Header
-    settings.split_attrs = {'level': 3}
+    settings.split_attrs = dict()
     split: Callable = Splitter()
     sections: List[tokens.Section] = split(ast.content)
     print('\n**Splitter output:**\n')

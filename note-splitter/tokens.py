@@ -92,7 +92,7 @@ class Text(Token):
 
 
 class EmptyLine(Token):
-    """An line in a file with either whitespace characters or nothing.
+    """A line in a file with either whitespace characters or nothing.
     
     Attributes
     ----------
@@ -493,7 +493,8 @@ class MathFence(Fence):
 class MathBlock(Token):
     """A multi-line mathblock.
 
-    Inline mathblocks are not supported.
+    Inline mathblocks are not supported (the opening and closing math 
+    fences must be on different lines).
     
     Attributes
     ----------
@@ -512,8 +513,9 @@ class MathBlock(Token):
 class Section(Token):
     """A file section starting with a token of the chosen split type.
     
-    Section tokens never contain section tokens, but may contain tokens 
-    of any and all other types.
+    The Splitter returns a list of Sections. Section tokens never 
+    contain section tokens, but may contain tokens of any and all other 
+    types.
 
     Attributes
     ----------
@@ -549,6 +551,7 @@ simple_token_types = [
 ]
 
 
+# These are types whose content can contain tags.
 tag_containing_types = (
     Text,
     Header,

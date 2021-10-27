@@ -1,5 +1,5 @@
-note-splitter
-=============
+note-splitter modules
+=====================
 
 .. toctree::
    :maxdepth: 4

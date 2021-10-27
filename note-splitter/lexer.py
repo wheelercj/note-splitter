@@ -5,12 +5,6 @@ For example, a markdown codeblock will become two code fence tokens
 surrounding one or more tokens of any type, possibly "incorrect" types 
 such as header. After lexing, the token list must be parsed to ensure 
 each token has the correct type and to further organize them.
-
-Here are guides for token lists, ASTs, and lexical analysis:
-
-* https://www.twilio.com/blog/abstract-syntax-trees
-* https://en.wikipedia.org/wiki/Lexical_analysis
-* https://craftinginterpreters.com/scanning.html
 """
 
 

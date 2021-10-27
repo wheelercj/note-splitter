@@ -6,4 +6,4 @@ This is currently in the early phases of development. If this application sounds
 
 [documentation](https://note-splitter.readthedocs.io/)
 
-![demo](docs/demo.png)
+![demo](docs/images/demo.png)
