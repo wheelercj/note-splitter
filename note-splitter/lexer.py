@@ -46,8 +46,8 @@ class Lexer:
     def __contextualize_tokens(self) -> None:
         """Changes the type of some tokens based on their context."""
         types = [
-            (tokens.Text, tokens.CodeFence),
-            (tokens.Text, tokens.MathFence),
+            (tokens.Code, tokens.CodeFence),
+            (tokens.Math, tokens.MathFence),
         ]
         for to_type, wrapper_type in types:
             self.__change_inner_token_types(to_type, wrapper_type)

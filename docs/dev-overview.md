@@ -19,7 +19,7 @@ print('this is code inside a code block, and . . .')
 You can find all token types this program uses on the [tokens page](tokens.rst), see their [hierarchy](token-hierarchy.md), and see how this program tokenizes text in the [Lexer class](https://github.com/wheelercj/note-splitter/blob/master/note-splitter/lexer.py).
 
 ## parsing
-Next, an optional step is to group together some tokens into larger tokens. Multiple consecutive table row tokens are put together into one table token, and two code fence tokens surrounding one or more text tokens become a code block token. This process is called **syntax analysis**, or **parsing**. The inner tokens are still tokens, but the overall token list is shorter and more organized now. (The reason why this step is optional is because sometimes the extra layer of organization is not needed and only makes operations a little more difficult.)
+Next, an optional step is to group together some tokens into larger tokens. Multiple consecutive table row tokens are put together into one table token, and two code fence tokens surrounding one or more code tokens become a code block token. This process is called **syntax analysis**, or **parsing**. The inner tokens are still tokens, but the overall token list is shorter and more organized now. (The reason why this step is optional is because sometimes the extra layer of organization is not needed and only makes operations a little more difficult.)
 
 Here's an example that shows some of the token types combined:
 

@@ -391,19 +391,31 @@ class CodeFence(Fence):
         self.language = line.lstrip('~').lstrip('`').strip()
 
 
+class Code(Token):
+    """A line of code inside a code block.
+    
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    """
+    def __init__(self, line: str):
+        self.content = line
+
+
 class CodeBlock(Block):
     """A multi-line code block.
     
     Attributes
     ----------
-    content : List[Union[CodeFence, Text]]
-        The code block's code fence tokens surrounding text token(s).
+    content : List[Union[CodeFence, Code]]
+        The code block's code fence tokens surrounding code token(s).
     language : str
         Any text that follows the triple backticks (or tildes) on the
         line of the opening code fence. Surrounding whitespace 
         characters are removed.
     """
-    def __init__(self, tokens_: List[Union[CodeFence, Text]]):
+    def __init__(self, tokens_: List[Union[CodeFence, Code]]):
         self.content = tokens_
         self.language = tokens_[0].language
 
@@ -425,6 +437,18 @@ class MathFence(Fence):
         self.content = line
 
 
+class Math(Token):
+    """A line of math inside a math block.
+    
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    """
+    def __init__(self, line: str):
+        self.content = line
+
+
 class MathBlock(Block):
     """A multi-line mathblock.
 
@@ -433,10 +457,10 @@ class MathBlock(Block):
     
     Attributes
     ----------
-    content : List[Text]
-        The mathblock's math fence tokens surrounding text token(s).
+    content : List[Math]
+        The mathblock's math fence tokens surrounding math token(s).
     """
-    def __init__(self, tokens_: List[Union[MathFence, Text]]):
+    def __init__(self, tokens_: List[Union[MathFence, Math]]):
         self.content = tokens_
 
 
