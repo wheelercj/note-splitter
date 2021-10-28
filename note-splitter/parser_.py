@@ -18,6 +18,11 @@ class AST:
     ----------
     tokens_ : List[tokens.Token]
         A list of tokens created from a Lexer object.
+    create_groups : bool
+        If True, some of the tokens will be grouped together into larger
+        tokens in the resulting AST. Otherwise, the tokens will be left
+        as they are and the AST will have frontmatter and global_tags 
+        attributes.
 
     Attributes
     ----------
@@ -30,7 +35,10 @@ class AST:
         tokens here are the tokens above all headers.
     """
 
-    def __init__(self, tokens_: List[tokens.Token]):
+    def __init__(
+            self,
+            tokens_: List[tokens.Token],
+            create_groups: bool = True):
         if not tokens_:
             return
         self.__tokens = tokens_
@@ -38,7 +46,11 @@ class AST:
         self.frontmatter: Optional[object] = self.__get_frontmatter()
         self.global_tags: List[str] = self.__get_global_tags()
         self.content: List[tokens.Token] = []
-        self.__create_groups()
+        if create_groups:
+            self.__create_groups()
+        else:
+            self.content = self.__tokens
+            del self.__tokens
 
 
     def __str__(self) -> str:
@@ -88,7 +100,8 @@ class AST:
         """Groups together all tokens that should be grouped together.
         
         No tokens are changed, some are only put together into new 
-        tokens.
+        tokens. All the tokens will end up in the AST's content 
+        attribute, and the __tokens list will be empty.
         """
         while self.__tokens:
             token = self.__tokens[0]
