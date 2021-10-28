@@ -55,7 +55,8 @@ def test():
     print_tokens(tokens_)
     input('**Press enter to continue**')
 
-    ast = AST(tokens_)
+    settings.create_groups = True
+    ast = AST(tokens_, settings.create_groups)
     print('\n**Parser output:**\n')
     if ast.frontmatter:
         print(f'frontmatter: {ast.frontmatter}\n')
@@ -72,6 +73,7 @@ def test():
                                            settings.split_attrs)
     print('\n**Splitter output:**\n')
     print_tokens(sections)
+    # input('**Press enter to continue**')
 
     # format: Callable = Formatter()
     # split_contents: List[str] = format(sections,
