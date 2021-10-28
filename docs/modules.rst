@@ -4,6 +4,7 @@ note-splitter modules
 .. toctree::
    :maxdepth: 4
 
+   formatter_
    lexer
    main
    note
@@ -12,4 +13,5 @@ note-splitter modules
    settings
    splitter
    test
+   token_hierarchy_script
    tokens
