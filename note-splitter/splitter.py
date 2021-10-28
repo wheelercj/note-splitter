@@ -62,7 +62,7 @@ class Splitter:
                 sections.append(new_section)
             elif isinstance(token.content, list):
                 split = Splitter()
-                sections.extend(split(token.content))
+                sections.extend(split(token.content, split_type, split_attrs))
                 self.__tokens.pop(0)
             else:
                 self.__tokens.pop(0)
