@@ -51,19 +51,11 @@ def test():
 
     tokenize: Callable = Lexer()
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
-    print('**Lexer output:**\n')
-    print_tokens(tokens_)
-    input('**Press enter to continue**')
+    print_lexer_output(tokens_)
 
     settings.create_groups = True
     ast = AST(tokens_, settings.create_groups)
-    print('\n**Parser output:**\n')
-    if ast.frontmatter:
-        print(f'frontmatter: {ast.frontmatter}\n')
-    if ast.global_tags:
-        print(f'global tags: {ast.global_tags}\n')
-    print_tokens(ast.content)
-    input('**Press enter to continue**')
+    print_parser_output(ast)
 
     settings.split_type = tokens.Header
     settings.split_attrs = dict()
@@ -71,17 +63,13 @@ def test():
     sections: List[tokens.Section] = split(ast.content,
                                            settings.split_type,
                                            settings.split_attrs)
-    print('\n**Splitter output:**\n')
-    print_tokens(sections)
-    # input('**Press enter to continue**')
+    print_splitter_output(sections)
 
     # format: Callable = Formatter()
     # split_contents: List[str] = format(sections,
     #                                    ast.global_tags,
     #                                    ast.frontmatter)
-    # print('\n**Formatter output:**\n')
-    # for i, text in enumerate(split_contents):
-    #     print(f'**file {i}:\n{text}')
+    # print_formatter_output(split_contents)
 
 
 def print_tokens(tokens_: List[tokens.Token]) -> None:
@@ -108,3 +96,35 @@ def format_tokens(tokens_: List[tokens.Token]) -> str:
         else:
             block.append(str(token))
     return (' ' * 34 + ' | ').join(block)
+
+
+def print_lexer_output(tokens_: List[tokens.Token]) -> None:
+    """Display's the lexer's output."""
+    print('**Lexer output:**\n')
+    print_tokens(tokens_)
+    input('**Press enter to continue**')
+
+
+def print_parser_output(ast: AST) -> None:
+    """Display's the parser's output."""
+    print('\n**Parser output:**\n')
+    if ast.frontmatter:
+        print(f'frontmatter: {ast.frontmatter}\n')
+    if ast.global_tags:
+        print(f'global tags: {ast.global_tags}\n')
+    print_tokens(ast.content)
+    input('**Press enter to continue**')
+
+
+def print_splitter_output(sections: List[tokens.Section]) -> None:
+    """Display's the splitter's output."""
+    print('\n**Splitter output:**\n')
+    print_tokens(sections)
+    input('**Press enter to continue**')
+
+
+def print_formatter_output(split_contents: List[str]) -> None:
+    """Display's the formatter's output."""
+    print('\n**Formatter output:**\n')
+    for i, text in enumerate(split_contents):
+        print(f'**file {i}:\n{text}')
