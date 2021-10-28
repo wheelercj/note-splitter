@@ -67,7 +67,9 @@ def test():
     settings.split_type = tokens.Header
     settings.split_attrs = dict()
     split: Callable = Splitter()
-    sections: List[tokens.Section] = split(ast.content)
+    sections: List[tokens.Section] = split(ast.content,
+                                           settings.split_type,
+                                           settings.split_attrs)
     print('\n**Splitter output:**\n')
     print_tokens(sections)
 
