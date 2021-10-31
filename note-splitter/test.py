@@ -53,8 +53,8 @@ def test():
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
     print_lexer_output(tokens_)
 
-    settings.create_groups = True
-    ast = AST(tokens_, settings.create_groups)
+    settings.create_blocks = True
+    ast = AST(tokens_, settings.create_blocks)
     print_parser_output(ast)
 
     settings.split_type = tokens.Header
