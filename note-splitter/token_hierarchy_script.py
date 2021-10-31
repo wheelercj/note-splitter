@@ -15,8 +15,13 @@ import tokens
 
 def main():
     token_hierarchy: str = create_token_hierarchy()
-    with open('../docs/token-hierarchy.rst', 'w') as file:
-        file.write(token_hierarchy)
+    token_hierarchy_path = 'docs/token-hierarchy.rst'
+    try:
+        with open(token_hierarchy_path, 'w') as file:
+            file.write(token_hierarchy)
+    except FileNotFoundError:
+        with open('../' + token_hierarchy_path, 'w') as file:
+            file.write(token_hierarchy)
     print('token hierarchy saved to docs/token-hierarchy.rst')
 
 
