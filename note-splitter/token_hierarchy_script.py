@@ -1,8 +1,8 @@
-"""This script detects and saves the hierarchy of all the tokens.
+"""This script overwrites token-hierarchy.rst with the token hierarchy.
 
-The result is automatically saved to a file called 'token-hierarchy.rst'
-in the docs directory. More indentation means that the token is a child 
-of the previous token with less indentation.
+The current token hierarchy is determined automatically from the code.
+More indentation means that the token is a child of the previous token 
+with less indentation.
 """
 
 # external imports

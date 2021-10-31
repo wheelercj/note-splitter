@@ -27,6 +27,8 @@ Below is the hierarchy of all the tokens this program uses. More indentation mea
     * :py:class:`tokens.Text`
     * :py:class:`tokens.TextListItem` (abstract)
         * :py:class:`tokens.Done`
-        * :py:class:`tokens.OrderedListItem`
+        * :py:class:`tokens.OrderedListItem` (abstract)
+            * :py:class:`tokens.LetteredListItem`
+            * :py:class:`tokens.NumberedListItem`
         * :py:class:`tokens.ToDo`
         * :py:class:`tokens.UnorderedListItem`

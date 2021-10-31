@@ -61,6 +61,17 @@ class TextListItem(Token):
         pass
 
 
+class OrderedListItem(TextListItem):
+    """The ABC for an item in an ordered list.
+    
+    Each child class must have :code:`content`, :code:`level`, and 
+    :code:`pattern` attributes.
+    """
+    @abstractmethod
+    def __init__(self, line: str):
+        pass
+
+
 class TablePart(Token):
     """The ABC for tokens that tables are made out of.
     
@@ -258,28 +269,6 @@ class Done(TextListItem):
         self.level = get_indentation_level(line)
 
 
-class OrderedListItem(TextListItem):
-    """An item in a numbered list.
-    
-    May contain tags.
-
-    Attributes
-    ----------
-    content : str
-        The content of the line of text.
-    level : int
-        The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for an item in an ordered list. This 
-        is a class attribute.
-    """
-    pattern = patterns.ordered_list_item
-
-    def __init__(self, line: str):
-        self.content = line
-        self.level = get_indentation_level(line)
-
-
 class UnorderedListItem(TextListItem):
     """An item in a bullet point list.
     
@@ -297,6 +286,50 @@ class UnorderedListItem(TextListItem):
         This is a class attribute.
     """
     pattern = patterns.unordered_list_item
+
+    def __init__(self, line: str):
+        self.content = line
+        self.level = get_indentation_level(line)
+
+
+class NumberedListItem(OrderedListItem):
+    """An item in a numbered list.
+    
+    May contain tags.
+
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    level : int
+        The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in a numbered list. This 
+        is a class attribute.
+    """
+    pattern = patterns.numbered_list_item
+
+    def __init__(self, line: str):
+        self.content = line
+        self.level = get_indentation_level(line)
+
+
+class LetteredListItem(OrderedListItem):
+    """An item in a lettered list.
+    
+    May contain tags.
+
+    Attributes
+    ----------
+    content : str
+        The content of the line of text.
+    level : int
+        The number of spaces of indentation.
+    pattern : re.Pattern
+        The compiled regex pattern for an item in a lettered list. This 
+        is a class attribute.
+    """
+    pattern = patterns.lettered_list_item
 
     def __init__(self, line: str):
         self.content = line
@@ -477,7 +510,7 @@ class Section(Block):
         The tokens in this section, starting with a token of the chosen 
         split type.
     """
-    def __init__(self, tokens_: List[Token] = []):
+    def __init__(self, tokens_: List[Token]):
         self.content = tokens_
 
 
@@ -493,8 +526,9 @@ simple_token_types = [
     ToDo,
     Done,
     Footnote,
-    OrderedListItem,
     UnorderedListItem,
+    NumberedListItem,
+    LetteredListItem,
     TableDivider,
     TableRow,
 ]
@@ -508,6 +542,7 @@ tag_containing_types = (
     Footnote,
     ToDo,
     Done,
-    OrderedListItem,
-    UnorderedListItem
+    UnorderedListItem,
+    NumberedListItem,
+    LetteredListItem,
 )
