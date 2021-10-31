@@ -1,3 +1,9 @@
+"""The class definitions for all the tokens, and a few lists of them.
+
+See a hierarchy of the tokens here:  
+https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
+"""
+
 # external imports
 from abc import ABC, abstractmethod
 from typing import List, Union
