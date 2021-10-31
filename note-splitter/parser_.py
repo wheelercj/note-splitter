@@ -229,6 +229,7 @@ class AST:
                 return global_tags
             elif isinstance(token, tokens.tag_containing_types):
                 global_tags.extend(self.__get_tags(token))
+        global_tags = list(set(global_tags))  # Remove duplicates.
         return global_tags
 
 
