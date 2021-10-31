@@ -45,7 +45,7 @@ def get_all_notes() -> List[Note]:
     for file_name in folder_list:
         file_path = os.path.join(folder_path, file_name)
         if os.path.isfile(file_path):
-            file_ext = os.path.splitext(file_name)
+            _, file_ext = os.path.splitext(file_name)
             if file_ext in settings.note_types:
                 notes.append(Note(file_path, folder_path, file_name))
 
