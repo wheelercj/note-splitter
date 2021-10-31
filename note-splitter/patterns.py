@@ -47,6 +47,9 @@ table_row : re.Pattern
     that match the table divider pattern, so when looking for table 
     rows, first make sure it's not a table divider.
 """
+# This module uses the Global Object Pattern. See more details about 
+# this design pattern here: 
+# https://python-patterns.guide/python/module-globals/#id1
 
 
 import re
