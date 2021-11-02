@@ -22,7 +22,6 @@ note_types : List[str]
 # This module uses the Global Object Pattern. See more details about 
 # this design pattern here: 
 # https://python-patterns.guide/python/module-globals/#id1
-
 from typing import List
 import sqlite3
 import os
@@ -49,6 +48,24 @@ def get_current_settings():
     cur.execute("SELECT * from settings")
     result = cur.fetchall()
     print(result)
+
+
+
+def delete_current_settings():
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
+    cur.execute("DELETE from settings")
+    connection.commit()
+    connection.close()
+
+def update_settings():
+    delete_current_settings()
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
+    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types) VALUES(?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types))
+    connection.commit()
+    connection.close()
+
 
 
     
