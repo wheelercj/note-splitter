@@ -8,10 +8,10 @@ Much of our documentation on Read The Docs is automatically built from the code 
 
 Each time a new Python module is added to the project:
  1. Add its name to the list in docs/modules.rst
- 2. Use this command to automatically generate an rst file for the new module: :code:`sphinx-apidoc -o docs note_splitter` (while in the project's root folder)
+ 2. Use this command to automatically generate an rst file for the new module: ``sphinx-apidoc -o docs note_splitter`` (while in the project's root folder)
 
 Each time a new third-party library is added to our project:
- 1. Add its name (the one used in the :code:`pip install` statement) to the list in docs/environment.yaml
+ 1. Add its name (the one used in the ``pip install`` statement) to the list in docs/environment.yaml
 
 If a new token type is created and/or the inheritance between token types changes:
  1. Run scripts/token_hierarchy.py to automatically update the docs/token_hierarchy.rst file
@@ -30,14 +30,14 @@ reStructuredText example::
     
     `file title here <file-name.html>`_
 
-Note that while a link to a local file in a markdown file can use the :code:`.rst` and :code:`.md` extensions, a link to a local file in an rst file must use the :code:`.html` extension.
+Note that while a link to a local file in a markdown file can use the ``.rst`` and ``.md`` extensions, a link to a local file in an rst file must use the ``.html`` extension.
 
 local testing
 -------------
-We can generate HTML files locally to test our rst and markdown files. If you haven't already, install Sphinx with :code:`pip install -U Sphinx`, MyST with :code:`pip install -U myst-parser` and our site's theme with ``pip install sphinx-rtd-theme``.
+We can generate HTML files locally to test our rst and markdown files. If you haven't already, install Sphinx with ``pip install -U Sphinx``, MyST with ``pip install -U myst-parser`` and our site's theme with ``pip install sphinx-rtd-theme``.
 
-1. While in the project's root folder, use :code:`cd docs`.
-2. Use the :code:`make html` command (or if that doesn't work, try :code:`.\make html`) to generate HTML files from our rst and markdown files. This is just for testing changes to the rst and markdown files before committing them; the HTML files should not be committed.
+1. While in the project's root folder, use ``cd docs``.
+2. Use the ``make html`` command (or if that doesn't work, try ``.\make html``) to generate HTML files from our rst and markdown files. This is just for testing changes to the rst and markdown files before committing them; the HTML files should not be committed.
 
 see also
 --------

@@ -9,8 +9,8 @@ any_header : re.Pattern
     The pattern of a markdown header of any level.
 tags : re.Pattern
     The pattern for a tag and the character before the tag. For 
-    :code:`group[1]` to be a tag, :code:`group[0]` must be 
-    :code:`in ('', ' ', '\t')`.
+    ``group[1]`` to be a tag, ``group[0]`` must be 
+    ``in ('', ' ', '\t')``.
 horizontal_rule : re.Pattern
     The pattern for a markdown-style horizontal rule, which is composed
     of three or more minuses, underscores, or asterisks. There may be 

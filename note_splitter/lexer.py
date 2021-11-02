@@ -60,8 +60,8 @@ class Lexer:
         """Changes the types of all tokens between tokens of a chosen type.
         
         Changes are made to this class' token list. This function 
-        assumes the tokens to change have a :code:`content` attribute 
-        that is of type :code:`str`.
+        assumes the tokens to change have a ``content`` attribute 
+        that is of type ``str``.
 
         Parameters
         ----------

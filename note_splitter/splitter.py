@@ -26,7 +26,7 @@ class Splitter:
             The type of the token to split by.
         split_attrs : dict
             The attributes of the token to split by. If one of the
-            attributes is named :code:`level`, lesser levels will take
+            attributes is named ``level``, lesser levels will take
             precedence in section creation.
         """
         self.__tokens = tokens_
@@ -45,7 +45,7 @@ class Splitter:
             The type of the token to split by.
         split_attrs : dict
             The attributes of the token to split by. If one of the
-            attributes is named :code:`level`, lesser levels will take
+            attributes is named ``level``, lesser levels will take
             precedence in section creation.
         """
         # Depth-first search for tokens of the chosen split type.
@@ -80,7 +80,7 @@ class Splitter:
         was chosen to split by.
         
         If the token type chosen as the section starter has
-        a :code:`level` attribute, it must be an integer and lower 
+        a ``level`` attribute, it must be an integer and lower 
         levels will take precedence over higher levels. E.g., each 
         header token has a level, and larger headers have smaller 
         levels (the largest header possible has a level of 1). When a 
@@ -95,7 +95,7 @@ class Splitter:
             The type of the token to split by.
         split_attrs : dict
             The attributes of the token to split by. If one of the
-            attributes is named :code:`level`, lesser levels will take
+            attributes is named ``level``, lesser levels will take
             precedence in section creation.
         """
         section_tokens: List[tokens.Token] = []
@@ -131,7 +131,7 @@ class Splitter:
             The type of the token to split by.
         split_attrs : dict
             The attributes of the token to split by. If one of the
-            attributes is named :code:`level`, lesser levels will take
+            attributes is named ``level``, lesser levels will take
             precedence in section creation.
         is_splitting : bool
             A boolean for whether splitting is in progress. Used to 

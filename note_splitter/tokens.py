@@ -28,10 +28,10 @@ def get_indentation_level(line: str) -> int:
 class Token(ABC):
     """The abstract base class (ABC) for all tokens.
     
-    Each child class must have a :code:`content` attribute. If the token
-    is not a combination of other tokens, that :code:`content` attribute
+    Each child class must have a ``content`` attribute. If the token
+    is not a combination of other tokens, that ``content`` attribute
     must be a string of the original content of the raw line of text.
-    Otherwise, the :code:`content` attribute is the list of subtokens.
+    Otherwise, the ``content`` attribute is the list of subtokens.
     """
     @abstractmethod
     def __init__(self):
@@ -45,7 +45,7 @@ class Token(ABC):
 class Block(Token):
     """The ABC for tokens that are each a combination of tokens.
     
-    Each child class must have a :code:`content` attribute.
+    Each child class must have a ``content`` attribute.
     """
     @abstractmethod
     def __init__(self):
@@ -59,7 +59,7 @@ class Block(Token):
 class TextListItem(Token):
     """The abstract base class (ABC) for text list item tokens.
     
-    Each child class must have :code:`content` and :code:`level` 
+    Each child class must have ``content`` and ``level`` 
     attributes.
     """
     @abstractmethod
@@ -70,8 +70,8 @@ class TextListItem(Token):
 class OrderedListItem(TextListItem):
     """The ABC for an item in an ordered list.
     
-    Each child class must have :code:`content`, :code:`level`, and 
-    :code:`pattern` attributes.
+    Each child class must have ``content``, ``level``, and 
+    ``pattern`` attributes.
     """
     @abstractmethod
     def __init__(self, line: str):
@@ -81,7 +81,7 @@ class OrderedListItem(TextListItem):
 class TablePart(Token):
     """The ABC for tokens that tables are made out of.
     
-    Each child class must have a :code:`content` attribute.
+    Each child class must have a ``content`` attribute.
     """
     @abstractmethod
     def __init__(self):
@@ -91,7 +91,7 @@ class TablePart(Token):
 class Fence(Token):
     """The ABC for tokens that block fences are made out of.
     
-    Each child class must have a :code:`content` attribute.
+    Each child class must have a ``content`` attribute.
     """
     @abstractmethod
     def __init__(self):
