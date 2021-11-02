@@ -32,8 +32,6 @@ destination_folder_path: str = ''
 split_header_level: int  = 4 
 note_types: str = '.md .markdown .txt'
 
-
-    
 def initialize_settings():
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
@@ -48,8 +46,6 @@ def get_current_settings():
     cur.execute("SELECT * from settings")
     result = cur.fetchall()
     print(result)
-
-
 
 def delete_current_settings():
     connection = sqlite3.connect('store-transactions.db') 
