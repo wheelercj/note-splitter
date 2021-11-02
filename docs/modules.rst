@@ -13,5 +13,4 @@ note-splitter modules
    settings
    splitter
    test
-   token_hierarchy_script
    tokens

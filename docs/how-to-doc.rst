@@ -14,7 +14,7 @@ Each time a new third-party library is added to our project:
  1. Add its name (the one used in the :code:`pip install` statement) to the list in docs/environment.yaml
 
 If a new token type is created and/or the inheritance between token types changes:
- 1. Run token_hierarchy_script.py to automatically update the token_hierarchy.rst file
+ 1. Run scripts/token_hierarchy.py to automatically update the docs/token_hierarchy.rst file
 
 custom documentation
 --------------------
@@ -34,7 +34,7 @@ Note that while a link to a local file in a markdown file can use the :code:`.rs
 
 local testing
 -------------
-We can generate HTML files locally to test our rst and markdown files. If you haven't already, install Sphinx with :code:`pip install -U Sphinx` and MyST with :code:`pip install -U myst-parser`.
+We can generate HTML files locally to test our rst and markdown files. If you haven't already, install Sphinx with :code:`pip install -U Sphinx`, MyST with :code:`pip install -U myst-parser` and our site's theme with ``pip install sphinx-rtd-theme``.
 
 1. While in the project's root folder, use :code:`cd docs`.
 2. Use the :code:`make html` command (or if that doesn't work, try :code:`.\make html`) to generate HTML files from our rst and markdown files. This is just for testing changes to the rst and markdown files before committing them; the HTML files should not be committed.

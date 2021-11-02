@@ -1,11 +1,14 @@
 """This script overwrites token-hierarchy.rst with the token hierarchy.
 
-The current token hierarchy is determined automatically from the code.
-More indentation means that the token is a child of the previous token 
-with less indentation.
+The current token hierarchy is determined automatically from the code. 
+Run this each time you add a new token or change their relationships. 
+More indentation in the hierarchy means that the token is a child of the
+previous token with less indentation.
 """
 
 # external imports
+import sys
+sys.path.append('/note_splitter')
 import inspect
 from typing import List, Tuple
 
