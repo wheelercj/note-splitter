@@ -12,7 +12,8 @@ Note splitter is an application that can split notes in plaintext files (such as
    :maxdepth: 2
    :caption: Contents:
    
-   dev-overview
+   dev-setup
+   note-splitter-overview
    token-hierarchy
    modules
    references
