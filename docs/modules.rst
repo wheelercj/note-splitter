@@ -1,4 +1,4 @@
-note-splitter modules
+Note Splitter modules
 =====================
 
 .. toctree::
