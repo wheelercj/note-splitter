@@ -1,0 +1,9 @@
+pyyaml
+
+# testing
+pytest
+
+# documentation
+sphinx == 4.2.0
+myst-parser
+sphinx-rtd-theme

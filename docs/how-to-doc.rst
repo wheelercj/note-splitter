@@ -38,7 +38,7 @@ Note that while a link to a local file in a markdown file can use the ``.rst`` a
 
 local testing
 -------------
-We can generate HTML files locally to test our rst and markdown files. If you haven't already, install Sphinx with ``pip install -U Sphinx``, MyST with ``pip install -U myst-parser`` and our site's theme with ``pip install sphinx-rtd-theme``.
+We can generate HTML files locally to test our rst and markdown files. If you haven't already, install the documentation dependencies with ``python -m pip install -r requirements.txt``.
 
 1. While in the project's root folder, use ``cd docs``.
 2. Use the ``make html`` command (or if that doesn't work, try ``.\make html``) to generate HTML files from our rst and markdown files. This is just for testing changes to the rst and markdown files before committing them; the HTML files should not be committed.
