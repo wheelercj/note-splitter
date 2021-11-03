@@ -25,9 +25,16 @@ If you use a launch.json file to keep track of how to run programs, below is an 
 }
 ```
 
-## how to fully test the project locally
-1. run Note Splitter, i.e. src/note_splitter/main.py
-2. run scripts/token_hierarchy.py
-3. build the docs with `cd docs` and either `make html` or `.\make html`
+## directory structure
 
-If any of these give any warnings or errors, then something needs to be fixed. Usually only one or two parts of the project need to be tested at a time though.
+Here are descriptions of what each of Note Splitter's folders are for:
+
+```
+.
+├── docs               # Files for documentation (.md and .rst) and for configuration.
+│   └── images         # Images used in the documentation and/or the README.
+├── scripts            # Single-file programs that help with maintaining this project.
+├── src                # The source code for Note Splitter and any other relevant packages.
+│   └── note_splitter  # The source code for Note Splitter.
+└── tests              # Automated tests.
+```
