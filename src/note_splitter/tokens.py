@@ -4,12 +4,9 @@ See a hierarchy of the tokens here:
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
 
-# external imports
 from abc import ABC, abstractmethod
 from typing import List, Union
-
-# internal imports
-import patterns
+from note_splitter import patterns
 
 
 def get_indentation_level(line: str) -> int:

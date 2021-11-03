@@ -16,7 +16,8 @@ Here are various guides, tools, etc. that were helpful to us while building Note
 * [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/)
 * [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
 * [design patterns](https://python-patterns.guide/) (singletons, factory methods, global objects, etc.)
-* [Python import: Advanced Techniques and Tips](https://realpython.com/python-import/#import-scripts-as-modules)
+* [Python import: Advanced Techniques and Tips](https://realpython.com/python-import/#create-and-install-a-local-package)
+* [python packaging: basic setup.py and declarative metadata (intermediate)](https://www.youtube.com/watch?v=GaWs-LenLYE&list=PLWBKAf81pmOaP9naRiNAqug6EBnkPakvY)
 
 ## testing
 * [Automated Testing in Python with pytest, tox, and GitHub Actions](https://www.youtube.com/watch?v=DhUpxWjOhME)

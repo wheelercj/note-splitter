@@ -48,13 +48,10 @@ replace_split_contents: bool
 # https://python-patterns.guide/python/module-globals/#id1
 
 
-# external imports
 from typing import List, Type
 import sqlite3
 import os
-
-# internal imports
-import tokens
+from note_splitter import tokens
 
 
 split_keyword: str = '#split'

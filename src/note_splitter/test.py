@@ -1,14 +1,10 @@
-# external imports
 from typing import List, Callable
 from textwrap import dedent
-
-# internal imports
-import settings
-import tokens
-from lexer import Lexer
-from parser_ import AST
-from splitter import Splitter
-from formatter_ import Formatter
+from note_splitter import settings, tokens
+from note_splitter.lexer import Lexer
+from note_splitter.parser_ import AST
+from note_splitter.splitter import Splitter
+from note_splitter.formatter_ import Formatter
 
 
 def test():
@@ -84,7 +80,7 @@ def print_tokens(tokens_: List[tokens.Token]) -> None:
 
 def print_token(token: tokens.Token, token_content: str) -> None:
     """Prints a token's types and content."""
-    print(f'{str(type(token)):>34s} | {token_content}', end='')
+    print(f'{str(type(token).__name__):>18s} | {token_content}', end='')
 
 
 def format_tokens(tokens_: List[tokens.Token]) -> str:
@@ -95,7 +91,7 @@ def format_tokens(tokens_: List[tokens.Token]) -> str:
             block.append(format_tokens(token.content))
         else:
             block.append(str(token))
-    return (' ' * 34 + ' | ').join(block)
+    return (' ' * 18 + ' | ').join(block)
 
 
 def print_lexer_output(tokens_: List[tokens.Token]) -> None:

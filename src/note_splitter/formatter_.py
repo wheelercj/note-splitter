@@ -6,13 +6,9 @@ strings.
 """
 
 
-# external imports
 from typing import List, Optional
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-
-# internal imports
-import settings
-import tokens
+from note_splitter import settings, tokens
 
 
 class Formatter:

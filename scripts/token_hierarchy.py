@@ -6,14 +6,9 @@ More indentation in the hierarchy means that the token is a child of the
 previous token with less indentation.
 """
 
-# external imports
-import sys
-sys.path.append('/note_splitter')
 import inspect
 from typing import List, Tuple
-
-# internal imports
-import tokens
+from note_splitter import tokens
 
 
 def main():

@@ -1,11 +1,8 @@
 """For splitting an AST's tokens into Sections tokens."""
 
 
-# external imports
 from typing import List, Type
-
-# internal imports
-import tokens
+from note_splitter import tokens
 
 
 class Splitter:

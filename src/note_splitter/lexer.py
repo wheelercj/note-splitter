@@ -9,12 +9,9 @@ correct type.
 """
 
 
-# external imports
 import re
 from typing import List, Type
-
-# internal imports
-import tokens
+from note_splitter import tokens
 
 
 class Lexer:

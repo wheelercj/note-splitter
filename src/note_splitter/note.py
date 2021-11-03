@@ -1,10 +1,7 @@
-# external imports
 import os
-from typing import List
+from typing import List, Optional
 from datetime import datetime, timedelta
-
-# internal imports
-import settings
+from note_splitter import settings
 
 
 class Note:
@@ -25,15 +22,26 @@ class Note:
         self.name = name
 
 
-def get_chosen_notes() -> List[Note]:
-    """Gets the notes that the user chose to split."""
+def get_chosen_notes(all_notes: Optional[List[Note]] = None) -> List[Note]:
+    """Gets the notes that the user chose to split.
+    
+    Parameters
+    ----------
+    all_notes : List[Note], optional
+        The list of all the notes in the user's chosen folder. If not 
+        provided, the list of all the notes in the user's chosen folder 
+        will be retrieved.
+    """
+    if all_notes is None:
+        all_notes: List[Note] = get_all_notes()
+
     chosen_notes: List[Note] = []
-    all_notes: List[Note] = get_all_notes()
     for note in all_notes:
         with open(note.path, 'r', encoding='utf8') as file:
             contents = file.read()
         if settings.split_keyword in contents:
             chosen_notes.append(note)
+    
     return chosen_notes
 
 
@@ -62,15 +70,19 @@ def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
     """
     file_names = []
     now = datetime.now()
-    file_names.append(create_time_id_file_name(now, file_ext))
+    file_names.append(__create_time_id_file_name(now, file_ext))
     for _ in range(file_count):
         now += timedelta(seconds=1)
-        file_names.append(create_time_id_file_name(now, file_ext))
+        file_names.append(__create_time_id_file_name(now, file_ext))
     return file_names
 
 
-def create_time_id_file_name(dt: datetime, file_ext: str) -> str:
-    """Creates a file name with the given datetime."""
+def __create_time_id_file_name(dt: datetime, file_ext: str) -> str:
+    """Creates a file name with the given datetime.
+    
+    The part of the file name before the extension is in the format 
+    YYYYMMDDhhmmss. ``file_ext`` must start with a period.
+    """
     year = str(dt.year)
     month = str(dt.month).zfill(2)
     day = str(dt.day).zfill(2)

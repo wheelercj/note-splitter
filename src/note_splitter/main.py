@@ -1,9 +1,6 @@
-# external imports
 # from typing import List
-
-# internal imports
-# from note import Note, get_chosen_notes
-from test import test
+# from note_splitter.note import Note, get_chosen_notes
+from note_splitter.test import test
 
 
 def main():
