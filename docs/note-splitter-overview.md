@@ -7,7 +7,25 @@ After the user has selected which plain text file to split and what to split by,
 
 Here's an example that shows each line's token type on the left, and its plain markdown on the right:
 
-![lexer demo](images/lexer_demo.png)
+```
+            Header | # sample markdown
+              Text | #first-tag #second-tag
+ UnorderedListItem | * bullet point 1
+ UnorderedListItem | * bullet point 2
+         EmptyLine |
+              Text | here is text
+  NumberedListItem | 1. ordered
+  NumberedListItem | 2. list
+         EmptyLine |
+            Header | ## second header
+              Text | #third-tag <- not a global tag
+         CodeFence | ```python
+              Code | print('this code is inside a code block')
+              Code | while True:
+              Code |     print(eval(input('>>> ')))
+         CodeFence | ```
+         EmptyLine |
+```
 
 Some features of plain text files can only be correctly understood by looking at their context. That is why the next step is to double-check the token types, this time comparing adjacent tokens. For example, a code block in a markdown file might contain a Python comment that, only without context, looks like a markdown header.
 
@@ -23,7 +41,25 @@ Next, an optional step is to group together some tokens into larger tokens. Mult
 
 Here's an example that shows some of the token types combined:
 
-![parser demo](images/parser_demo.png)
+```
+            Header | # sample markdown
+              Text | #first-tag #second-tag
+          TextList | * bullet point 1
+                   | * bullet point 2
+         EmptyLine | 
+              Text | here is text
+          TextList | 1. ordered
+                   | 2. list
+         EmptyLine | 
+            Header | ## second header
+              Text | #third-tag <- not a global tag
+         CodeBlock | ```python
+                   | print('this code is inside a code block')
+                   | while True:
+                   |     print(eval(input('>>> ')))
+                   | ```
+         EmptyLine |
+```
 
 Now we have a syntax tree. This data structure can simplify many operations such as splitting a file, merging multiple files, moving parts of a file around, etc.
 
@@ -34,7 +70,25 @@ Note Splitter takes the syntax tree and the user's choice of what to split by, a
 
 Here's an example with section tokens where the user chose to split by headers of all levels:
 
-![splitter demo](images/splitter_demo.png)
+```
+           Section | # sample markdown
+                   | #first-tag #second-tag
+                   | * bullet point 1
+                   | * bullet point 2
+                   |
+                   | here is text
+                   | 1. ordered
+                   | 2. list
+                   |
+           Section | ## second header
+                   | #third-tag <- not a global tag
+                   | ```python
+                   | print('this code is inside a code block')
+                   | while True:
+                   |     print(eval(input('>>> ')))
+                   | ```
+                   |
+```
 
 You can see the code for splitting in [splitter.py](https://github.com/wheelercj/note-splitter/blob/master/note_splitter/splitter.py).
 
