@@ -22,13 +22,17 @@ We can also add our own manually written documentation files. Read The Docs supp
 
 | Internal links are easy to add.  
 
-Markdown example::
+Markdown example
 
-    [file title here](file-name.rst)
+.. code-block::
 
-reStructuredText example::
-    
-    `file title here <file-name.html>`_
+  [file title here](file-name.rst)
+
+reStructuredText example
+
+.. code-block:: rst
+  
+  `file title here <file-name.html>`_
 
 Note that while a link to a local file in a markdown file can use the ``.rst`` and ``.md`` extensions, a link to a local file in an rst file must use the ``.html`` extension.
 
