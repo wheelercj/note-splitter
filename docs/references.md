@@ -1,6 +1,6 @@
 # references
 
-Here are various guides, tools, etc. that were helpful to us while building Note Splitter.
+Here are various guides, tools, etc. that have been helpful to us while building Note Splitter.
 
 ## use cases
 * [https://github.com/wheelercj/note-splitter/discussions/20](https://github.com/wheelercj/note-splitter/discussions/20)
@@ -12,10 +12,12 @@ Here are various guides, tools, etc. that were helpful to us while building Note
 ## Python
 * [The Python Standard Library — Python 3.7 documentation](https://docs.python.org/3.7/library/)
 * [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
-* [Structuring Your Project — The Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/structure/)
 * [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/)
 * [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
 * [design patterns](https://python-patterns.guide/) (singletons, factory methods, global objects, etc.)
+
+### project structure
+* [Structuring Your Project — The Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/structure/)
 * [Python import: Advanced Techniques and Tips](https://realpython.com/python-import/#create-and-install-a-local-package)
 * [python packaging: basic setup.py and declarative metadata (intermediate)](https://www.youtube.com/watch?v=GaWs-LenLYE&list=PLWBKAf81pmOaP9naRiNAqug6EBnkPakvY)
 
