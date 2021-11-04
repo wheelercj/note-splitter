@@ -28,10 +28,12 @@ class Lexer:
 
     def __append_token(self, line: str) -> None:
         """Parses the text and appends the next token."""
-        for type_ in tokens.simple_token_types:
-            if self.__matches(line, type_.pattern):
-                self.__tokens.append(type_(line))
-                return
+        all_token_types = tokens.get_all_token_types(tokens)
+        for type_ in all_token_types:
+            if hasattr(type_, 'pattern'):
+                if self.__matches(line, type_.pattern):
+                    self.__tokens.append(type_(line))
+                    return
         self.__tokens.append(tokens.Text(line))
 
 

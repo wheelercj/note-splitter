@@ -521,26 +521,6 @@ class Section(Block):
         self.content = tokens_
 
 
-# Some lines of text can be categorized without looking at their 
-# context. Each type in the list below must have a pattern attribute.
-simple_token_types = [
-    EmptyLine,
-    Header,
-    HorizontalRule,
-    CodeFence,
-    MathFence,
-    Blockquote,
-    ToDo,
-    Done,
-    Footnote,
-    UnorderedListItem,
-    NumberedListItem,
-    LetteredListItem,
-    TableDivider,
-    TableRow,
-]
-
-
 # These are types whose content can contain tags.
 tag_containing_types = (
     Text,
