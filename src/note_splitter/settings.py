@@ -67,9 +67,6 @@ backlink: bool = True
 create_index_file: bool = True
 replace_split_contents: bool = False
 
-
-
-
 def initialize_settings():
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
