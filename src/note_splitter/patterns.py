@@ -27,8 +27,6 @@ blockquote : re.Pattern
     The pattern for a quote that takes up one entire line.
 to_do : re.Pattern
     The pattern for a to do list item that is not completed.
-done : re.Pattern
-    The pattern for a to do list item that is completed.
 footnote : re.Pattern
     The pattern for a footnote (the ones usually at the bottom of a 
     file, not their references).
@@ -63,8 +61,7 @@ frontmatter_fence = re.compile(r'^---$')
 code_fence = re.compile(r'^(?:```|~~~).*')
 math_fence = re.compile(r'.*\$\$\s*')
 blockquote = re.compile(r'^>+ .+')
-to_do = re.compile(r'^- \[ \] .+')
-done = re.compile(r'^- \[x\] .+')
+to_do = re.compile(r'^\s*- \[[x\s]\] .+')
 footnote = re.compile(r'^\[\^.+\]: .+')
 unordered_list_item = re.compile(r'\s*[*\-\+] [^\s].*')
 numbered_list_item = re.compile(r'\s*\d+\.\s+[^\s].*')

@@ -233,7 +233,7 @@ class Footnote(Token):
 
 
 class ToDo(TextListItem):
-    """A to do list item that is not completed.
+    """A to do list item.
     
     May contain tags.
 
@@ -243,6 +243,8 @@ class ToDo(TextListItem):
         The content of the line of text.
     level : int
         The number of spaces of indentation.
+    is_done : bool
+        Whether the to do item is done.
     pattern : re.Pattern
         The compiled regex pattern for a to do list item. This is a 
         class attribute.
@@ -252,28 +254,7 @@ class ToDo(TextListItem):
     def __init__(self, line: str):
         self.content = line
         self.level = _get_indentation_level(line)
-
-
-class Done(TextListItem):
-    """A to do list item that is completed.
-    
-    May contain tags.
-
-    Attributes
-    ----------
-    content : str
-        The content of the line of text.
-    level : int
-        The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for a finished to do list item. This 
-        is a class attribute.
-    """
-    pattern = patterns.done
-
-    def __init__(self, line: str):
-        self.content = line
-        self.level = _get_indentation_level(line)
+        self.is_done = line.startswith('- [x]')
 
 
 class UnorderedListItem(TextListItem):
@@ -528,7 +509,6 @@ tag_containing_types = (
     Blockquote,
     Footnote,
     ToDo,
-    Done,
     UnorderedListItem,
     NumberedListItem,
     LetteredListItem,
