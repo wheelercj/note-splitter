@@ -55,7 +55,7 @@ def __create_token_subhierarchy(
             __create_token_subhierarchy(token_hierarchy, c, indentation + '    ')
         else:
             class_name = c[0].__name__
-            if class_name not in ('object', 'ABC'):
+            if class_name not in ('object', 'ABC', 'module'):
                 abstract = ' (abstract)' if inspect.isabstract(c[0]) else ''
                 line = indentation[8:] + '* :py:class:`tokens.' + class_name + '`' + abstract
                 token_hierarchy.append(line)
