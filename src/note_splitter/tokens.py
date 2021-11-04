@@ -4,12 +4,16 @@ See a hierarchy of the tokens here:
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
 
+
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Union, Type, Any
+from types import ModuleType
+import inspect
+from functools import lru_cache
 from note_splitter import patterns
 
 
-def get_indentation_level(line: str) -> int:
+def __get_indentation_level(line: str) -> int:
     """Counts the spaces at the start of the line.
     
     If there are tabs instead, each tab is counted as 4 spaces. This
@@ -109,7 +113,7 @@ class Text(Token):
     """
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class EmptyLine(Token):
@@ -194,7 +198,7 @@ class Blockquote(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class BlockquoteBlock(Block):
@@ -247,7 +251,7 @@ class ToDo(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class Done(TextListItem):
@@ -269,7 +273,7 @@ class Done(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class UnorderedListItem(TextListItem):
@@ -292,7 +296,7 @@ class UnorderedListItem(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class NumberedListItem(OrderedListItem):
@@ -314,7 +318,7 @@ class NumberedListItem(OrderedListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class LetteredListItem(OrderedListItem):
@@ -336,7 +340,7 @@ class LetteredListItem(OrderedListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = get_indentation_level(line)
+        self.level = __get_indentation_level(line)
 
 
 class TextList(Block):
@@ -549,3 +553,31 @@ tag_containing_types = (
     NumberedListItem,
     LetteredListItem,
 )
+
+
+def __is_token_type(obj: Any) -> bool:
+    """Returns True if obj is a Token type.
+    
+    Parameters
+    ----------
+    obj : Any
+        The object to test.
+    """
+    return inspect.isclass(obj) and obj.__name__ not in ('ABC', 'module')
+
+
+@lru_cache(maxsize=1)
+def get_all_token_types(tokens_module: ModuleType) -> List[Type[Token]]:
+    """Gets the list of all token types.
+    
+    Call the function like this: ``tokens.get_all_token_types(tokens)``.
+
+    Parameters
+    ----------
+    tokens_module : ModuleType
+        The module containing the token types. There is only one correct
+        argument. The only reason why the argument is required is 
+        because there doesn't seem to be any other way to automatically 
+        get the list of token types from within the file they are in.
+    """
+    return [c[1] for c in inspect.getmembers(tokens_module, __is_token_type)]
