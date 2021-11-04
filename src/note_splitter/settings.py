@@ -51,6 +51,7 @@ replace_split_contents: bool
 from typing import List
 import sqlite3
 import os
+import json 
 
 split_keyword: str = '#split'
 source_folder_path: str = os.path.abspath(os.curdir)
