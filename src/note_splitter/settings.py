@@ -48,10 +48,11 @@ replace_split_contents: bool
 # https://python-patterns.guide/python/module-globals/#id1
 
 
-from typing import List
+from typing import List, Type
 import sqlite3
 import os
 import json 
+from note_splitter import tokens
 
 split_keyword: str = '#split'
 source_folder_path: str = os.path.abspath(os.curdir)

@@ -13,7 +13,7 @@ from functools import lru_cache
 from note_splitter import patterns
 
 
-def __get_indentation_level(line: str) -> int:
+def _get_indentation_level(line: str) -> int:
     """Counts the spaces at the start of the line.
     
     If there are tabs instead, each tab is counted as 4 spaces. This
@@ -113,7 +113,7 @@ class Text(Token):
     """
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class EmptyLine(Token):
@@ -198,7 +198,7 @@ class Blockquote(Token):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class BlockquoteBlock(Block):
@@ -251,7 +251,7 @@ class ToDo(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class Done(TextListItem):
@@ -273,7 +273,7 @@ class Done(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class UnorderedListItem(TextListItem):
@@ -296,7 +296,7 @@ class UnorderedListItem(TextListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class NumberedListItem(OrderedListItem):
@@ -318,7 +318,7 @@ class NumberedListItem(OrderedListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class LetteredListItem(OrderedListItem):
@@ -340,7 +340,7 @@ class LetteredListItem(OrderedListItem):
 
     def __init__(self, line: str):
         self.content = line
-        self.level = __get_indentation_level(line)
+        self.level = _get_indentation_level(line)
 
 
 class TextList(Block):
