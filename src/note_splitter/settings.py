@@ -48,32 +48,32 @@ replace_split_contents: bool
 # https://python-patterns.guide/python/module-globals/#id1
 
 
-from typing import List, Type
+from typing import List
 import sqlite3
 import os
-from note_splitter import tokens
-
 
 split_keyword: str = '#split'
 source_folder_path: str = os.path.abspath(os.curdir)
 destination_folder_path: str = ''
 note_types: str = '.md .markdown .txt'
-create_blocks: bool = True
-copy_frontmatter: bool = True
-copy_global_tags: bool = True
 split_type: Type = tokens.Header
 split_attrs: dict = dict()
 new_file_name_format: str = r'%id.md'
+create_blocks: bool = True
+copy_frontmatter: bool = True
+copy_global_tags: bool = True
 backlink: bool = True
 create_index_file: bool = True
 replace_split_contents: bool = False
 
 
+
+
 def initialize_settings():
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text, split_header_level real, note_types text)''')
-    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types) VALUES(?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types))
+    cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text,  note_types text, split_type text, split_attrs text, new_file_name_format text,  create_blocks integer, copy_frontmatter integer, copy_global_tags integer, backlink integer, create_index_file integer, replace_split_contents integer)''')
+    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, new_file_name_format, create_blocks, copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?, ?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, ','.join(note_types), split_type__name__, json.dumps(split_attrs), new_file_name_format, int(create_blocks), int(copy_frontmatter), int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
     connection.close()
 
@@ -95,16 +95,9 @@ def update_settings():
     delete_current_settings()
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types) VALUES(?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, split_header_level, note_types))
+    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, new_file_name_format, create_blocks, copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?, ?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, ','.join(note_types), split_type__name__, json.dumps(split_attrs), new_file_name_format, int(create_blocks), int(copy_frontmatter), int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
     connection.close()
-
-
-
-    
-  
-
-
 
 
 
