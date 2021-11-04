@@ -1,4 +1,4 @@
-"""The class definitions for all the tokens, and a few lists of them.
+"""The class definitions for all the tokens.
 
 See a hierarchy of the tokens here:  
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
@@ -57,6 +57,16 @@ class Block(Token):
         return ''.join([str(token) for token in self.content])
 
 
+class CanHaveTags(Token):
+    """The abstract base class (ABC) for tokens that can have tags.
+    
+    Each child class must have a ``content`` attribute that is a string.
+    """    
+    @abstractmethod
+    def __init__(self):
+        pass
+
+
 class TextListItem(Token):
     """The abstract base class (ABC) for text list item tokens.
     
@@ -99,7 +109,7 @@ class Fence(Token):
         pass
 
 
-class Text(Token):
+class Text(CanHaveTags):
     """Normal text.
     
     May contain tags.
@@ -133,7 +143,7 @@ class EmptyLine(Token):
         self.content = line
 
 
-class Header(Token):
+class Header(CanHaveTags):
     """A header (i.e. a title).
     
     May contain tags.
@@ -179,7 +189,7 @@ class HorizontalRule(Token):
         self.content = line
 
 
-class Blockquote(Token):
+class Blockquote(CanHaveTags):
     """A quote taking up one entire line of text.
     
     May contain tags.
@@ -213,7 +223,7 @@ class BlockquoteBlock(Block):
         self.content = tokens_
 
 
-class Footnote(Token):
+class Footnote(CanHaveTags):
     """A footnote (not the reference).
     
     May contain tags.
@@ -232,7 +242,7 @@ class Footnote(Token):
         self.content = line
 
 
-class ToDo(TextListItem):
+class ToDo(TextListItem, CanHaveTags):
     """A to do list item.
     
     May contain tags.
@@ -257,7 +267,7 @@ class ToDo(TextListItem):
         self.is_done = line.startswith('- [x]')
 
 
-class UnorderedListItem(TextListItem):
+class UnorderedListItem(TextListItem, CanHaveTags):
     """An item in a bullet point list.
     
     May contain tags. The list can have bullet points as asterisks, 
@@ -280,7 +290,7 @@ class UnorderedListItem(TextListItem):
         self.level = _get_indentation_level(line)
 
 
-class NumberedListItem(OrderedListItem):
+class NumberedListItem(OrderedListItem, CanHaveTags):
     """An item in a numbered list.
     
     May contain tags.
@@ -302,7 +312,7 @@ class NumberedListItem(OrderedListItem):
         self.level = _get_indentation_level(line)
 
 
-class LetteredListItem(OrderedListItem):
+class LetteredListItem(OrderedListItem, CanHaveTags):
     """An item in a lettered list.
     
     May contain tags.
@@ -500,19 +510,6 @@ class Section(Block):
     """
     def __init__(self, tokens_: List[Token]):
         self.content = tokens_
-
-
-# These are types whose content can contain tags.
-tag_containing_types = (
-    Text,
-    Header,
-    Blockquote,
-    Footnote,
-    ToDo,
-    UnorderedListItem,
-    NumberedListItem,
-    LetteredListItem,
-)
 
 
 def __is_token_type(obj: Any) -> bool:

@@ -7,7 +7,7 @@ previous token with less indentation.
 """
 
 import inspect
-from typing import List, Tuple
+from typing import List
 from note_splitter import tokens
 
 
@@ -29,13 +29,11 @@ def create_token_hierarchy() -> str:
     token_hierarchy = [
         'token hierarchy',
         '===============',
-        '\nBelow is the hierarchy of all the tokens this program uses. More indentation means that the token is a child of the previous token with less indentation.\n',
+        '\nBelow is the hierarchy of all the tokens this program uses. More indentation means that the token is a child of the previous token with less indentation. Notice that the non-abstract types that inherit TextListItem also inherit CanHaveTags, so they are listed twice.\n',
     ]
 
-    members: List[tuple] = inspect.getmembers(tokens)
-    class_tuples: List[Tuple[str, object]] = [c for c in members if inspect.isclass(c[1])]
-    classes = [c[1] for c in class_tuples]
-    class_tree = inspect.getclasstree(classes)
+    all_token_types = tokens.get_all_token_types(tokens)
+    class_tree = inspect.getclasstree(all_token_types)
     __create_token_subhierarchy(token_hierarchy, class_tree)
     token_hierarchy.append('')
 
@@ -57,7 +55,7 @@ def __create_token_subhierarchy(
             class_name = c[0].__name__
             if class_name not in ('object', 'ABC', 'module'):
                 abstract = ' (abstract)' if inspect.isabstract(c[0]) else ''
-                line = indentation[8:] + '* :py:class:`tokens.' + class_name + '`' + abstract
+                line = indentation[4:] + '* :py:class:`tokens.' + class_name + '`' + abstract
                 token_hierarchy.append(line)
 
 
