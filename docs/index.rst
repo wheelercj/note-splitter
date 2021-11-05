@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to note splitter's documentation!
+Welcome to Note Splitter's documentation!
 =========================================
 
-Note splitter is an application that can split notes in plaintext files (such as .md or .txt files) into multiple smaller files.
+Note Splitter is an application that can split notes in plaintext files (such as .md or .txt files) into multiple smaller files.
 
 .. toctree::
    :maxdepth: 2
