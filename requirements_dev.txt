@@ -1,0 +1,9 @@
+# testing
+pytest-cov==3.0.0
+pytest==6.2.5
+tox==3.24.4
+
+# documentation
+myst-parser
+sphinx-rtd-theme
+sphinx==4.2.0
