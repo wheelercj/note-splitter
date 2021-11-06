@@ -29,7 +29,7 @@ def create_token_hierarchy() -> str:
     token_hierarchy = [
         'token hierarchy',
         '===============',
-        '\nBelow is the hierarchy of all the tokens this program uses. More indentation means that the token is a child of the previous token with less indentation. Notice that the non-abstract types that inherit TextListItem also inherit CanHaveTags, so they are listed twice.\n',
+        '\nBelow is the hierarchy of all the tokens this program uses. More indentation means that the token is a child of the previous token with less indentation. Notice that the non-abstract types that inherit TextListItem also inherit CanHaveInlineElements, so they are listed twice.\n',
     ]
 
     all_token_types = tokens.get_all_token_types(tokens)

@@ -57,10 +57,12 @@ class Block(Token):
         return ''.join([str(token) for token in self.content])
 
 
-class CanHaveTags(Token):
-    """The abstract base class (ABC) for tokens that can have tags.
+class CanHaveInlineElements(Token):
+    """The ABC for tokens that can have inline elements.
     
     Each child class must have a ``content`` attribute that is a string.
+    Not all tokens with a ``content`` attribute that is a string can 
+    have inline elements.
     """    
     @abstractmethod
     def __init__(self):
@@ -70,8 +72,7 @@ class CanHaveTags(Token):
 class TextListItem(Token):
     """The abstract base class (ABC) for text list item tokens.
     
-    Each child class must have ``content`` and ``level`` 
-    attributes.
+    Each child class must have ``content`` and ``level`` attributes.
     """
     @abstractmethod
     def __init__(self):
@@ -81,8 +82,8 @@ class TextListItem(Token):
 class OrderedListItem(TextListItem):
     """The ABC for an item in an ordered list.
     
-    Each child class must have ``content``, ``level``, and 
-    ``pattern`` attributes.
+    Each child class must have ``content``, ``level``, and  ``pattern`` 
+    attributes.
     """
     @abstractmethod
     def __init__(self, line: str):
@@ -109,7 +110,7 @@ class Fence(Token):
         pass
 
 
-class Text(CanHaveTags):
+class Text(CanHaveInlineElements):
     """Normal text.
     
     May contain tags.
@@ -143,7 +144,7 @@ class EmptyLine(Token):
         self.content = line
 
 
-class Header(CanHaveTags):
+class Header(CanHaveInlineElements):
     """A header (i.e. a title).
     
     May contain tags.
@@ -189,7 +190,7 @@ class HorizontalRule(Token):
         self.content = line
 
 
-class Blockquote(CanHaveTags):
+class Blockquote(CanHaveInlineElements):
     """A quote taking up one entire line of text.
     
     May contain tags.
@@ -223,7 +224,7 @@ class BlockquoteBlock(Block):
         self.content = tokens_
 
 
-class Footnote(CanHaveTags):
+class Footnote(CanHaveInlineElements):
     """A footnote (not the reference).
     
     May contain tags.
@@ -242,7 +243,7 @@ class Footnote(CanHaveTags):
         self.content = line
 
 
-class ToDo(TextListItem, CanHaveTags):
+class ToDo(TextListItem, CanHaveInlineElements):
     """A to do list item.
     
     May contain tags.
@@ -267,7 +268,7 @@ class ToDo(TextListItem, CanHaveTags):
         self.is_done = line.startswith('- [x]')
 
 
-class UnorderedListItem(TextListItem, CanHaveTags):
+class UnorderedListItem(TextListItem, CanHaveInlineElements):
     """An item in a bullet point list.
     
     May contain tags. The list can have bullet points as asterisks, 
@@ -290,7 +291,7 @@ class UnorderedListItem(TextListItem, CanHaveTags):
         self.level = _get_indentation_level(line)
 
 
-class NumberedListItem(OrderedListItem, CanHaveTags):
+class NumberedListItem(OrderedListItem, CanHaveInlineElements):
     """An item in a numbered list.
     
     May contain tags.
@@ -312,7 +313,7 @@ class NumberedListItem(OrderedListItem, CanHaveTags):
         self.level = _get_indentation_level(line)
 
 
-class LetteredListItem(OrderedListItem, CanHaveTags):
+class LetteredListItem(OrderedListItem, CanHaveInlineElements):
     """An item in a lettered list.
     
     May contain tags.

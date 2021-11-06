@@ -223,7 +223,7 @@ class AST:
         for token in self.__tokens:
             if isinstance(token, tokens.Header) and token.level >= 2:
                 return global_tags
-            elif isinstance(token, tokens.CanHaveTags):
+            elif isinstance(token, tokens.CanHaveInlineElements):
                 global_tags.extend(self.__get_tags(token))
         global_tags = list(set(global_tags))  # Remove duplicates.
         return global_tags
