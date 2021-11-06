@@ -28,7 +28,7 @@ Here are various guides, tools, etc. that have been helpful to us while building
 ## documentation
 * [Documenting Python Code: A Complete Guide – Real Python](https://realpython.com/documenting-python-code/#docstring-formats)
 * [Style guide — numpydoc v1.2.dev0 Manual](https://numpydoc.readthedocs.io/en/latest/format.html)
-* [https://note-splitter.readthedocs.io/en/latest/doc-setup.html](https://note-splitter.readthedocs.io/en/latest/doc-setup.html)
+* [notes on setting up documentation on Read The Docs](https://note-splitter.readthedocs.io/en/latest/doc-setup.html)
 
 ## token lists, ASTs, and lexical analysis
 * [Introduction to Abstract Syntax Trees](https://www.twilio.com/blog/abstract-syntax-trees)
