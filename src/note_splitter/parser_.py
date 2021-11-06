@@ -234,9 +234,4 @@ class AST:
         
         Assumes the token's content attribute is a string.
         """
-        tags = []
-        groups = patterns.tags.findall(token.content)
-        for group in groups:
-            if group[0] in ('', ' ', '\t'):
-                tags.append(group[1])
-        return tags
+        return patterns.tag.findall(token.content)
