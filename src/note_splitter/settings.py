@@ -57,7 +57,7 @@ from note_splitter import tokens
 split_keyword: str = '#split'
 source_folder_path: str = os.path.abspath(os.curdir)
 destination_folder_path: str = ''
-note_types: str = '.md .markdown .txt'
+note_types: List[str] = [".md", ".markdown", ".txt"]
 split_type: Type = tokens.Header
 split_attrs: dict = dict()
 new_file_name_format: str = r'%id.md'
