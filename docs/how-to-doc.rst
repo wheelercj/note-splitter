@@ -10,25 +10,25 @@ Each time a new Python module is added to the project:
  1. Add its name to the list in docs/modules.rst
  2. Use this command to automatically generate an rst file for the new module: ``sphinx-apidoc -o docs note_splitter`` (while in the project's root folder)
 
-Each time a new third-party library is added to our project:
- 1. Add its name (the one used in the ``pip install`` statement) to the list in docs/environment.yaml
+Each time a new dependency is added to our project:
+ 1. See `dependencies <https://note-splitter.readthedocs.io/en/latest/dev-setup.html#dependencies>`_
 
-If a new token type is created and/or the inheritance between token types changes:
- 1. Run scripts/token_hierarchy.py to automatically update the docs/token_hierarchy.rst file
+If a token type is created, deleted, and/or the inheritance between token types changes:
+ 1. Run scripts/token_hierarchy.py to automatically overwrite docs/token_hierarchy.rst with the new hierarchy
 
 custom documentation
 --------------------
-We can also add our own manually written documentation files. Read The Docs supports both markdown (`MyST's version <https://myst-parser.readthedocs.io/en/latest/>`_) and `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ files. Just put the files in the docs folder and add the file's name to the list in docs/index.rst. `Here's <http://rst.ninjs.org/#>`_ a reStructuredText renderer for previewing rst files.
+We can also add our own manually written documentation files. Read The Docs supports both markdown (`MyST's version <https://myst-parser.readthedocs.io/en/latest/>`_) and `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ (rst) files. Just put the files in the docs folder and add the file's name to the list in docs/index.rst. `Here's <http://rst.ninjs.org/#>`_ a reStructuredText renderer for previewing rst files.
 
 | Internal links are easy to add.  
 
-Markdown example
+Markdown example:
 
 .. code-block::
 
   [file title here](file-name.rst)
 
-reStructuredText example
+reStructuredText example:
 
 .. code-block:: rst
   
@@ -38,7 +38,7 @@ Note that while a link to a local file in a markdown file can use the ``.rst`` a
 
 local testing
 -------------
-We can generate HTML files locally to test our rst and markdown files. If you haven't already, install the documentation dependencies with ``python -m pip install -r requirements.txt``.
+We can generate HTML files locally to test our rst and markdown files.
 
 1. While in the project's root folder, use ``cd docs``.
 2. Use the ``make html`` command (or if that doesn't work, try ``.\make html``) to generate HTML files from our rst and markdown files. This is just for testing changes to the rst and markdown files before committing them; the HTML files should not be committed.
