@@ -2,7 +2,7 @@
 
 Split markdown files into multiple smaller files.
 
-<p align="center">[Documentation](https://note-splitter.readthedocs.io/)</p>
+<p align="center"><a href="https://note-splitter.readthedocs.io/" target="_blank">Documentation</a></p>
 
 ## Features
 * Split by almost any feature of text you can describe.
