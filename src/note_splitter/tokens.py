@@ -1,6 +1,6 @@
 """The class definitions for all the tokens.
 
-See a hierarchy of the tokens here:  
+See the hierarchy of all the token types here:  
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
 
@@ -116,14 +116,13 @@ class Text(CanHaveInlineElements):
 
 class EmptyLine(Token):
     """A line in a file with either whitespace characters or nothing.
+
+    This type has a class attribute named ``pattern``.
     
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for an empty line. This is a class 
-        attribute.
     """
     pattern = patterns.empty_line
 
@@ -134,6 +133,8 @@ class EmptyLine(Token):
 class Header(CanHaveInlineElements):
     """A header (i.e. a title).
 
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
@@ -144,9 +145,6 @@ class Header(CanHaveInlineElements):
     level : int
         The header level. A header level of 1 is the largest possible 
         header.
-    pattern : re.Pattern
-        The compiled regex pattern for a header. This is a class 
-        attribute.
     """
     pattern = patterns.any_header
 
@@ -161,13 +159,12 @@ class Header(CanHaveInlineElements):
 class HorizontalRule(Token):
     """A horizontal rule.
     
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for a horizontal rule. This is a 
-        class attribute.
     """
     pattern = patterns.horizontal_rule
 
@@ -178,15 +175,14 @@ class HorizontalRule(Token):
 class Blockquote(CanHaveInlineElements):
     """A quote taking up one entire line of text.
 
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
     level : int
         The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for a blockquote. This is a class 
-        attribute.
     """
     pattern = patterns.blockquote
 
@@ -210,13 +206,12 @@ class BlockquoteBlock(Block):
 class Footnote(CanHaveInlineElements):
     """A footnote (not the reference).
 
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for a footnote. This is a class 
-        attribute.
     """
     pattern = patterns.footnote
 
@@ -227,6 +222,8 @@ class Footnote(CanHaveInlineElements):
 class ToDo(TextListItem, CanHaveInlineElements):
     """A to do list item.
 
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
@@ -235,9 +232,6 @@ class ToDo(TextListItem, CanHaveInlineElements):
         The number of spaces of indentation.
     is_done : bool
         Whether the to do item is done.
-    pattern : re.Pattern
-        The compiled regex pattern for a to do list item. This is a 
-        class attribute.
     """
     pattern = patterns.to_do
 
@@ -251,17 +245,14 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
     """An item in a bullet point list.
     
     The list can have bullet points as asterisks, minuses, and/or 
-    pluses.
-
+    pluses. This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
     level : int
         The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for an item in an unordered list. 
-        This is a class attribute.
     """
     pattern = patterns.unordered_list_item
 
@@ -273,15 +264,14 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
 class OrderedListItem(TextListItem, CanHaveInlineElements):
     """An item in an ordered list.
 
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
     level : int
         The number of spaces of indentation.
-    pattern : re.Pattern
-        The compiled regex pattern for an item in an ordered list. 
-        This is a class attribute.
     """
     pattern = patterns.ordered_list_item
 
@@ -297,6 +287,8 @@ class TextList(Block):
     unordered list items, to dos, and other text lists with more 
     indentation.
 
+    Attributes
+    ----------
     content : List[Union[TextListItem, 'TextList']]
         The tokens that make up the list. Lists may have sublists.
     level : int
@@ -311,13 +303,12 @@ class TextList(Block):
 class TableRow(TablePart):
     """A row of a table.
     
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for a table row. This is a class 
-        attribute.
     """
     pattern = patterns.table_row
 
@@ -329,13 +320,12 @@ class TableDivider(TablePart):
     """The part of a table that divides the table's header from its 
     body.
     
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for a table divider. This is a class 
-        attribute.
     """
     pattern = patterns.table_divider
 
@@ -358,6 +348,8 @@ class Table(Block):
 class CodeFence(Fence):
     """The delimiter of a multi-line code block.
     
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
@@ -367,9 +359,6 @@ class CodeFence(Fence):
         Surrounding whitespace characters are removed. This will be an 
         empty string if there are no non-whitespace characters after the
         triple backticks/tildes.
-    pattern : re.Pattern
-        The compiled regex pattern for a code fence. This is a class 
-        attribute.
     """
     pattern = patterns.code_fence
 
@@ -410,13 +399,12 @@ class CodeBlock(Block):
 class MathFence(Fence):
     """The delimiter of a multi-line mathblock.
     
+    This type has a class attribute named ``pattern``.
+    
     Attributes
     ----------
     content : str
         The content of the line of text.
-    pattern : re.Pattern
-        The compiled regex pattern for a math fence. This is a class 
-        attribute.
     """
     pattern = patterns.math_fence
 
