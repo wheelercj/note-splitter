@@ -99,6 +99,16 @@ class Fence(Token):
         pass
 
 
+class Fenced(Token):
+    """The ABC for tokens that are between Fence tokens.
+
+    Each child class must have a ``content`` attribute.
+    """
+    @abstractmethod
+    def __init__(self):
+        pass
+
+
 class Text(CanHaveInlineElements):
     """Normal text.
     
@@ -367,7 +377,7 @@ class CodeFence(Fence):
         self.language = line.lstrip('~').lstrip('`').strip()
 
 
-class Code(Token):
+class Code(Fenced):
     """A line of code inside a code block.
     
     Attributes
@@ -412,7 +422,7 @@ class MathFence(Fence):
         self.content = line
 
 
-class Math(Token):
+class Math(Fenced):
     """A line of math inside a math block.
     
     Attributes

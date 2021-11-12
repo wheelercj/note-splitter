@@ -19,13 +19,14 @@ Below is the hierarchy of all the tokens this program uses. More indentation mea
         * :py:class:`tokens.Text`
         * :py:class:`tokens.ToDo`
         * :py:class:`tokens.UnorderedListItem`
-    * :py:class:`tokens.Code`
     * :py:class:`tokens.EmptyLine`
     * :py:class:`tokens.Fence` (abstract)
         * :py:class:`tokens.CodeFence`
         * :py:class:`tokens.MathFence`
+    * :py:class:`tokens.Fenced` (abstract)
+        * :py:class:`tokens.Code`
+        * :py:class:`tokens.Math`
     * :py:class:`tokens.HorizontalRule`
-    * :py:class:`tokens.Math`
     * :py:class:`tokens.TablePart` (abstract)
         * :py:class:`tokens.TableDivider`
         * :py:class:`tokens.TableRow`

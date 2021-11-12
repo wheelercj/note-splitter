@@ -178,7 +178,7 @@ class AST:
 
     def __get_fenced_block(self) -> Union[tokens.CodeBlock, tokens.MathBlock]:
         """Creates a code block token or a math block token."""
-        block_tokens: List[Union[tokens.Fence, tokens.Code, tokens.Math]] = []
+        block_tokens: List[Union[tokens.Fence, tokens.Fenced]] = []
         block_tokens.append(self.__tokens.pop(0))
 
         while self.__tokens:
@@ -187,7 +187,7 @@ class AST:
                 block_tokens.append(token)
                 self.__tokens.pop(0)
                 break
-            elif isinstance(token, (tokens.Code, tokens.Math)):
+            elif isinstance(token, tokens.Fenced):
                 block_tokens.append(token)
                 self.__tokens.pop(0)
             else:
