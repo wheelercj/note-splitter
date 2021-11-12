@@ -22,7 +22,7 @@ class Lexer:
         self.__tokens: List[tokens.Token] = []
         for line in text.split('\n'):
             self.__append_token(line)
-        self.__contextualize_tokens()
+        self.__check_token_types()
         return self.__tokens
 
 
@@ -42,7 +42,7 @@ class Lexer:
         return bool(pattern.match(line))
 
 
-    def __contextualize_tokens(self) -> None:
+    def __check_token_types(self) -> None:
         """Changes the type of some tokens based on their context."""
         types = [
             (tokens.Code, tokens.CodeFence),
