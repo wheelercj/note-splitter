@@ -27,8 +27,7 @@ class AST:
     global_tags : List[str]
         All of the file's tags above any header of level 2 or greater.
     content : List[tokens.Token]
-        All the tokens below any frontmatter. The only non-section 
-        tokens here are the tokens above all headers.
+        All the tokens below any frontmatter.
     """
 
     def __init__(

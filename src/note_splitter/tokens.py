@@ -102,8 +102,6 @@ class Fence(Token):
 class Text(CanHaveInlineElements):
     """Normal text.
     
-    May contain tags.
-    
     Attributes
     ----------
     content : str
@@ -135,8 +133,6 @@ class EmptyLine(Token):
 
 class Header(CanHaveInlineElements):
     """A header (i.e. a title).
-    
-    May contain tags.
 
     Attributes
     ----------
@@ -181,8 +177,6 @@ class HorizontalRule(Token):
 
 class Blockquote(CanHaveInlineElements):
     """A quote taking up one entire line of text.
-    
-    May contain tags.
 
     Attributes
     ----------
@@ -215,8 +209,6 @@ class BlockquoteBlock(Block):
 
 class Footnote(CanHaveInlineElements):
     """A footnote (not the reference).
-    
-    May contain tags.
 
     Attributes
     ----------
@@ -234,8 +226,6 @@ class Footnote(CanHaveInlineElements):
 
 class ToDo(TextListItem, CanHaveInlineElements):
     """A to do list item.
-    
-    May contain tags.
 
     Attributes
     ----------
@@ -260,8 +250,8 @@ class ToDo(TextListItem, CanHaveInlineElements):
 class UnorderedListItem(TextListItem, CanHaveInlineElements):
     """An item in a bullet point list.
     
-    May contain tags. The list can have bullet points as asterisks, 
-    minuses, and/or pluses.
+    The list can have bullet points as asterisks, minuses, and/or 
+    pluses.
 
     Attributes
     ----------
