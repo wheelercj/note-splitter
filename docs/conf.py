@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../src/note_splitter'))
 project = 'note splitter'
 master_doc = 'index'
 copyright = '2021, Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
-author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
+author = 'C. Wheeler, S. Ramezani, C. Vargas, and S. Nazaretyan'
 
 
 # -- General configuration ---------------------------------------------------
