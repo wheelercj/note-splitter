@@ -127,7 +127,7 @@ class Text(CanHaveInlineElements):
 class EmptyLine(Token):
     """A line in a file with either whitespace characters or nothing.
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -143,7 +143,7 @@ class EmptyLine(Token):
 class Header(CanHaveInlineElements):
     """A header (i.e. a title).
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -169,7 +169,7 @@ class Header(CanHaveInlineElements):
 class HorizontalRule(Token):
     """A horizontal rule.
     
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -185,7 +185,7 @@ class HorizontalRule(Token):
 class Blockquote(CanHaveInlineElements):
     """A quote taking up one entire line of text.
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -216,7 +216,7 @@ class BlockquoteBlock(Block):
 class Footnote(CanHaveInlineElements):
     """A footnote (not the reference).
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -232,7 +232,7 @@ class Footnote(CanHaveInlineElements):
 class ToDo(TextListItem, CanHaveInlineElements):
     """A to do list item.
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -255,7 +255,7 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
     """An item in a bullet point list.
     
     The list can have bullet points as asterisks, minuses, and/or 
-    pluses. This type has a class attribute named ``pattern``.
+    pluses. The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -274,7 +274,7 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
 class OrderedListItem(TextListItem, CanHaveInlineElements):
     """An item in an ordered list.
 
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -313,7 +313,7 @@ class TextList(Block):
 class TableRow(TablePart):
     """A row of a table.
     
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -330,7 +330,7 @@ class TableDivider(TablePart):
     """The part of a table that divides the table's header from its 
     body.
     
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -358,7 +358,7 @@ class Table(Block):
 class CodeFence(Fence):
     """The delimiter of a multi-line code block.
     
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
@@ -409,7 +409,7 @@ class CodeBlock(Block):
 class MathFence(Fence):
     """The delimiter of a multi-line mathblock.
     
-    This type has a class attribute named ``pattern``.
+    The ``pattern`` attribute is a class attribute.
     
     Attributes
     ----------
