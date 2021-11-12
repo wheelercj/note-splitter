@@ -43,8 +43,8 @@ replace_split_contents: bool
     Whether or not to replace the parts of the source file that was
     split out with links to the new files.
 """
-# This module uses the Global Object Pattern. See more details about 
-# this design pattern here: 
+# This module follows the Global Object Pattern. You can see more 
+# details about this design pattern here: 
 # https://python-patterns.guide/python/module-globals/#id1
 
 
