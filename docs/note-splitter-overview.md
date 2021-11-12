@@ -21,8 +21,8 @@ Here's an example that shows the result of tokenization with each token's type o
  UnorderedListItem | * bullet point 2
          EmptyLine |
               Text | here is text
-  NumberedListItem | 1. ordered
-  NumberedListItem | 2. list
+   OrderedListItem | 1. ordered
+   OrderedListItem | 2. list
          EmptyLine |
             Header | ## second header
               Text | #third-tag <- not a global tag

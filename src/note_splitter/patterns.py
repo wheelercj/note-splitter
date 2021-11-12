@@ -31,11 +31,10 @@ footnote : re.Pattern
     file, not their references).
 unordered_list_item : re.Pattern
     The pattern for an item in a bullet point list. The list can have 
-    bullet points as asterisks, minuses, or pluses.
-numbered_list_item : re.Pattern
-    The pattern for an item in a numbered list.
-lettered_list_item : re.Pattern
-    The pattern for an item in a lettered list.
+    bullet points as asterisks, minuses, or pluses. This pattern can 
+    also match some horizontal rules and to dos.
+ordered_list_item : re.Pattern
+    The pattern for an item in an ordered list.
 table_divider : re.Pattern
     The pattern for the part of a table that divides the table's header
     from its body.
@@ -63,7 +62,6 @@ blockquote = re.compile(r'^>+ .+')
 to_do = re.compile(r'^\s*- \[[x\s]\] .+')
 footnote = re.compile(r'^\[\^.+\]: .+')
 unordered_list_item = re.compile(r'\s*[*\-\+] [^\s].*')
-numbered_list_item = re.compile(r'\s*\d+\.\s+[^\s].*')
-lettered_list_item = re.compile(r'\s*[a-zA-Z]+\.\s+[^\s].*')
 table_divider = re.compile(r'^\|(?: +:?\-+:? +\|)+$')
 table_row = re.compile(r'^\| .+ \|$')
+ordered_list_item = re.compile(r'^\s*\d+[.)]\s.*')
