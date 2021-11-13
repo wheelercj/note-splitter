@@ -7,7 +7,7 @@ from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def test():
+def __manual_test():
     sample_markdown = dedent(
         '''
         ---
@@ -47,11 +47,11 @@ def test():
 
     tokenize: Callable = Lexer()
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
-    print_lexer_output(tokens_)
+    __print_lexer_output(tokens_)
 
     settings.create_blocks = True
     ast = AST(tokens_, settings.create_blocks)
-    print_parser_output(ast)
+    __print_parser_output(ast)
 
     settings.split_type = tokens.Header
     settings.split_attrs = dict()
@@ -59,68 +59,72 @@ def test():
     sections: List[tokens.Section] = split(ast.content,
                                            settings.split_type,
                                            settings.split_attrs)
-    print_splitter_output(sections)
+    __print_splitter_output(sections)
 
-    # format: Callable = Formatter()
-    # split_contents: List[str] = format(sections,
-    #                                    ast.global_tags,
-    #                                    ast.frontmatter)
-    # print_formatter_output(split_contents)
+    format_: Callable = Formatter()
+    split_contents: List[str] = format_(sections,
+                                        ast.global_tags,
+                                        ast.frontmatter)
+    __print_formatter_output(split_contents)
 
 
-def print_tokens(tokens_: List[tokens.Token]) -> None:
+def __print_tokens(tokens_: List[tokens.Token]) -> None:
     """Prints tokens' types and contents."""
     for token in tokens_:
         if isinstance(token.content, list):
-            block = format_tokens(token.content)
-            print_token(token, block)
+            block = __format_tokens(token.content)
+            __print_token(token, block)
         else:
-            print_token(token, str(token))
+            __print_token(token, str(token))
 
 
-def print_token(token: tokens.Token, token_content: str) -> None:
+def __print_token(token: tokens.Token, token_content: str) -> None:
     """Prints a token's types and content."""
     print(f'{str(type(token).__name__):>18s} | {token_content}', end='')
 
 
-def format_tokens(tokens_: List[tokens.Token]) -> str:
+def __format_tokens(tokens_: List[tokens.Token]) -> str:
     """Formats tokens' contents for test output."""
     block = []
     for token in tokens_:
         if isinstance(token.content, list):
-            block.append(format_tokens(token.content))
+            block.append(__format_tokens(token.content))
         else:
             block.append(str(token))
     return (' ' * 18 + ' | ').join(block)
 
 
-def print_lexer_output(tokens_: List[tokens.Token]) -> None:
+def __print_lexer_output(tokens_: List[tokens.Token]) -> None:
     """Display's the lexer's output."""
     print('**Lexer output:**\n')
-    print_tokens(tokens_)
+    __print_tokens(tokens_)
     input('**Press enter to continue**')
 
 
-def print_parser_output(ast: AST) -> None:
+def __print_parser_output(ast: AST) -> None:
     """Display's the parser's output."""
     print('\n**Parser output:**\n')
     if ast.frontmatter:
         print(f'frontmatter: {ast.frontmatter}\n')
     if ast.global_tags:
         print(f'global tags: {ast.global_tags}\n')
-    print_tokens(ast.content)
+    __print_tokens(ast.content)
     input('**Press enter to continue**')
 
 
-def print_splitter_output(sections: List[tokens.Section]) -> None:
+def __print_splitter_output(sections: List[tokens.Section]) -> None:
     """Display's the splitter's output."""
     print('\n**Splitter output:**\n')
-    print_tokens(sections)
+    __print_tokens(sections)
     input('**Press enter to continue**')
 
 
-def print_formatter_output(split_contents: List[str]) -> None:
+def __print_formatter_output(split_contents: List[str]) -> None:
     """Display's the formatter's output."""
     print('\n**Formatter output:**\n')
     for i, text in enumerate(split_contents):
-        print(f'**file {i}:\n{text}')
+        print(f'**file {i}:**\n{text}')
+
+
+if __name__ == '__main__':
+    __manual_test()
