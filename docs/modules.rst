@@ -12,5 +12,4 @@ Note Splitter modules
    patterns
    settings
    splitter
-   test
    tokens
