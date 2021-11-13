@@ -34,6 +34,9 @@ extensions = [
     'myst_parser',
 ]
 
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = True
+
 source_suffix = {
     '.rst': 'restructuredtext',
     '.txt': 'markdown',
