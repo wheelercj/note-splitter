@@ -31,7 +31,7 @@ split_attrs: dict
     The attributes to split by. If the chosen split type has an 
     attribute, it can be used to narrow down what to split by.
 new_file_name_format: str
-    The format of the new file names. TODO: figure out exactly what 
+    The format of the new file names. # TODO: figure out exactly what 
     formats this string should be able to have. Maybe do the same thing
     as zettlr: https://docs.zettlr.com/en/reference/settings/#advanced
 backlink: bool
@@ -60,7 +60,7 @@ destination_folder_path: str = ''
 note_types: List[str] = [".md", ".markdown", ".txt"]
 split_type: Type = tokens.Header
 split_attrs: dict = dict()
-new_file_name_format: str = r'%id.md'
+new_file_name_format: str = r'%id'
 create_blocks: bool = True
 copy_frontmatter: bool = True
 copy_global_tags: bool = True
