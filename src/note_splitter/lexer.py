@@ -18,7 +18,13 @@ class Lexer:
     """Creates a Callable that converts raw text to a list of tokens."""
 
     def __call__(self, text: str) -> List[tokens.Token]:
-        """Converts raw text to a list of tokens."""
+        """Converts raw text to a list of tokens.
+        
+        Parameters
+        ----------
+        text : str
+            The raw text to convert to a list of tokens.
+        """
         self.__tokens: List[tokens.Token] = []
         for line in text.split('\n'):
             self.__append_token(line)
@@ -27,7 +33,13 @@ class Lexer:
 
 
     def __append_token(self, line: str) -> None:
-        """Parses the text and appends the next token."""
+        """Parses the text and appends the next token.
+        
+        Parameters
+        ----------
+        line : str
+            The line of text to parse.
+        """
         all_token_types = tokens.get_all_token_types(tokens)
         for type_ in all_token_types:
             if hasattr(type_, 'pattern'):
@@ -37,8 +49,16 @@ class Lexer:
         self.__tokens.append(tokens.Text(line))
 
 
-    def __matches(self, line: str, pattern: re.Pattern):
-        """Determines if the line matches a pattern."""
+    def __matches(self, line: str, pattern: re.Pattern) -> bool:
+        """Determines if the line matches a pattern.
+        
+        Parameters
+        ----------
+        line : str
+            The line of text to check.
+        pattern : re.Pattern
+            The pattern to check the line against.
+        """
         return bool(pattern.match(line))
 
 

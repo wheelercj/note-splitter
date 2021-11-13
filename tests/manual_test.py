@@ -1,3 +1,5 @@
+"""Run this file to see the main steps this program goes through."""
+
 from typing import List, Callable
 from textwrap import dedent
 from note_splitter import settings, tokens
@@ -7,7 +9,8 @@ from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def __manual_test():
+def __manual_test() -> None:
+    """Shows the main steps the program goes through on sample markdown."""
     sample_markdown = dedent(
         '''
         ---
@@ -69,7 +72,13 @@ def __manual_test():
 
 
 def __print_tokens(tokens_: List[tokens.Token]) -> None:
-    """Prints tokens' types and contents."""
+    """Prints tokens' types and contents.
+    
+    Parameters
+    ----------
+    tokens_ : List[tokens.Token]
+        The list of tokens to print.
+    """
     for token in tokens_:
         if isinstance(token.content, list):
             block = __format_tokens(token.content)
@@ -79,12 +88,26 @@ def __print_tokens(tokens_: List[tokens.Token]) -> None:
 
 
 def __print_token(token: tokens.Token, token_content: str) -> None:
-    """Prints a token's types and content."""
+    """Prints a token's types and content.
+        
+    Parameters
+    ----------
+    token : tokens.Token
+        The token to print.
+    token_content : str
+        The content of the token to print.
+    """
     print(f'{str(type(token).__name__):>18s} | {token_content}', end='')
 
 
 def __format_tokens(tokens_: List[tokens.Token]) -> str:
-    """Formats tokens' contents for test output."""
+    """Formats tokens' contents for test output.
+        
+    Parameters
+    ----------
+    tokens_ : List[tokens.Token]
+        The list of tokens to format for printing.
+    """
     block = []
     for token in tokens_:
         if isinstance(token.content, list):
@@ -95,14 +118,26 @@ def __format_tokens(tokens_: List[tokens.Token]) -> str:
 
 
 def __print_lexer_output(tokens_: List[tokens.Token]) -> None:
-    """Display's the lexer's output."""
+    """Displays the lexer's output.
+        
+    Parameters
+    ----------
+    tokens_ : List[tokens.Token]
+        The list of tokens to print.
+    """
     print('**Lexer output:**\n')
     __print_tokens(tokens_)
     input('**Press enter to continue**')
 
 
 def __print_parser_output(ast: AST) -> None:
-    """Display's the parser's output."""
+    """Displays the parser's output.
+    
+    Parameters
+    ----------
+    ast : AST
+        The AST to print.
+    """
     print('\n**Parser output:**\n')
     if ast.frontmatter:
         print(f'frontmatter: {ast.frontmatter}\n')
@@ -113,14 +148,27 @@ def __print_parser_output(ast: AST) -> None:
 
 
 def __print_splitter_output(sections: List[tokens.Section]) -> None:
-    """Display's the splitter's output."""
+    """Displays the splitter's output.
+    
+    Parameters
+    ----------
+    sections : List[tokens.Section]
+        The list of sections to print.
+    """
     print('\n**Splitter output:**\n')
     __print_tokens(sections)
     input('**Press enter to continue**')
 
 
 def __print_formatter_output(split_contents: List[str]) -> None:
-    """Display's the formatter's output."""
+    """Displays the formatter's output.
+    
+    Parameters
+    ----------
+    split_contents : List[str]
+        The list of strings to print. Each string represents one new 
+        file's content.
+    """
     print('\n**Formatter output:**\n')
     for i, text in enumerate(split_contents):
         print(f'**file {i}:**\n{text}')

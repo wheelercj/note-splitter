@@ -133,7 +133,8 @@ class Splitter:
         is_splitting : bool
             A boolean for whether splitting is in progress. Used to 
             determine if the tokens should be split just before a token 
-            of a lower level than the chosen split level.
+            of a lower level than the chosen split level. True by 
+            default.
         """
         if not isinstance(token, split_type):
             return False

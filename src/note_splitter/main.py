@@ -65,7 +65,15 @@ def split_text(content: str,
 
 
 def create_file_names(note_ext: str, note_count: int) -> List[str]:
-    """"""
+    """Creates the names for all the new files.
+    
+    Parameters
+    ----------
+    note_ext: str
+        The extension of the files to be created.
+    note_count: int
+        The number of files to be created.
+    """
     if settings.new_file_name_format == r'%id':
         return create_time_id_file_names(note_ext, note_count)
     else:

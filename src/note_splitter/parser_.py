@@ -1,4 +1,4 @@
-"""For converting a list of tokens into an abstract syntax tree (AST)."""
+"""For converting a list of tokens to an abstract syntax tree (AST)."""
 
 
 import re
@@ -9,16 +9,6 @@ from note_splitter import tokens, patterns
 
 class AST:
     """An entire file as an abstract syntax tree (AST).
-
-    Parameters
-    ----------
-    tokens_ : List[tokens.Token]
-        A list of tokens created from a Lexer object.
-    create_blocks : bool
-        If True, some of the tokens will be grouped together into larger
-        tokens in the resulting AST. Otherwise, the tokens will be left
-        as they are and the AST will have frontmatter and global_tags 
-        attributes.
 
     Attributes
     ----------
@@ -34,9 +24,21 @@ class AST:
             self,
             tokens_: List[tokens.Token],
             create_blocks: bool = True):
+        """Creates an AST from a list of tokens.
+
+        Parameters
+        ----------
+        tokens_ : List[tokens.Token]
+            A list of tokens created from a Lexer object.
+        create_blocks : bool
+            If True, some of the tokens will be grouped together into 
+            larger tokens in the resulting AST. Otherwise, the tokens 
+            will be left as they are and the AST will have frontmatter 
+            and global_tags attributes.
+        """
         if not tokens_:
             return
-        self.__tokens = tokens_
+        self.__tokens = tokens_  # This attribute empties into self.content.
 
         self.frontmatter: Optional[object] = self.__get_frontmatter()
         self.global_tags: List[str] = self.__get_global_tags()
@@ -45,7 +47,7 @@ class AST:
             self.__create_blocks()
         else:
             self.content = self.__tokens
-            del self.__tokens
+        del self.__tokens  # This should be empty if blocks were created.
 
 
     def __str__(self) -> str:
@@ -206,7 +208,13 @@ class AST:
     def __load_frontmatter(
             self,
             tokens_: List[tokens.Text]) -> Optional[object]:
-        """Converts Text tokens into a Python object."""
+        """Converts Text tokens into a Python object.
+        
+        Parameters
+        ----------
+        tokens_ : List[tokens.Text]
+            The tokens that make up the frontmatter.
+        """
         text: str = '\n'.join([t.content for t in tokens_])
         return yaml.load(text, Loader=yaml.FullLoader)
 
@@ -214,9 +222,9 @@ class AST:
     def __get_global_tags(self) -> List[str]:
         """Finds all the global tags within the token list.
         
-        Assumes the tokens have been contextualized but not yet combined
-        into blocks. Global tags are tags that are above all headers 
-        of level 2 or greater.
+        Assumes the token types have been checked but that they have not
+        yet combined into blocks. Global tags are tags that are above 
+        all headers of level 2 or greater.
         """
         global_tags: List[str] = []
         for token in self.__tokens:
@@ -232,5 +240,10 @@ class AST:
         """Gets the tags in one token.
         
         Assumes the token's content attribute is a string.
+
+        Parameters
+        ----------
+        token : tokens.Token
+            The token to get the tags from.
         """
         return patterns.tag.findall(token.content)
