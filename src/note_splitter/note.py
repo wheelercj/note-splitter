@@ -1,3 +1,6 @@
+"""Manages info about the user's files."""
+
+
 import os
 from typing import List, Optional
 from datetime import datetime, timedelta
@@ -15,11 +18,14 @@ class Note:
         The absolute path to the folder that the file is in.
     name : str
         The name of the file, including the file extension.
+    ext : str
+        The file extension starting with a period.
     """
     def __init__(self, path: str, folder_path: str, name: str):
         self.path = path
         self.folder_path = folder_path
         self.name = name
+        self.ext = os.path.splitext(self.path)[1]
 
 
 def get_chosen_notes(all_notes: Optional[List[Note]] = None) -> List[Note]:
@@ -49,7 +55,14 @@ def get_all_notes() -> List[Note]:
     """Gets all the notes in the user's chosen folder."""
     notes: List[Note] = []
     folder_path = settings.source_folder_path
-    folder_list = os.listdir(folder_path)
+    if not folder_path:
+        pass  # TODO: prompt the user for a valid folder path instead.
+    try:
+        folder_list = os.listdir(folder_path)
+    except FileNotFoundError:
+        print(f'Folder {folder_path} does not exist.')
+        raise  # TODO: prompt the user for a valid folder path instead.
+    
     for file_name in folder_list:
         file_path = os.path.join(folder_path, file_name)
         if os.path.isfile(file_path):
@@ -67,6 +80,13 @@ def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
     returned file names represent the time in the format YYYYMMDDhhmmss,
     starting with the current time and increasing by one second for each
     file created.
+
+    Parameters
+    ----------
+    file_ext : str
+        The file extension, including the period.
+    file_count : int, optional
+        The number of files to create. The default is 1.
     """
     file_names = []
     now = datetime.now()
@@ -80,8 +100,15 @@ def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
 def __create_time_id_file_name(dt: datetime, file_ext: str) -> str:
     """Creates a file name with the given datetime.
     
-    The part of the file name before the extension is in the format 
-    YYYYMMDDhhmmss. ``file_ext`` must start with a period.
+    The part of the file name before the extension will be in the format
+    YYYYMMDDhhmmss.
+
+    Parameters
+    ----------
+    dt : datetime
+        The datetime to use in the file name.
+    file_ext : str
+        The file extension, including the period.
     """
     year = str(dt.year)
     month = str(dt.month).zfill(2)
