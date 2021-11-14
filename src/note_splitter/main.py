@@ -2,6 +2,7 @@
 
 
 import os
+import uuid 
 from typing import List, Callable
 from note_splitter import settings, tokens
 from note_splitter.note import Note, \
@@ -29,8 +30,10 @@ def main() -> None:
                                                format_)
         new_file_names: List[str] = create_file_names(note.ext,
                                                       len(split_contents))
-        save_new_notes(split_contents, new_file_names)
+        new_notes = save_new_notes(split_contents, new_file_names)
         print(f'Created {len(split_contents)} new files.')
+        index_path = create_index_file(new_notes, new_notes[0].folder_path)
+        print(f'Created index file at {index_path}')
 
 
 def split_text(content: str,
@@ -81,7 +84,8 @@ def create_file_names(note_ext: str, note_count: int) -> List[str]:
                         f'{settings.new_file_name_format.__name__}')
 
 
-def save_new_notes(split_contents: List[str], new_file_names: List[str]):
+def save_new_notes(split_contents: List[str],
+                   new_file_names: List[str]) -> List[Note]:
     """Creates new files and saves strings into them.
     
     The lists for the contents and names of the new files are parallel.
@@ -92,12 +96,44 @@ def save_new_notes(split_contents: List[str], new_file_names: List[str]):
         A list of strings to each be saved into a new file.
     new_file_names: List[str]
         A list of names of files to be created.
+
+    Returns
+    -------
+    new_notes: List[Note]
+        The newly created notes.
     """
+    new_notes = []
     for i, split_content in enumerate(split_contents):
-        new_file_name = os.path.join(settings.new_notes_folder,
+        new_file_path = os.path.join(settings.new_notes_folder,
                                      new_file_names[i])
-        with open(new_file_name, 'x', encoding='utf8') as file:
+        with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
+        new_notes.append(Note(new_file_path))
+    
+    return new_notes
+
+
+def create_index_file(new_notes: List[Note], folder_path: str) -> str:
+    """Creates an index file for the new notes.
+    
+    Parameters
+    ----------
+    new_notes: List[Note]
+        The newly created notes.
+
+    Returns
+    -------
+    index_file_path: str
+        The path to the newly created index file.
+    """
+    unique_string = uuid.uuid4().hex[:10]
+    index_file_path = os.path.join(folder_path, f'index {unique_string}.md')
+    with open(index_file_path, 'x', encoding='utf8') as file:
+        file.write('# index\n\n')
+        for note in new_notes:
+            file.write(f'* [{note.title}]({note.path})\n')
+
+    return index_file_path
 
 
 if __name__ == '__main__':

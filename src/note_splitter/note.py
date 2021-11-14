@@ -15,17 +15,36 @@ class Note:
     path: str
         The absolute path to the file.
     folder_path : str
-        The absolute path to the folder that the file is in.
+        The absolute path to the folder that the file is in. If not 
+        provided, it will be retrieved from the path.
     name : str
-        The name of the file, including the file extension.
-    ext : str
-        The file extension starting with a period.
+        The name of the file, including the file extension. If not
+        provided, it will be retrieved from the path.
+    title : str
+        The title of the note. This is the body of the first header, or 
+        the first line of the file if there is no header.
     """
-    def __init__(self, path: str, folder_path: str, name: str):
+    def __init__(self, path: str, folder_path: str = None, name: str = None):
         self.path = path
-        self.folder_path = folder_path
-        self.name = name
+        if folder_path is None:
+            self.folder_path = os.path.dirname(path)
+        else:
+            self.folder_path = folder_path
+        if name is None:
+            self.name = os.path.basename(path)
+        else:
+            self.name = name
         self.ext = os.path.splitext(self.path)[1]
+        self.title = self.get_title()
+
+
+    def get_title(self) -> str:
+        """Returns the title of the note."""
+        with open(self.path, 'r') as file:
+            for line in file:
+                if line.startswith('#'):
+                    return line.lstrip('#').strip()
+            return file.readline().strip()
 
 
 def get_chosen_notes(all_notes: Optional[List[Note]] = None) -> List[Note]:
