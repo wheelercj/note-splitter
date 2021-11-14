@@ -12,19 +12,32 @@ class Note:
     
     Attributes
     ----------
-    path: str
-        The absolute path to the file.
-    folder_path : str
-        The absolute path to the folder that the file is in. If not 
-        provided, it will be retrieved from the path.
-    name : str
-        The name of the file, including the file extension. If not
-        provided, it will be retrieved from the path.
     title : str
         The title of the note. This is the body of the first header, or 
         the first line of the file if there is no header.
+    name : str
+        The name of the file, including the file extension.
+    ext : str
+        The file extension, starting with a period.
+    path : str
+        The absolute path to the file.
+    folder_path : str
+        The absolute path to the folder that the file is in.
     """
     def __init__(self, path: str, folder_path: str = None, name: str = None):
+        """Creates a new Note object.
+
+        Parameters
+        ----------
+        path : str
+            The absolute path to the file.
+        folder_path : str
+            The absolute path to the folder that the file is in. If not
+            provided, it will be retrieved from the path.
+        name : str
+            The name of the file, including the file extension. If not
+            provided, it will be retrieved from the path.
+        """
         self.path = path
         if folder_path is None:
             self.folder_path = os.path.dirname(path)
