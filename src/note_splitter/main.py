@@ -103,9 +103,8 @@ def save_new_notes(split_contents: List[str],
         The newly created notes.
     """
     new_notes = []
-    for i, split_content in enumerate(split_contents):
-        new_file_path = os.path.join(settings.new_notes_folder,
-                                     new_file_names[i])
+    for new_file_name, split_content in zip(new_file_names, split_contents):
+        new_file_path = os.path.join(settings.new_notes_folder, new_file_name)
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
         new_notes.append(Note(new_file_path))
