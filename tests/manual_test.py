@@ -40,12 +40,15 @@ def __manual_test() -> None:
         - [x] something that's done
         > this is
         > a blockquote
+        Here's[^1] a footnote reference.
 
         # fourth header
         The header above is a level 1 header.
         ```cpp
         cout << "here's another code block";
         ```
+
+        [^1]: this is a footnote
         ''')
 
     tokenize: Callable = Lexer()
@@ -143,6 +146,11 @@ def __print_parser_output(ast: AST) -> None:
         print(f'frontmatter: {ast.frontmatter}\n')
     if ast.global_tags:
         print(f'global tags: {ast.global_tags}\n')
+    if ast.footnotes:
+        print('footnotes:')
+        for i, footnote in enumerate(ast.footnotes):
+            print(f'    {i}: {footnote}')
+        print()
     __print_tokens(ast.content)
     input('**Press enter to continue**')
 

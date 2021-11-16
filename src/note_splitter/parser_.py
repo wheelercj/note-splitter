@@ -18,6 +18,8 @@ class AST:
         All of the file's tags above any header of level 2 or greater.
     content : List[tokens.Token]
         All the tokens below any frontmatter.
+    footnotes : List[tokens.Footnote]
+        All the footnotes in the file.
     """
 
     def __init__(
@@ -32,9 +34,9 @@ class AST:
             A list of tokens created from a Lexer object.
         create_blocks : bool
             If True, some of the tokens will be grouped together into 
-            larger tokens in the resulting AST. Otherwise, the tokens 
-            will be left as they are and the AST will have frontmatter 
-            and global_tags attributes.
+            larger tokens in the resulting AST. Otherwise, the token
+            list will be put into the content attribute unchanged. The 
+            AST's other attributes will still be created.
         """
         if not tokens_:
             return
@@ -42,6 +44,7 @@ class AST:
 
         self.frontmatter: Optional[object] = self.__get_frontmatter()
         self.global_tags: List[str] = self.__get_global_tags()
+        self.footnotes: List[tokens.Footnote] = self.__get_footnotes()
         self.content: List[tokens.Token] = []
         if create_blocks:
             self.__create_blocks()
@@ -234,6 +237,15 @@ class AST:
                 global_tags.extend(self.__get_tags(token))
         global_tags = list(set(global_tags))  # Remove duplicates.
         return global_tags
+
+
+    def __get_footnotes(self) -> List[tokens.Footnote]:
+        """Gets the footnotes in the token list."""
+        footnotes: List[tokens.Footnote] = []
+        for token in self.__tokens:
+            if isinstance(token, tokens.Footnote):
+                footnotes.append(token)
+        return footnotes
 
 
     def __get_tags(self, token: tokens.Token) -> List[str]:
