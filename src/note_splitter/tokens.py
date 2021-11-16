@@ -218,7 +218,7 @@ class BlockquoteBlock(Block):
 
 
 class Footnote(CanHaveInlineElements):
-    """A footnote (not the reference).
+    """A footnote (not a footnote reference).
 
     The ``pattern`` attribute is a class attribute.
     
@@ -226,11 +226,15 @@ class Footnote(CanHaveInlineElements):
     ----------
     content : str
         The content of the line of text.
+    reference : str
+        The footnote's reference that may appear in other parts of the
+        document.
     """
     pattern: re.Pattern = patterns.footnote
 
     def __init__(self, line: str):
         self.content: str = line
+        self.reference: str = line.split(':')[0]
 
 
 class ToDo(TextListItem, CanHaveInlineElements):
