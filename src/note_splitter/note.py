@@ -2,9 +2,12 @@
 
 
 import os
-from typing import List, Optional
+import uuid
+from copy import copy
+from typing import List, Tuple
 from datetime import datetime, timedelta
 from note_splitter import settings
+from note_splitter.patterns import any_header as header_pattern
 
 
 class Note:
@@ -14,7 +17,8 @@ class Note:
     ----------
     title : str
         The title of the note. This is the body of the first header, or 
-        the first line of the file if there is no header.
+        the first line of the file if there is no header, or an empty 
+        string if the file is empty.
     name : str
         The name of the file, including the file extension.
     ext : str
@@ -27,14 +31,16 @@ class Note:
     def __init__(self, path: str, folder_path: str = None, name: str = None):
         """Creates a new Note object.
 
+        Assumes that the file already exists and has its content.
+
         Parameters
         ----------
         path : str
             The absolute path to the file.
-        folder_path : str
+        folder_path : str, optional
             The absolute path to the folder that the file is in. If not
             provided, it will be retrieved from the path.
-        name : str
+        name : str, optional
             The name of the file, including the file extension. If not
             provided, it will be retrieved from the path.
         """
@@ -48,19 +54,12 @@ class Note:
         else:
             self.name = name
         self.ext = os.path.splitext(self.path)[1]
-        self.title = self.get_title()
+        with open(self.path, 'r', encoding='utf8') as file:
+            contents = file.read()
+        self.title = get_title(contents)
 
 
-    def get_title(self) -> str:
-        """Returns the title of the note."""
-        with open(self.path, 'r') as file:
-            for line in file:
-                if line.startswith('#'):
-                    return line.lstrip('#').strip()
-            return file.readline().strip()
-
-
-def get_chosen_notes(all_notes: Optional[List[Note]] = None) -> List[Note]:
+def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     """Gets the notes that the user chose to split.
     
     Parameters
@@ -105,47 +104,121 @@ def get_all_notes() -> List[Note]:
     return notes
 
 
-def create_time_id_file_names(file_ext: str, file_count: int = 1) -> List[str]:
-    """Creates file names with increasing 14-digit numbers.
-    
-    The file extension must start with a period. The numbers in the 
-    returned file names represent the time in the format YYYYMMDDhhmmss,
-    starting with the current time and increasing by one second for each
-    file created.
+def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
+    """Creates names for new files.
+
+    The returned file names are in the format specified in the
+    file_name_format setting. If more than one file name is created and 
+    file_name_format contains an at least one hour, minute, or seconds 
+    variable, the time will be incremented for each file name.
 
     Parameters
     ----------
     file_ext : str
-        The file extension, including the period.
-    file_count : int, optional
-        The number of files to create. The default is 1.
+        The file extension, including the leading period.
+    files_contents : List[str]
+        The contents of the files to be named.
     """
     file_names = []
     now = datetime.now()
-    file_names.append(__create_time_id_file_name(now, file_ext))
-    for _ in range(file_count):
-        now += timedelta(seconds=1)
-        file_names.append(__create_time_id_file_name(now, file_ext))
+    for file_contents in files_contents:
+        file_name_format = copy(settings.file_name_format)
+        new_file_name = __create_file_name(file_ext,
+                                           file_name_format,
+                                           file_contents,
+                                           now)
+        file_names.append(new_file_name)
+        if r'%s' in file_name_format:
+            now += timedelta(seconds=1)
+        elif r'%m' in file_name_format:
+            now += timedelta(minutes=1)
+        elif r'%h' in file_name_format:
+            now += timedelta(hours=1)
     return file_names
 
 
-def __create_time_id_file_name(dt: datetime, file_ext: str) -> str:
-    """Creates a file name with the given datetime.
-    
-    The part of the file name before the extension will be in the format
-    YYYYMMDDhhmmss.
+def __create_file_name(file_ext: str,
+                       file_name_format: str,
+                       file_contents: str,
+                       dt: datetime) -> str:
+    """Creates a name for a new file.
 
     Parameters
     ----------
-    dt : datetime
-        The datetime to use in the file name.
     file_ext : str
-        The file extension, including the period.
+        The file extension, including the leading period.
+    file_name_format : str
+        The format of the file name.
+    file_contents : str
+        The contents of the file to be named.
+    dt : datetime
+        The date and time to use for the file name if the file name
+        format contains any date and/or time variables.
     """
-    year = str(dt.year)
-    month = str(dt.month).zfill(2)
-    day = str(dt.day).zfill(2)
-    hour = str(dt.hour).zfill(2)
-    minute = str(dt.minute).zfill(2)
-    second = str(dt.second).zfill(2)
-    return f'{year}{month}{day}{hour}{minute}{second}{file_ext}'
+    variables = __get_variables(file_contents, dt)
+    variables.append((r'%id', create_file_id(file_contents, dt)))
+    for name, value in variables:
+        file_name_format = file_name_format.replace(name, value)
+    return f'{file_name_format}{file_ext}'
+
+
+def create_file_id(file_contents: str, dt: datetime = None) -> str:
+    """Creates an ID for a file.
+    
+    This function depends on the file_id_format setting.
+
+    Parameters
+    ----------
+    file_contents : str
+        The contents of the file to be IDed.
+    dt : datetime, optional
+        The datetime to use in the file name. If not provided, the 
+        current time will be used.
+    """
+    if dt is None:
+        dt = datetime.now()
+    file_id = copy(settings.file_id_format)
+    variables = __get_variables(file_contents, dt)
+    for name, value in variables:
+        file_id = file_id.replace(name, value)
+    return file_id
+
+
+def __get_variables(file_contents: str, dt: datetime) -> List[Tuple[str, str]]:
+    """Gets the variable names and values for file name and ID formats.
+
+    Parameters
+    ----------
+    file_contents : str
+        The contents of the file being named or IDed.
+    dt : datetime
+        The datetime to use in the file name or ID if the format
+        contains any date and/or time variables.
+    """
+    return [
+        (r'%uuid4', str(uuid.uuid4())),
+        (r'%title', get_title(file_contents)),
+        (r'%Y', str(dt.year)),
+        (r'%M', str(dt.month).zfill(2)),
+        (r'%D', str(dt.day).zfill(2)),
+        (r'%h', str(dt.hour).zfill(2)),
+        (r'%m', str(dt.minute).zfill(2)),
+        (r'%s', str(dt.second).zfill(2)),
+    ]
+
+
+def get_title(file_contents: str) -> str:
+    """Gets the title of the file.
+    
+    The title is the body of the first header, or the first line if 
+    there is no header, or an empty string if the file is empty.
+
+    Parameters
+    ----------
+    file_contents : str
+        The contents of the file to get the title from.
+    """
+    for line in file_contents.split('\n'):
+        if header_pattern.match(line):
+            return line.lstrip('#').strip()
+    return file_contents.split('\n')[0].strip()

@@ -2,12 +2,10 @@
 
 
 import os
-import uuid 
+import uuid
 from typing import List, Callable
 from note_splitter import settings, tokens
-from note_splitter.note import Note, \
-                               get_chosen_notes, \
-                               create_time_id_file_names
+from note_splitter import note
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
@@ -20,18 +18,18 @@ def main() -> None:
     split: Callable = Splitter()
     format_: Callable = Formatter()
     
-    notes: List[Note] = get_chosen_notes()
-    for note in notes:
-        with open(note.path, 'r', encoding='utf8') as file:
+    notes: List[note.Note] = note.get_chosen_notes()
+    for n in notes:
+        with open(n.path, 'r', encoding='utf8') as file:
             content: str = file.read()
         split_contents: List[str] = split_text(content,
                                                tokenize,
                                                split,
                                                format_)
-        new_file_names: List[str] = create_file_names(note.ext,
-                                                      len(split_contents))
+        new_file_names: List[str] = note.create_file_names(n.ext,
+                                                           split_contents)
         new_notes = save_new_notes(split_contents, new_file_names)
-        print(f'Created {len(split_contents)} new files.')
+        print(f'Created {len(new_notes)} new files.')
         index_path = create_index_file(new_notes, new_notes[0].folder_path)
         print(f'Created index file at {index_path}')
 
@@ -67,25 +65,8 @@ def split_text(content: str,
     return split_contents
 
 
-def create_file_names(note_ext: str, note_count: int) -> List[str]:
-    """Creates the names for all the new files.
-    
-    Parameters
-    ----------
-    note_ext: str
-        The extension of the files to be created.
-    note_count: int
-        The number of files to be created.
-    """
-    if settings.new_file_name_format == r'%id':
-        return create_time_id_file_names(note_ext, note_count)
-    else:
-        raise ValueError('Invalid value in ' \
-                        f'{settings.new_file_name_format.__name__}')
-
-
 def save_new_notes(split_contents: List[str],
-                   new_file_names: List[str]) -> List[Note]:
+                   new_file_names: List[str]) -> List[note.Note]:
     """Creates new files and saves strings into them.
     
     The lists for the contents and names of the new files are parallel.
@@ -99,7 +80,7 @@ def save_new_notes(split_contents: List[str],
 
     Returns
     -------
-    new_notes: List[Note]
+    new_notes: List[note.Note]
         The newly created notes.
     """
     new_notes = []
@@ -107,17 +88,17 @@ def save_new_notes(split_contents: List[str],
         new_file_path = os.path.join(settings.new_notes_folder, new_file_name)
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
-        new_notes.append(Note(new_file_path))
+        new_notes.append(note.Note(new_file_path))
     
     return new_notes
 
 
-def create_index_file(new_notes: List[Note], folder_path: str) -> str:
+def create_index_file(new_notes: List[note.Note], folder_path: str) -> str:
     """Creates an index file for the new notes.
     
     Parameters
     ----------
-    new_notes: List[Note]
+    new_notes: List[note.Note]
         The newly created notes.
 
     Returns
