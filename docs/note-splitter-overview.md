@@ -2,6 +2,12 @@
 
 Here is a broad overview for developers of how Note Splitter's core splitting algorithm works.
 
+The main steps the program goes through are:  
+1. tokenization
+2. parsing
+3. splitting
+4. formatting
+
 ## tokenization
 After the user has selected which plain text file to split and what to split by, Note Splitter looks at the file and assigns a category to each line. This process is called **lexical analysis**, or **tokenization**. Some of the categories any given line can have are: header, blockquote, footnote, empty line, table row, etc. Each line and its category is combined into a **token**, which is what this program calls a variable representing one small part of a file and data about that part. At this point in the program, each token only holds one line of the file, and all the tokens are in one list.
 
@@ -92,7 +98,14 @@ Continuing from the previous example, here's the result of splitting where the u
 
 Once again, all the previous tokens still exist and can be accessed, they have simply been grouped together inside other tokens. You can see the code for splitting in [splitter.py](https://github.com/wheelercj/note-splitter/blob/master/note_splitter/splitter.py).
 
-After formatting and any final adjustments, the sections are converted back to plain text strings and saved into new files.
+## formatting
+The last big step is formatting and saving:  
+1. adjust some details in each such as making header levels lower if the lowest header level is not 1
+2. copy certain elements of the source file into each of the new sections such as tags or footnotes (if the user chose that in settings)
+3. convert the section tokens back to strings
+4. save those strings into new files
+
+The code for formatting can be found in [formatter_.py](https://github.com/wheelercj/note-splitter/blob/master/note_splitter/formatter_.py).
 
 ## further reading
 Syntax trees are most often used to process code, but even though the resources below talk mostly about code, the ideas still apply to working with a plain text syntax tree.
