@@ -7,3 +7,4 @@ dependencies:
   - pip
   - myst-parser
   - pyyaml
+  - pysimplegui==4.53
