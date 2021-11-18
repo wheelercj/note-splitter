@@ -43,6 +43,10 @@ class Token(ABC):
         """Returns the original content of the token's raw text."""
         return self.content + '\n'
 
+    def __repr__(self):
+        """Returns the name of the token type."""
+        return self.__class__.__name__
+
 
 class Block(Token):
     """The ABC for tokens that are each a combination of tokens.

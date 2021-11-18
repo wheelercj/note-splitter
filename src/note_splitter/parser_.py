@@ -61,6 +61,11 @@ class AST:
         return ''.join(raw_content)
 
 
+    def __repr__(self) -> str:
+        """Return a string of the type names of the tokens."""
+        return ''.join(repr(token) + '\n' for token in self.content)
+
+
     def __get_frontmatter(self) -> Optional[object]:
         """Gets frontmatter from the tokens list, if it has frontmatter.
         
