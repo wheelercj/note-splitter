@@ -30,10 +30,11 @@ def _get_indentation_level(line: str) -> int:
 class Token(ABC):
     """The abstract base class (ABC) for all tokens.
     
-    Each child class must have a ``content`` attribute. If the token
-    is not a combination of other tokens, that ``content`` attribute
-    must be a string of the original content of the raw line of text.
-    Otherwise, the ``content`` attribute is the list of subtokens.
+    Each non-abstract child class must have a ``content`` attribute. If 
+    the token is not a combination of other tokens, that ``content`` 
+    attribute must be a string of the original content of the raw line 
+    of text. Otherwise, the ``content`` attribute is the list of 
+    subtokens.
     """
     @abstractmethod
     def __init__(self):
@@ -47,7 +48,8 @@ class Token(ABC):
 class Block(Token):
     """The ABC for tokens that are each a combination of tokens.
     
-    Each child class must have a ``content`` attribute.
+    Each child class must have a ``content`` attribute that is a list
+    of the subtokens.
     """
     @abstractmethod
     def __init__(self):
