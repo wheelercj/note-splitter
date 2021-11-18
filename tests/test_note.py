@@ -177,7 +177,9 @@ def test_create_file_name_from_header():
 def test_create_file_names_with_no_variables():
     settings.file_name_format = r''
     file_names = note.create_file_names('.md', ['new file contents'] * 3)
-    assert file_names == ['.md'] * 3
+    assert len(file_names) == 3
+    for file_name in file_names:
+        assert len(file_name) == 33
 
 
 def test_create_file_names_with_14_digit_id():
@@ -217,7 +219,7 @@ def test_create_file_names_with_uuids():
                                                  'file two ',
                                                  'file three\n## here'])
     for file_name in file_names:
-        assert len(file_name) == 40
+        assert len(file_name) == 34
     assert len(set(file_names)) == 3
 
 

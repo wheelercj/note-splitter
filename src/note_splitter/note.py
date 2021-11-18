@@ -127,6 +127,7 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
                                            file_name_format,
                                            file_contents,
                                            now)
+        new_file_name = __validate_file_name(new_file_name)
         file_names.append(new_file_name)
         if r'%s' in file_name_format:
             now += timedelta(seconds=1)
@@ -134,6 +135,8 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
             now += timedelta(minutes=1)
         elif r'%h' in file_name_format:
             now += timedelta(hours=1)
+        elif r'%D' in file_name_format:
+            now += timedelta(days=1)            
     return file_names
 
 
@@ -155,6 +158,8 @@ def __create_file_name(file_ext: str,
         The date and time to use for the file name if the file name
         format contains any date and/or time variables.
     """
+    if not file_name_format:
+        file_name_format = r'%uuid4'
     variables = __get_variables(file_contents, dt)
     variables.append((r'%id', create_file_id(file_contents, dt)))
     for name, value in variables:
@@ -211,7 +216,7 @@ def get_title(file_contents: str) -> str:
     """Gets the title of the file.
     
     The title is the body of the first header, or the first line if 
-    there is no header, or an empty string if the file is empty.
+    there is no header, or a random string if the file is empty.
 
     Parameters
     ----------
@@ -221,4 +226,36 @@ def get_title(file_contents: str) -> str:
     for line in file_contents.split('\n'):
         if header_pattern.match(line):
             return line.lstrip('#').strip()
-    return file_contents.split('\n')[0].strip()
+    title = file_contents.split('\n')[0].strip()
+    if title:
+        return title
+    return str(uuid.uuid4())
+
+
+def __validate_file_name(file_name: str) -> str:
+    """Validates a file name's characters and length.
+
+    Invalid characters are replaced with hyphens. If the file name
+    is too long, it is truncated. If the file name starts or ends with 
+    certain characters, they are removed.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name to validate.
+
+    Returns
+    -------
+    file_name : str
+        The validated file name.
+    """
+    root, ext = os.path.splitext(file_name)
+    root = root[:30]
+    invalid_characters = '#%{&}\\<>*?/$!\'":@+`|='
+    for ch in invalid_characters:
+        root = root.replace(ch, '-')
+    invalid_start_or_end_characters = ' .-_'
+    for ch in invalid_start_or_end_characters:
+        root = root.lstrip(ch).rstrip(ch)
+    print(f'{root}{ext}')
+    return root + ext
