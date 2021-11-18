@@ -48,6 +48,20 @@ unordered_list_item : re.Pattern
     dos.
 tag : re.Pattern
     The pattern for a tag (an inline element).
+blockquote_block_part_names : re.Pattern
+    The pattern for the type names of a blockquote block (a block 
+    element).
+code_block_part_names : re.Pattern
+    The pattern for the type names of a code block (a block element).
+math_block_part_names : re.Pattern
+    The pattern for the type names of a math block (a block element).
+table_part_names : re.Pattern
+    The pattern for the type names of a table (a block element).
+text_list_part_names : re.Pattern
+    The pattern for the type names of a text list (a block element).
+underline_header_part_names : re.Pattern
+    The pattern for the type names of an underline header (a block 
+    element).
 """
 # This module follows the Global Object Pattern. You can see more 
 # details about this design pattern here: 
@@ -55,8 +69,11 @@ tag : re.Pattern
 
 
 import re
+from typing import List
+from note_splitter import tokens
 
-# full-line elements
+
+# Full-line elements.
 any_header = re.compile(r'^#+ .+')
 blockquote = re.compile(r'^(?:>\s*)+.+$')
 code_fence = re.compile(r'^(?:```|~~~).*')
@@ -71,5 +88,14 @@ table_row = re.compile(r'^\|.+\|$')
 to_do = re.compile(r'^\s*[*+-] \[[x\s]\] .+')
 unordered_list_item = re.compile(r'^\s*[*+-]\s.*')
 
-# inline elements
+# Inline elements.
 tag = re.compile(r'(?<!\S)(?:(?:#+[\w\d_-]*[\w\d_-]#?)|(?:(?<=.)#+[\w\d_-]*[\w\d_-]#?))')
+
+# Block elements of full-line element type names.
+# TODO: write code that can use these.
+blockquote_block_part_names = re.compile(r'\b(?:Blockquote\n)+')
+code_block_part_names = re.compile(r'\bCodeFence\n(?:Code\n)+\nCodeFence\n')
+math_block_part_names = re.compile(r'\bMathFence\n(?:Math\n)+\nMathFence\n')
+table_part_names = re.compile(r'\bTableRow\nTableDivider\n(?:TableRow\n)*')
+text_list_part_names = re.compile(r'\b(?:TextListItem\n|TextList\n)+')
+underline_header_part_names = re.compile(r'\bText\nHorizontalRule\n')
