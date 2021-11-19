@@ -32,8 +32,9 @@ def main() -> None:
                                                       len(split_contents))
         new_notes = save_new_notes(split_contents, new_file_names)
         print(f'Created {len(split_contents)} new files.')
-        index_path = create_index_file(new_notes, new_notes[0].folder_path)
-        print(f'Created index file at {index_path}')
+        if settings.create_index_file:
+            index_path = create_index_file(new_notes, new_notes[0].folder_path)
+            print(f'Created index file at {index_path}')
 
 
 def split_text(content: str,
