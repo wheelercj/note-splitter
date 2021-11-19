@@ -162,7 +162,7 @@ class Header(CanHaveInlineElements):
         The header level. A header level of 1 is the largest possible 
         header.
     """
-    pattern: re.Pattern = patterns.any_header
+    pattern: re.Pattern = patterns.header
 
     def __init__(self, line: str):
         """Parses a line of text and creates a header token."""
@@ -239,8 +239,8 @@ class Footnote(CanHaveInlineElements):
         self.reference: str = line.split(':')[0]
 
 
-class ToDo(TextListItem, CanHaveInlineElements):
-    """A to do list item.
+class Task(TextListItem, CanHaveInlineElements):
+    """A to do list item that is either checked or unchecked.
 
     The ``pattern`` attribute is a class attribute.
     
@@ -253,12 +253,12 @@ class ToDo(TextListItem, CanHaveInlineElements):
     is_done : bool
         Whether the to do item is done.
     """
-    pattern: re.Pattern = patterns.to_do
+    pattern: re.Pattern = patterns.task
 
     def __init__(self, line: str):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
-        self.is_done = line.startswith('- [x]')
+        self.is_done = patterns.finished_task.match(line) is not None
 
 
 class UnorderedListItem(TextListItem, CanHaveInlineElements):
