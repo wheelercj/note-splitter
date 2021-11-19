@@ -11,7 +11,7 @@ from typing import List
 from note_splitter import tokens
 
 
-def main():
+def save_token_hierarchy():
     """Detects, creates, and saves the token hierarchy to a file."""
     token_hierarchy: str = create_token_hierarchy()
     token_hierarchy_path = 'docs/token-hierarchy.rst'
@@ -29,7 +29,10 @@ def create_token_hierarchy() -> str:
     token_hierarchy = [
         'token hierarchy',
         '===============',
-        '\nBelow is the hierarchy of all the tokens this program uses. More indentation means that the token is a child of the previous token with less indentation. Notice that the non-abstract types that inherit TextListItem also inherit CanHaveInlineElements, so they are listed twice.\n',
+        '\nBelow is the hierarchy of all the tokens this program uses. More ' \
+        'indentation means that the token is a child of the previous token ' \
+        'with less indentation. Note that some of the token types inherit ' \
+        'multiple others, so they are listed twice.\n',
     ]
 
     all_token_types = tokens.get_all_token_types(tokens)
@@ -55,9 +58,9 @@ def __create_token_subhierarchy(
             class_name = c[0].__name__
             if class_name not in ('object', 'ABC', 'module'):
                 abstract = ' (abstract)' if inspect.isabstract(c[0]) else ''
-                line = indentation[4:] + '* :py:class:`tokens.' + class_name + '`' + abstract
+                line = f'{indentation[4:]}* :py:class:`tokens.{class_name}`{abstract}'
                 token_hierarchy.append(line)
 
 
 if __name__ == '__main__':
-    main()
+    save_token_hierarchy()
