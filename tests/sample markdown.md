@@ -21,7 +21,7 @@ ksljdlfks
 ```
 # first level header
 ## second level header
-####### seventh level header
+###### sixth level header
 #      header surrounded with extra spaces   
 ### s8973#abc@#%
 ```
