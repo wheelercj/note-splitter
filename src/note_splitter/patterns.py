@@ -62,7 +62,7 @@ import re
 
 # full-line elements
 blockquote = re.compile(r'^(?:>\s*)+.+$')
-code_fence = re.compile(r'^(?:```|~~~).*')
+code_fence = re.compile(r'^\s{0,3}(?:`{3,}|~{3,}).*')
 empty_line = re.compile(r'^\s*$')
 finished_task = re.compile(r'^\s*[*+-] \[[xX]\] .+')
 footnote = re.compile(r'^\[\^[^^\s\n][^^\n]*(?<!\s)\]: [^\n]+')
