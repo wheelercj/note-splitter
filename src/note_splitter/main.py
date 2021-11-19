@@ -85,6 +85,7 @@ def save_new_notes(split_contents: List[str],
     new_notes = []
     for new_file_name, split_content in zip(new_file_names, split_contents):
         new_file_path = os.path.join(settings.new_notes_folder, new_file_name)
+        new_file_path = note.ensure_file_path_uniqueness(new_file_path)
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
         new_notes.append(note.Note(new_file_path))
@@ -114,6 +115,7 @@ def create_index_file(source_note: note.Note,
     """
     index_name = note.validate_file_name(f'index - {source_note.title}.md', 35)
     index_file_path = os.path.join(folder_path, index_name)
+    index_file_path = note.ensure_file_path_uniqueness(index_file_path)
     with open(index_file_path, 'x', encoding='utf8') as file:
         file.write(f'# index of {source_note.title}\n\n')
         for n in new_notes:

@@ -2,6 +2,7 @@
 
 
 import os
+import re
 import uuid
 from copy import copy
 from typing import List, Tuple
@@ -235,9 +236,11 @@ def get_title(file_contents: str) -> str:
 def validate_file_name(file_name: str, max_length: int = 30) -> str:
     """Validates a file name's characters and length.
 
-    Invalid characters are replaced with hyphens. If the file name has a
-    length greater than max_length, it is truncated. If the file name 
-    starts or ends with certain characters, they are removed.
+    This function does NOT ensure that a file with the same name does 
+    not already exist. Invalid characters are replaced with hyphens. If 
+    the file name has a length greater than max_length, it is truncated.
+    If the file name starts or ends with certain characters, they are 
+    removed.
 
     Parameters
     ----------
@@ -256,8 +259,36 @@ def validate_file_name(file_name: str, max_length: int = 30) -> str:
     invalid_characters = '#%{&}\\<>*?/$!\'":@+`|='
     for ch in invalid_characters:
         root = root.replace(ch, '-')
-    invalid_start_or_end_characters = ' .-_'
-    for ch in invalid_start_or_end_characters:
-        root = root.lstrip(ch).rstrip(ch)
-    print(f'{root}{ext}')
+    root = root.strip(' .-_')
     return root + ext
+
+
+def ensure_file_path_uniqueness(file_path: str) -> str:
+    """Makes sure a file's path is unique.
+
+    If a file with the same name already exists, a ``(1)`` is appended 
+    to the file name unless that is already there, in which case it is 
+    changed to ``(2)``, etc. This function assumes the file name does 
+    not have any invalid characters.
+
+    Parameters
+    ----------
+    file_path : str
+        The absolute path for the file, including the planned file name.
+
+    Returns
+    -------
+    file_path : str
+        The absolute path for the file, including the unique file name.
+    """
+    if os.path.exists(file_path):
+        folder_path, file_name_and_ext = os.path.split(file_path)
+        file_name, file_ext = os.path.splitext(file_name_and_ext)
+        match = re.match(r'.+\((\d+)\)$', file_name)
+        if not match:
+            file_name += '(1)'
+        else:
+            file_name = file_name[:match.start(1)] + f'{int(match[1]) + 1})'    
+        file_name_and_ext = file_name + file_ext
+        file_path = os.path.join(folder_path, file_name_and_ext)
+    return file_path
