@@ -2,7 +2,6 @@
 
 
 import os
-import uuid
 from typing import List, Callable
 from note_splitter import settings, tokens
 from note_splitter import note
@@ -30,7 +29,7 @@ def main() -> None:
                                                            split_contents)
         new_notes = save_new_notes(split_contents, new_file_names)
         print(f'Created {len(new_notes)} new files.')
-        index_path = create_index_file(new_notes, new_notes[0].folder_path)
+        index_path = create_index_file(n, new_notes, new_notes[0].folder_path)
         print(f'Created index file at {index_path}')
 
 
@@ -93,25 +92,32 @@ def save_new_notes(split_contents: List[str],
     return new_notes
 
 
-def create_index_file(new_notes: List[note.Note], folder_path: str) -> str:
+def create_index_file(source_note: note.Note,
+                      new_notes: List[note.Note],
+                      folder_path: str) -> str:
     """Creates an index file for the new notes.
     
     Parameters
     ----------
+    source_note: note.Note
+        The note that the new notes were created from.
     new_notes: List[note.Note]
         The newly created notes.
+    folder_path: str
+        The absolute path to the folder that the new notes were created 
+        in.
 
     Returns
     -------
     index_file_path: str
-        The path to the newly created index file.
+        The absolute path to the newly created index file.
     """
-    unique_string = uuid.uuid4().hex[:10]
-    index_file_path = os.path.join(folder_path, f'index {unique_string}.md')
+    index_name = note.validate_file_name(f'index - {source_note.title}.md', 35)
+    index_file_path = os.path.join(folder_path, index_name)
     with open(index_file_path, 'x', encoding='utf8') as file:
-        file.write('# index\n\n')
-        for note in new_notes:
-            file.write(f'* [{note.title}]({note.path})\n')
+        file.write(f'# index of {source_note.title}\n\n')
+        for n in new_notes:
+            file.write(f'* [{n.title}]({n.path})\n')
 
     return index_file_path
 

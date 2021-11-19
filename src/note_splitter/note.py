@@ -127,7 +127,7 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
                                            file_name_format,
                                            file_contents,
                                            now)
-        new_file_name = __validate_file_name(new_file_name)
+        new_file_name = validate_file_name(new_file_name)
         file_names.append(new_file_name)
         if r'%s' in file_name_format:
             now += timedelta(seconds=1)
@@ -232,17 +232,19 @@ def get_title(file_contents: str) -> str:
     return str(uuid.uuid4())
 
 
-def __validate_file_name(file_name: str) -> str:
+def validate_file_name(file_name: str, max_length: int = 30) -> str:
     """Validates a file name's characters and length.
 
-    Invalid characters are replaced with hyphens. If the file name
-    is too long, it is truncated. If the file name starts or ends with 
-    certain characters, they are removed.
+    Invalid characters are replaced with hyphens. If the file name has a
+    length greater than max_length, it is truncated. If the file name 
+    starts or ends with certain characters, they are removed.
 
     Parameters
     ----------
     file_name : str
         The file name to validate.
+    max_length : int, optional
+        The maximum length of the file name.
 
     Returns
     -------
@@ -250,7 +252,7 @@ def __validate_file_name(file_name: str) -> str:
         The validated file name.
     """
     root, ext = os.path.splitext(file_name)
-    root = root[:30]
+    root = root[:max_length]
     invalid_characters = '#%{&}\\<>*?/$!\'":@+`|='
     for ch in invalid_characters:
         root = root.replace(ch, '-')
