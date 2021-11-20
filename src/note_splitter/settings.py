@@ -69,7 +69,7 @@ create_index_file: bool = True
 replace_split_contents: bool = False
 
 def initialize_settings():
-    """initialize the settings with default values"""
+    """Initialize the settings with default values"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
     cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text,  
@@ -84,7 +84,7 @@ def initialize_settings():
     connection.close()
 
 def get_current_settings():
-    """fetch the current user settings from the database"""
+    """Fetch the current user settings from the database"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
     cur.execute("SELECT * from settings")
@@ -92,7 +92,7 @@ def get_current_settings():
     print(result)
 
 def delete_current_settings():
-    """delete the user settings from the database"""
+    """Delete the user settings from the database"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
     cur.execute("DELETE from settings")
@@ -100,7 +100,7 @@ def delete_current_settings():
     connection.close()
 
 def update_settings():
-    """update the user settings in the database"""
+    """Update the user settings in the database"""
     delete_current_settings()
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
@@ -112,5 +112,9 @@ def update_settings():
     connection.commit()
     connection.close()
 
-
+def reset_settings_to_default():
+    """Reset current settings to default"""
+    delete_current_settings()
+    initialize_settings()
+    
 
