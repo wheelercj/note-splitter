@@ -75,9 +75,9 @@ def initialize_settings():
     cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text,  
                 note_types text, split_type text, split_attrs text, new_file_name_format text,  create_blocks integer, 
                 copy_frontmatter integer, copy_global_tags integer, backlink integer, create_index_file integer, replace_split_contents integer)''')
-    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, 
+    cur.execute("""INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, 
                 new_file_name_format, create_blocks, copy_frontmatter, copy_global_tags, backlink, create_index_file, 
-                replace_split_contents) VALUES(?,?,?,?, ?, ?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, 
+                replace_split_contents) VALUES(?,?,?,?, ?, ?,?,?,?,?)""", (split_keyword, source_folder_path, destination_folder_path, 
                 ','.join(note_types), split_type__name__, json.dumps(split_attrs), new_file_name_format, int(create_blocks), int(copy_frontmatter), 
                 int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
@@ -104,9 +104,9 @@ def update_settings():
     delete_current_settings()
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, 
-                new_file_name_format, create_blocks, copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) 
-                VALUES(?,?,?,?, ?, ?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, ','.join(note_types), split_type__name__, 
+    cur.execute("INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path, note_types, split_type, split_attrs, " 
+                "new_file_name_format, create_blocks, copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents)" 
+                " VALUES(?,?,?,?, ?, ?,?,?,?,?)", (split_keyword, source_folder_path, destination_folder_path, ','.join(note_types), split_type__name__, 
                 json.dumps(split_attrs), new_file_name_format, int(create_blocks), int(copy_frontmatter), int(copy_global_tags), 
                  int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
