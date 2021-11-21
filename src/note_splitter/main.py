@@ -3,8 +3,7 @@
 
 import os
 from typing import List, Callable
-from note_splitter import settings, tokens
-from note_splitter import note
+from note_splitter import settings, tokens, note
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
@@ -18,19 +17,20 @@ def main() -> None:
     format_: Callable = Formatter()
     
     notes: List[note.Note] = note.get_chosen_notes()
-    for n in notes:
-        with open(n.path, 'r', encoding='utf8') as file:
+    for source_note in notes:
+        with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
         split_contents: List[str] = split_text(content,
                                                tokenize,
                                                split,
                                                format_)
-        new_file_names: List[str] = note.create_file_names(n.ext,
+        new_file_names: List[str] = note.create_file_names(source_note.ext,
                                                            split_contents)
         new_notes = save_new_notes(split_contents, new_file_names)
         print(f'Created {len(new_notes)} new files.')
         if settings.create_index_file:
-            index_path = create_index_file(n, new_notes, new_notes[0].folder_path)
+            index_path = create_index_file_(source_note,
+                                            new_notes)
             print(f'Created index file at {index_path}')
 
 
@@ -57,8 +57,8 @@ def split_text(content: str,
     tokens_: List[tokens.Token] = tokenize(content)
     ast = AST(tokens_, settings.create_blocks)
     sections: List[tokens.Section] = split(ast.content,
-                                            settings.split_type,
-                                            settings.split_attrs)
+                                           settings.split_type,
+                                           settings.split_attrs)
     split_contents: List[str] = format_(sections,
                                         ast.global_tags,
                                         ast.frontmatter)
@@ -90,14 +90,12 @@ def save_new_notes(split_contents: List[str],
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
         new_notes.append(note.Note(new_file_path))
-    
     return new_notes
 
 
-def create_index_file(source_note: note.Note,
-                      new_notes: List[note.Note],
-                      folder_path: str) -> str:
-    """Creates an index file for the new notes.
+def create_index_file_(source_note: note.Note,
+                       new_notes: List[note.Note]) -> str:
+    """Creates an index file for the new notes in the same folder.
     
     Parameters
     ----------
@@ -105,9 +103,6 @@ def create_index_file(source_note: note.Note,
         The note that the new notes were created from.
     new_notes: List[note.Note]
         The newly created notes.
-    folder_path: str
-        The absolute path to the folder that the new notes were created 
-        in.
 
     Returns
     -------
@@ -115,13 +110,12 @@ def create_index_file(source_note: note.Note,
         The absolute path to the newly created index file.
     """
     index_name = note.validate_file_name(f'index - {source_note.title}.md', 35)
-    index_file_path = os.path.join(folder_path, index_name)
+    index_file_path = os.path.join(new_notes[0].folder_path, index_name)
     index_file_path = note.ensure_file_path_uniqueness(index_file_path)
     with open(index_file_path, 'x', encoding='utf8') as file:
         file.write(f'# index of {source_note.title}\n\n')
         for n in new_notes:
             file.write(f'* [{n.title}]({n.path})\n')
-
     return index_file_path
 
 
