@@ -245,7 +245,8 @@ def test_get_title_from_no_header():
 
 
 def test_get_title_from_empty_string():
-    assert note.get_title('') == ''
+    # An empty file's title is a uuid4.
+    assert len(note.get_title('')) == 36
 
 
 def test_get_title_from_line_after_tag():
