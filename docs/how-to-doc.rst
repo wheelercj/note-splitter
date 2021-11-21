@@ -2,6 +2,10 @@
 how to maintain this documentation
 ==================================
 
+.. image:: https://readthedocs.org/projects/note-splitter/badge/?version=latest
+    :target: https://note-splitter.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 auto-generating documentation
 -----------------------------
 Much of our documentation on Read The Docs is automatically built from the code we write (docstrings, typehints, classes, etc.) whenever we commit to the master branch. Sometimes we will need to make small changes to the documentation files to help this automatic documentation continue.
