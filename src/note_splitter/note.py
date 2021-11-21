@@ -8,7 +8,7 @@ from copy import copy
 from typing import List, Tuple
 from datetime import datetime, timedelta
 from note_splitter import settings
-from note_splitter.patterns import any_header as header_pattern
+from note_splitter.patterns import header as header_pattern
 
 
 class Note:
