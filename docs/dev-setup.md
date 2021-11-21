@@ -44,4 +44,8 @@ Here are descriptions of what each of Note Splitter's folders are for:
 ```
 
 ## automated testing
-To run the automated tests for Note Splitter, use the `pytest` command. If you're looking for how to run the automated tests for the documentation, see [how to maintain this documentation](how-to-doc.rst).
+To locally run the automated tests for Note Splitter, there are two commands you can choose from:
+* `pytest` to run the tests in your current environment
+* `tox` to run the tests in multiple virtual environments
+
+If you're looking for how to locally build the documentation, see [how to maintain this documentation](how-to-doc.rst).
