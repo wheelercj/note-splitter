@@ -23,12 +23,19 @@ Every time file_id_format is changed, file_id_regex must be updated.
 
 Attributes
 ----------
-split_keyword : str
-    The tag/keyword the program searches for to know which file(s) 
-    to split.
-source_folder_path : str
-    The absolute path to the user's folder containing the files to 
-    be split.
+backlink: bool
+    Whether or not to append a backlink to the source file in each new 
+    file.
+copy_frontmatter : bool
+    Whether or not to copy frontmatter from the source file to each new 
+    file.
+copy_global_tags : bool
+    Whether or not to copy global tags from the source file to each new 
+    file.
+create_blocks : bool
+    Whether or not to create ``Block`` tokens while parsing.
+create_index_file : bool
+    Whether or not to create an index file.
 destination_folder_path : str
     The absolute path to the user's folder where new files will be 
     saved.
@@ -40,30 +47,23 @@ file_id_regex : str
 file_name_format : str
     The format of the new file names.
 note_types : List[str]
-    The file extensions of the files that may be chosen to be split.
-    Each must start with a period.
-create_blocks: bool
-    Whether or not to create ``Block`` tokens while parsing.
-copy_frontmatter: bool
-    Whether or not to copy frontmatter from the source file to each 
-    new file.
-copy_global_tags: bool
-    Whether or not to copy global tags from the source file to each 
-    new file.
-split_type: Type
-    The type to split by. This can be any token type, even an abstract 
-    one.
-split_attrs: dict
+    The file extensions of the files that may be chosen to be split.Each
+    must start with a period.
+replace_split_contents : bool
+    Whether or not to replace the parts of the source file that was 
+    split out with links to the new files.
+source_folder_path : str
+    The absolute path to the user's folder containing the files to be 
+    split.
+split_attrs : dict
     The attributes to split by. If the chosen split type has an 
     attribute, it can be used to narrow down what to split by.
-backlink: bool
-    Whether or not to append a backlink to the source file in each new 
-    file.
-create_index_file: bool
-    Whether or not to create an index file.
-replace_split_contents: bool
-    Whether or not to replace the parts of the source file that was
-    split out with links to the new files.
+split_keyword : str
+    The tag/keyword the program searches for to know which file(s) to 
+    split.
+split_type : Type
+    The type to split by. This can be any token type, even an abstract 
+    one.
 """
 # This module follows the Global Object Pattern. You can see more 
 # details about this design pattern here: 
@@ -72,25 +72,24 @@ replace_split_contents: bool
 
 from typing import List, Type
 import sqlite3
-import os
 import json 
 from note_splitter import tokens
 
-split_keyword: str = '#split'
-source_folder_path: str = os.path.abspath(os.curdir)
-destination_folder_path: str = ''
-note_types: List[str] = [".md", ".markdown", ".txt"]
-split_type: Type = tokens.Header
-split_attrs: dict = dict()
-create_blocks: bool = True
+backlink: bool = True
 copy_frontmatter: bool = True
 copy_global_tags: bool = True
-backlink: bool = True
+create_blocks: bool = True
 create_index_file: bool = True
+destination_folder_path: str = ''
 file_id_format: str = r'%Y%M%D%h%m%s'
 file_id_regex: str = r'\d{14}'
 file_name_format: str = r'%id'
+note_types: List[str] = [".md", ".markdown", ".txt"]
 replace_split_contents: bool = False
+source_folder_path: str = ''
+split_attrs: dict = {}
+split_keyword: str = '#split'
+split_type: Type = tokens.Header
 
 def initialize_settings():
     """Initialize the settings with default values"""
@@ -140,5 +139,3 @@ def reset_settings_to_default():
     """Reset current settings to default"""
     delete_current_settings()
     initialize_settings()
-    
-
