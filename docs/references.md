@@ -14,12 +14,15 @@ Here are various guides, tools, etc. that have been helpful to us while building
 * [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
 * [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/)
 * [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
-* [design patterns](https://python-patterns.guide/) (singletons, factory methods, global objects, etc.)
 
 ### project structure
 * [Structuring Your Project — The Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/structure/)
 * [Python import: Advanced Techniques and Tips](https://realpython.com/python-import/#create-and-install-a-local-package)
 * [python packaging: basic setup.py and declarative metadata (intermediate)](https://www.youtube.com/watch?v=GaWs-LenLYE&list=PLWBKAf81pmOaP9naRiNAqug6EBnkPakvY)
+
+## design patterns
+* [Python Design Patterns](https://python-patterns.guide/) by Brandon Rhodes
+* [The Catalog of Design Patterns](https://refactoring.guru/design-patterns/catalog) by Refactoring Guru
 
 ## testing
 * [Automated Testing in Python with pytest, tox, and GitHub Actions](https://www.youtube.com/watch?v=DhUpxWjOhME)
