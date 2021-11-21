@@ -38,6 +38,11 @@ Here are various guides, tools, etc. that have been helpful to us while building
 * [Lexical analysis](https://en.wikipedia.org/wiki/Lexical_analysis)
 * [Scanning · Crafting Interpreters](https://craftinginterpreters.com/scanning.html)
 
+## PySimpleGUI
+* [PySimpleGUI GitHub Repo](https://github.com/PySimpleGUI/PySimpleGUI)
+* [PySimpleGUI User's Manual](https://pysimplegui.readthedocs.io/en/latest/)
+* [GeeksforGeeks - Introduction to PySimpleGUI](https://www.geeksforgeeks.org/introduction-to-pysimplegui/)
+
 ## other
 * [intro to version control (with git and GitHub)](https://wheelercj.github.io/notes/pages/20210907144216.html)
 * [resources for learning and using regex](https://wheelercj.github.io/notes/pages/20210506235005.html)
