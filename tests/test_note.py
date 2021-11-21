@@ -256,3 +256,15 @@ def test_get_title_from_line_after_tag():
 def test_get_title_from_line_after_fake_title():
     # The line a title is on must not start with any spaces.
     assert note.get_title(' # fake title\n# 28827 \n asjdlfkd') == '28827'
+
+
+########################
+#  validate_file_name  #
+########################
+
+
+def test_validate_file_name_with_valid_name():
+    assert note.validate_file_name('valid_name.txt') == 'valid_name.txt'
+
+
+# TODO: test validate_file_name more.
