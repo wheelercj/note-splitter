@@ -39,8 +39,9 @@ Here are various guides, tools, etc. that have been helpful to us while building
 * [Scanning · Crafting Interpreters](https://craftinginterpreters.com/scanning.html)
 
 ## PySimpleGUI
-* [PySimpleGUI GitHub Repo](https://github.com/PySimpleGUI/PySimpleGUI)
-* [PySimpleGUI User's Manual](https://pysimplegui.readthedocs.io/en/latest/)
+* [PySimpleGUI - The Demo Programs](https://github.com/PySimpleGUI/PySimpleGUI/tree/master/DemoPrograms)
+* [PySimpleGUI - The Full Documenation](http://www.PySimpleGUI.org)
+* [PySimpleGUI Cookbook](http://Cookbook.PySimpleGUI.org)
 * [GeeksforGeeks - Introduction to PySimpleGUI](https://www.geeksforgeeks.org/introduction-to-pysimplegui/)
 
 ## other
