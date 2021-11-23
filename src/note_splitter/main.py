@@ -12,6 +12,11 @@ from note_splitter.formatter_ import Formatter
 
 def main() -> None:
     """Runs the entire application."""
+    split_files()
+
+
+def split_files() -> None:
+    """Finds the files to split and splits them into multiple smaller files."""
     tokenize: Callable = Lexer()
     split: Callable = Splitter()
     format_: Callable = Formatter()
