@@ -15,13 +15,23 @@ def main() -> None:
     split_files()
 
 
-def split_files() -> None:
-    """Finds the files to split and splits them into multiple smaller files."""
+def split_files(notes: List[note.Note] = None) -> None:
+    """Splits files into multiple smaller files.
+    
+    If no notes are provided, they will be found by the split keyword 
+    defined in settings.
+
+    Parameters
+    ----------
+    notes: List[note.Note]
+        The notes to be split.
+    """
     tokenize: Callable = Lexer()
     split: Callable = Splitter()
     format_: Callable = Formatter()
     
-    notes: List[note.Note] = note.get_chosen_notes()
+    if notes is None:
+        notes: List[note.Note] = note.get_chosen_notes()
     for source_note in notes:
         with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
