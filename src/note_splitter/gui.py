@@ -1,8 +1,4 @@
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from typing import Tuple
-
-"""
-    PySimpleGUI Note Splitter Demo Program Project GUI
+"""PySimpleGUI Note Splitter Demo Program Project GUI
 
     PySimpleGUI was used to create a note splitter that can be used as a general purpose tool. 
 
@@ -40,6 +36,9 @@ from typing import Tuple
                 
     Copyright 2021 Note Splitter
 """
+
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
+from typing import Tuple
 
 def make_window(theme):
     sg.theme(theme)
