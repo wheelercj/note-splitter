@@ -5,6 +5,7 @@ Note Splitter modules
    :maxdepth: 4
 
    formatter_
+   gui
    lexer
    main
    note
