@@ -18,8 +18,8 @@ def main() -> None:
 def split_files(notes: List[note.Note] = None) -> None:
     """Splits files into multiple smaller files.
     
-    If no notes are provided, they will be found by the split keyword 
-    defined in settings.
+    If no notes are provided, they will be found using the split keyword
+    and the source folder path chosen in settings.
 
     Parameters
     ----------
