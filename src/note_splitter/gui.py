@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from typing import Tuple
 
 """
     PySimpleGUI Note Splitter Demo Program Project GUI
@@ -172,6 +173,38 @@ def popup_folderbrowse(message: str) -> str:
         event, values = window.read()
     window.close()
     return values[0]
+
+def create_hyperlink(text: str,
+                     url: str,
+                     font: Tuple[str, int, str] = None) -> sg.Text:
+    """Creates a PySimpleGUI Text object with a clickable hyperlink.
+
+    When the user clicks the hyperlink, the event created will start 
+    with 'URL ' and end with the URL.
+    
+    Parameters
+    ----------
+    text : str
+        The text to display in the Text object.
+    url : str
+        The URL to open when the hyperlink is clicked.
+    font : Tuple[str, int, str]
+        The font to use for the Text object. The first element is the 
+        font family, the second is the font size, and the third is the
+        font style. The default is ('Arial', 18, 'underline').
+
+    Returns
+    -------
+    sg.Text
+        A PySimpleGUI Text object with a clickable hyperlink.
+    """
+    if font is None:
+        font = ('Arial', 18, 'underline')
+    return sg.Text(text,
+                   tooltip=url,
+                   enable_events=True,
+                   font=font,
+                   key=f'URL {url}')
 
 if __name__ == '__main__':
     # sg.theme('black')
