@@ -163,11 +163,11 @@ def popup_folderbrowse(message: str) -> str:
     str
         The absolute path to the folder the user chose.
     """
-    layout = [[sg.Text(message)],
-      [sg.FolderBrowse(), sg.InputText()],
-      [sg.Submit(), sg.Cancel()]]
     event = None
     while event is None:
+        layout = [[sg.Text(message)],
+            [sg.FolderBrowse(), sg.InputText()],
+            [sg.Submit(), sg.Cancel()]]
         window = sg.Window('Choose a folder', layout)
         event, values = window.read()
     window.close()
