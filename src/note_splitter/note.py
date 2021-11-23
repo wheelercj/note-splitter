@@ -7,7 +7,7 @@ import uuid
 from copy import copy
 from typing import List, Tuple
 from datetime import datetime, timedelta
-from note_splitter import settings
+from note_splitter import settings, gui
 from note_splitter.patterns import header as header_pattern
 
 
@@ -72,6 +72,8 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     """
     if all_notes is None:
         all_notes: List[Note] = get_all_notes()
+    if not all_notes:
+        return []
 
     chosen_notes: List[Note] = []
     for note in all_notes:
@@ -83,17 +85,26 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     return chosen_notes
 
 
+def request_source_folder_path() -> bool:
+    """Prompts the user to select a folder to search for notes to split."""
+    folder_path = gui.popup_folderbrowse('Please select a folder to ' \
+        'search for notes to split')
+    if not folder_path:
+        return False
+    settings.source_folder_path = folder_path
+    settings.update_settings()
+    return True
+
+
 def get_all_notes() -> List[Note]:
     """Gets all the notes in the user's chosen folder."""
     notes: List[Note] = []
     folder_path = settings.source_folder_path
-    if not folder_path:
-        pass  # TODO: prompt the user for a valid folder path instead.
     try:
         folder_list = os.listdir(folder_path)
     except FileNotFoundError:
-        print(f'Folder {folder_path} does not exist.')
-        raise  # TODO: prompt the user for a valid folder path instead.
+        if not request_source_folder_path():
+            return []
     
     for file_name in folder_list:
         file_path = os.path.join(folder_path, file_name)
