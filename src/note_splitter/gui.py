@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from typing import Tuple
 
 """
@@ -45,23 +45,20 @@ def make_window(theme):
     sg.theme(theme)
     menu_def = [['&Close Application', ['E&xit']],
                 ['&Help', ['&Documentation']] ]
-    right_click_menu_def = [[], ['Versions', 'Clear Screen', 'Exit']]
+    right_click_menu_def = [[], ['Versions', 'Exit']]
 
     frame_layout = [[sg.T('Split by:')],
                   [sg.CB('Check 1'), sg.CB('Check 2'), sg.CB('Check 3')]]
 
     input_layout =  [
-
-                # [sg.Menu(menu_def, key='-MENU-')],
-
                 [sg.Multiline('Note Splitter User Tips:\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nYou get the point.', size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
 
-                [sg.Text("Add a file: "), sg.Input(key="-IN2-",change_submits=True), sg.FilesBrowse(key="-IN-")],
+                # [sg.Text("Choose some File"), sg.Input(key="-IN2-",change_submits=True), sg.FilesBrowse(key="-IN-")],
+
+                [sg.Button("Open Folder")],
+                [sg.Button("Open File")],
 
                 [sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
-
-                # [sg.Checkbox('Checkbox', default=True, k='-CB-')],
-                # [sg.Radio('Radio1', "RadioDemo", default=True, size=(10,1), k='-R1-'), sg.Radio('Radio2', "RadioDemo", default=True, size=(10,1), k='-R2-')],
 
                 [sg.Combo(values=('Combo 1', 'Combo 2', 'Combo 3'), default_value='Combo 1', readonly=True, k='-COMBO-'),
 
@@ -74,13 +71,13 @@ def make_window(theme):
                       # [sg.Output(size=(60,15), font='Courier 8', expand_x=True, expand_y=True)]
                       ]
 
-    specialty_layout = [[sg.Text("Any \"special\" elements will display here!")],
-                      [sg.Button("Open Folder")],
-                      [sg.Button("Open File")]]
+    # specialty_layout = [[sg.Text("Any \"special\" elements will display here!")],
+    #                   [sg.Button("Open Folder")],
+    #                   [sg.Button("Open File")]]
 
-    settings_layout = [[sg.Text("Any \"setting\" changes will be chosen and displayed here!")]]
+    settings_layout = [[sg.Text("Any \"setting\" options will be chosen and displayed here!")]]
     
-    theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking!")],
+    theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
                     [sg.Listbox(values = sg.theme_list(), 
                       size =(20, 12), 
                       key ='-THEME LISTBOX-',
@@ -90,7 +87,7 @@ def make_window(theme):
     layout = [ [sg.MenubarCustom(menu_def, key='-MENU-', font='Courier 15', tearoff=True)],
                 [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Home', input_layout),
-                               sg.Tab('Dummy Tab', specialty_layout),
+                              #  sg.Tab('Dummy Tab', specialty_layout),
                                sg.Tab('Settings', settings_layout),                 sg.Tab('Change Theme', theme_layout),
                                sg.Tab('Output', logging_layout)]], key='-TAB GROUP-', expand_x=True, expand_y=True),
 
@@ -207,9 +204,5 @@ def create_hyperlink(text: str,
                    key=f'URL {url}')
 
 if __name__ == '__main__':
-    # sg.theme('black')
-    # sg.theme('dark red')
-    # sg.theme('dark green 7')
-    # sg.theme('DefaultNoMoreNagging')
     sg.theme('TanBlue')
     main()
