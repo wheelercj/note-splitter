@@ -139,3 +139,12 @@ def reset_settings_to_default():
     """Reset current settings to default"""
     delete_current_settings()
     initialize_settings()
+
+def get_all_token_type_names() -> List[str]:
+    """Get all token type names."""
+    all_token_types: List[Type] = tokens.get_all_token_types(tokens)
+    # TODO
+
+def get_token_type(name: str) -> Type:
+    """Get a token type by name."""
+    # TODO
