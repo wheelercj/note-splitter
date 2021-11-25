@@ -38,7 +38,10 @@
 """
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from typing import Tuple
+from typing import Tuple, List, Dict
+from note_splitter import settings
+from note_splitter.note import Note
+
 
 def make_window(theme):
     sg.theme(theme)
@@ -201,6 +204,103 @@ def create_hyperlink(text: str,
                    enable_events=True,
                    font=font,
                    key=f'URL {url}')
+
+
+def create_split_type_dropdown() -> sg.Combo:
+    """Creates a dropdown element listing token types.
+    
+    The Section type is excluded.
+    """
+    token_type_names = settings.get_all_token_type_names()
+    token_type_names.remove('section')
+    return sg.Combo(values=token_type_names,
+                    default_value='header',
+                    key='-SPLIT TYPE-')
+
+
+def create_split_attr_dropdown() -> sg.Combo:
+    """Creates a dropdown element listing token attributes."""
+    obj = settings.split_type()
+    attr_names: List[str] = list(obj.__dict__.keys())
+    default_value = 'level' if 'level' in attr_names else None
+    return sg.Combo(values=attr_names,
+                    default_value=default_value,
+                    key='-SPLIT ATTR-')
+
+
+def create_note_listbox_layout(notes: List[Note],
+                               key: str) -> List[List[sg.Element]]:
+    """Creates a listbox of note titles and relevant buttons.
+
+    The open and show buttons will have the keys ``f'-OPEN{key}'`` and
+    ``f'-SHOW{key}'``, respectively.
+    
+    Parameters
+    ----------
+    notes : List[Note]
+        The notes to display in the listbox.
+    key : str
+        The key to use for the listbox and part of each of its buttons.
+    """
+    note_titles = [n.title for n in notes]
+    return [[sg.Listbox(note_titles, key=key, size=(80, 6))],
+            [sg.Button('Open', key=f'-OPEN{key}'),
+             sg.Button('Show in file browser', key=f'-SHOW{key}')]]
+
+
+def handle_note_listbox_event(event: str,
+                              selected_titles: List[str],
+                              listbox_notes: List[Note]) -> None:
+    """Handles an event from a listbox of notes.
+
+    Parameters
+    ----------
+    event : str
+        The event to handle.
+    selected_titles : List[str]
+        The titles of the notes selected in the listbox.
+    listbox_notes : List[Note]
+        The notes displayed in the listbox.
+    """
+    listbox_notes_dict = {n.title: n for n in listbox_notes}
+    event_methods = (('-OPEN', 'open'),
+                     ('-SHOW', 'show'),
+                     ('-MOVE', 'move'),
+                     ('-DELETE', 'delete'))
+    for event_prefix, method_name in event_methods:
+        if event.startswith(event_prefix):
+            call_note_listbox_method(method_name,
+                                     selected_titles,
+                                     listbox_notes_dict,
+                                     listbox_notes)
+            break
+
+
+def call_note_listbox_method(method_name: str,
+                             titles: List[str],
+                             listbox_notes_dict: Dict[str, Note],
+                             listbox_notes: List[Note]) -> None:
+    """Calls a method on a note in a listbox.
+
+    Assumes that the method name is valid.
+
+    Parameters
+    ----------
+    method_name : str
+        The name of the method to call.
+    titles : List[str]
+        The titles of the notes to call the method on.
+    listbox_notes_dict : dict
+        A dictionary mapping note titles to notes.
+    listbox_notes : List[Note]
+        The notes displayed in the listbox.
+    """
+    for title in titles:
+        note_: Note = listbox_notes_dict[title]
+        method = getattr(note_, method_name)
+        if method() is None:
+            listbox_notes.remove(note_)
+
 
 if __name__ == '__main__':
     sg.theme('TanBlue')
