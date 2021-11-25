@@ -4,9 +4,13 @@
 import os
 import re
 import uuid
+import webbrowser
+import subprocess
+import platform
 from copy import copy
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
+import PySimpleGUI as sg
 from note_splitter import settings, gui
 from note_splitter.patterns import header as header_pattern
 
@@ -58,6 +62,85 @@ class Note:
         with open(self.path, 'r', encoding='utf8') as file:
             contents = file.read()
         self.title = get_title(contents)
+
+    def open(self) -> Optional[bool]:
+        """Opens the note in the device's default editor.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was opened successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        webbrowser.open('file://' + self.path)
+        return True
+
+    def show(self) -> Optional[bool]:
+        """Shows the note in the file browser.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was shown successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        if platform.system() == 'Windows':
+            temp_path = self.path.replace('/', '\\')
+            subprocess.Popen(['explorer', '/select,', temp_path])
+        elif platform.system() == 'Darwin':  # macOS
+            subprocess.call(['open', '-R', self.path])
+        else:  # Linux
+            subprocess.call(['xdg-open', '-R', self.path])
+        return True
+
+    def move(self, new_folder_path: str) -> Optional[bool]:
+        """Not fully implemented. Moves the note file to a new folder.
+
+        Parameters
+        ----------
+        new_folder_path : str
+            The absolute path to the new folder.
+
+        Returns
+        -------
+        bool, None
+            True if the note was moved successfully, None if the note 
+            does not exist, False otherwise.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        new_path = os.path.join(new_folder_path, self.name)
+        if os.path.exists(new_path):
+            sg.Popup(f'File already exists: {new_path}')
+            return False
+        # TODO: update relative paths in the note file, and update any 
+        # references to the old path in any/all of the user's files.
+        os.rename(self.path, new_path)
+        self.path = new_path
+        self.folder_path = new_folder_path
+        return True
+        
+    def delete(self) -> Optional[bool]:
+        """Deletes the note file.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was deleted successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        os.remove(self.path)
+        return True
 
 
 def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
