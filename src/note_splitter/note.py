@@ -11,6 +11,7 @@ from copy import copy
 from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
 from send2trash import send2trash  # https://github.com/arsenetar/send2trash
+from tkinter import filedialog
 import PySimpleGUI as sg
 from note_splitter import settings, gui
 from note_splitter.patterns import header as header_pattern
@@ -171,8 +172,8 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
 
 def request_source_folder_path() -> bool:
     """Prompts the user to select a folder to search for notes to split."""
-    folder_path = gui.popup_folderbrowse('Please select a folder to ' \
-        'search for notes to split')
+    folder_path = filedialog.askdirectory(title='Please select the folder ' \
+                                            'with your notes.', mustexist=True)
     if not folder_path:
         return False
     settings.source_folder_path = folder_path

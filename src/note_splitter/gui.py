@@ -147,31 +147,6 @@ def main():
     window.close()
     exit(0)
 
-def popup_folderbrowse(message: str) -> str:
-    """Displays a popup requesting the user to choose a folder.
-    
-    If the user clicks the Cancel button, an empty string will be 
-    returned and the program should cancel splitting.
-
-    Parameters
-    ----------
-    message : str
-        The message to display in the popup.
-
-    Returns
-    -------
-    str
-        The absolute path to the folder the user chose.
-    """
-    event = None
-    while event is None:
-        layout = [[sg.Text(message)],
-            [sg.FolderBrowse(), sg.InputText()],
-            [sg.Submit(), sg.Cancel()]]
-        window = sg.Window('Choose a folder', layout)
-        event, values = window.read()
-    window.close()
-    return values[0]
 
 def create_hyperlink(text: str,
                      url: str,
