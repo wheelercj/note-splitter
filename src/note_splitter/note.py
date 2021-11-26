@@ -10,6 +10,7 @@ import platform
 from copy import copy
 from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
+from send2trash import send2trash  # https://github.com/arsenetar/send2trash
 import PySimpleGUI as sg
 from note_splitter import settings, gui
 from note_splitter.patterns import header as header_pattern
@@ -128,7 +129,7 @@ class Note:
         return True
         
     def delete(self) -> Optional[bool]:
-        """Deletes the note file.
+        """Moves the note file to the trash or recycle bin.
         
         Returns
         -------
@@ -139,7 +140,7 @@ class Note:
         if not os.path.exists(self.path):
             sg.Popup(f'File not found: {self.path}')
             return None
-        os.remove(self.path)
+        send2trash(self.path)
         return True
 
 

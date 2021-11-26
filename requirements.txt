@@ -1,2 +1,3 @@
 pyyaml==6.0
 pysimplegui==4.53
+send2trash==1.8
