@@ -3,6 +3,7 @@
 
 import os
 from typing import List, Callable
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from note_splitter import settings, tokens, note
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
@@ -13,6 +14,10 @@ from note_splitter.formatter_ import Formatter
 def main() -> None:
     """Runs the entire application."""
     split_files()
+
+
+def show_progress(n: int, max_n: int) -> None:
+    sg.one_line_progress_meter('Splitting', n, max_n, '-PROGRESS_METER-')
 
 
 def split_files(notes: List[note.Note] = None) -> None:
@@ -32,7 +37,8 @@ def split_files(notes: List[note.Note] = None) -> None:
     
     if notes is None:
         notes: List[note.Note] = note.get_chosen_notes()
-    for source_note in notes:
+    for i, source_note in enumerate(notes):
+        show_progress(i, len(notes))
         with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
         split_contents: List[str] = split_text(content,
