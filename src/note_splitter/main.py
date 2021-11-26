@@ -16,8 +16,25 @@ def main() -> None:
     split_files()
 
 
-def show_progress(n: int, max_n: int) -> None:
-    sg.one_line_progress_meter('Splitting', n, max_n, '-PROGRESS_METER-')
+def show_progress(note_number: int,
+                  note_count: int,
+                  call_number: int,
+                  call_count: int) -> None:
+    """Shows the progress of the application.
+
+    Parameters
+    ----------
+    note_number: int
+        The number of the note being processed.
+    note_count: int
+        The total number of notes being processed.
+    call_number: int
+        The number of the call to this function.
+    call_count: int
+        The total number of calls to this function.
+    """
+    n = int((note_number + call_number) / (note_count * call_count) * 100)
+    sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
 
 
 def split_files(notes: List[note.Note] = None) -> None:
@@ -38,20 +55,23 @@ def split_files(notes: List[note.Note] = None) -> None:
     if notes is None:
         notes: List[note.Note] = note.get_chosen_notes()
     for i, source_note in enumerate(notes):
-        show_progress(i, len(notes))
+        show_progress(i, len(notes), 1, 5)
         with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
+        show_progress(i, len(notes), 2, 5)
         split_contents: List[str] = split_text(content,
                                                tokenize,
                                                split,
                                                format_)
+        show_progress(i, len(notes), 3, 5)
         new_file_names: List[str] = note.create_file_names(source_note.ext,
                                                            split_contents)
+        show_progress(i, len(notes), 4, 5)
         new_notes = save_new_notes(split_contents, new_file_names)
+        show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
         if settings.create_index_file:
-            index_path = create_index_file_(source_note,
-                                            new_notes)
+            index_path = create_index_file_(source_note, new_notes)
             print(f'Created index file at {index_path}')
 
 
