@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from send2trash import send2trash  # https://github.com/arsenetar/send2trash
 from tkinter import filedialog
 import PySimpleGUI as sg
-from note_splitter import settings, gui
+from note_splitter import settings
 from note_splitter.patterns import header as header_pattern
 
 
