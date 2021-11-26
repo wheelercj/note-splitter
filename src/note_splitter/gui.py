@@ -244,6 +244,11 @@ def handle_note_listbox_event(event: str,
                      ('-DELETE', 'delete'))
     for event_prefix, method_name in event_methods:
         if event.startswith(event_prefix):
+            if method_name == 'delete':
+                answer = sg.popup_yes_no('Are you sure you want to delete ' \
+                                       'the selected notes?', keep_on_top=True)
+                if answer != 'Yes':
+                    return
             call_note_listbox_method(method_name,
                                      selected_titles,
                                      listbox_notes_dict,
