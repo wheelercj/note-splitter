@@ -207,8 +207,12 @@ def create_note_listbox_layout(notes: List[Note],
                                key: str) -> List[List[sg.Element]]:
     """Creates a listbox of note titles and relevant buttons.
 
-    The open and show buttons will have the keys ``f'-OPEN{key}'`` and
-    ``f'-SHOW{key}'``, respectively.
+    The listbox itself has the given key, and the buttons have these 
+    keys: 
+     * ``f'-OPEN{key}'`` for the "Open" button
+     * ``f'-DELETE{key}'`` for the "Delete" button
+     * ``f'-MOVE{key}'`` for the "Move" button
+     * ``f'-SHOW{key}'`` for the "Show in file browser" button
     
     Parameters
     ----------
@@ -220,6 +224,8 @@ def create_note_listbox_layout(notes: List[Note],
     note_titles = [n.title for n in notes]
     return [[sg.Listbox(note_titles, key=key, size=(80, 6))],
             [sg.Button('Open', key=f'-OPEN{key}'),
+             sg.Button('Move', key=f'-MOVE{key}'),
+             sg.Button('Delete', key=f'-DELETE{key}'),
              sg.Button('Show in file browser', key=f'-SHOW{key}')]]
 
 
