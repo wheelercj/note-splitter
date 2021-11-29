@@ -290,7 +290,7 @@ interrupted#word
 !#negatedtag
 ```
 
-#### asset link
+#### file path in link
 ```
 [](..\..\assets\comm-rota.pdf)
 ![](1e9b3e85368662b9d33d2fcd700cc84f.png)
@@ -300,12 +300,15 @@ interrupted#word
 [account info](..\Other\account info.jpg)
 ![C:\Users\chris\Documents\Zettelkasten\assets\Screenshot_2020-05-27 2.png](C:\Users\chris\Documents\Zettelkasten\assets\Screenshot_2020-05-27 2.png)
 ![4d628bdda08ec00570422b0d030fd918.mp4](4d628bdda08ec00570422b0d030fd918.mp4)
+[20200319163500.md](..\test docs\20200319163500.md)
+[20200319163500.md](test docs/20200319163500.markdown)
 ```
 
-#### not asset link
+#### not file path in link
+It's okay to match some of these as long as the result is checked with `os.path.exists`.
 ```
+`[20200319163500.md](test docs/20200319163500.markdown)`
 [](c:\Users\chris\Documents\folder)
-[20200319163500.md](..\test docs\20200319163500.md)
 [](zotero://open-pdf/library/items/3PMYG2V7?page=7)
 [abcdef@csun.edu](mailto:abcdef@csun.edu)
 [wikipedia](wikipedia.org)
@@ -320,6 +323,7 @@ interrupted#word
 [](www.wikipedia.org/wiki/file.html)
 [](www.wikipedia.org/wiki/file.htm)
 [](wikipedia.org/wiki/file.html)
+`[](wikipedia.org/wiki/file.html)`
 ```
 
 #### time ID

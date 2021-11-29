@@ -28,6 +28,10 @@ horizontal_rule : re.Pattern
     The pattern for a horizontal rule, which is composed of three or 
     more minuses, underscores, or asterisks. There may be any number of 
     whitespace characters anywhere on the line (a full-line element).
+file_path_in_link : re.Pattern
+    The pattern for a relative or absolute file path in a link (an 
+    inline element). This pattern also matches some website URLs in 
+    links.
 math_fence : re.Pattern
     The pattern for the delimiter of a multi-line block of math 
     equations (a full-line element).
@@ -77,4 +81,5 @@ task = re.compile(r'^\s*[*+-] \[[x\s]\] .+')
 unordered_list_item = re.compile(r'^\s*[*+-]\s.*')
 
 # inline elements
+file_path_in_link = re.compile(r'(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:|obsidian:)(?P<path>.*?(?P<basename>[^(/|\\)]*?(?P<ext>\.[^.\\/]+)))(?=\)(?!`))')
 tag = re.compile(r'(?<!\S)(?:(?:#+[\w\d_-]*[\w\d_-]#?)|(?:(?<=.)#+[\w\d_-]*[\w\d_-]#?))')
