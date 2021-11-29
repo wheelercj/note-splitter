@@ -203,8 +203,9 @@ def create_split_attr_dropdown() -> sg.Combo:
                     key='-SPLIT ATTR-')
 
 
-def create_note_listbox_layout(notes: List[Note],
-                               key: str) -> List[List[sg.Element]]:
+def create_note_listbox_layout_with_buttons(
+        notes: List[Note],
+        key: str) -> List[List[sg.Element]]:
     """Creates a listbox of note titles and relevant buttons.
 
     The listbox itself has the given key, and the buttons have these 
@@ -221,12 +222,29 @@ def create_note_listbox_layout(notes: List[Note],
     key : str
         The key to use for the listbox and part of each of its buttons.
     """
+    layout = create_note_listbox_layout(notes, key)
+    layout.append([
+        sg.Button('Open', key=f'-OPEN{key}'),
+        sg.Button('Delete', key=f'-DELETE{key}'),
+        sg.Button('Move', key=f'-MOVE{key}'),
+        sg.Button('Show in file browser', key=f'-SHOW{key}')
+    ])
+    return layout
+
+
+def create_note_listbox_layout(notes: List[Note],
+                               key: str) -> List[List[sg.Element]]:
+    """Creates a listbox of note titles.
+
+    Parameters
+    ----------
+    notes : List[Note]
+        The notes to display in the listbox.
+    key : str
+        The key to use for the listbox.
+    """
     note_titles = [n.title for n in notes]
-    return [[sg.Listbox(note_titles, key=key, size=(80, 6))],
-            [sg.Button('Open', key=f'-OPEN{key}'),
-             sg.Button('Move', key=f'-MOVE{key}'),
-             sg.Button('Delete', key=f'-DELETE{key}'),
-             sg.Button('Show in file browser', key=f'-SHOW{key}')]]
+    return [[sg.Listbox(note_titles, key=key, size=(80, 6))]]
 
 
 def handle_note_listbox_event(event: str,
