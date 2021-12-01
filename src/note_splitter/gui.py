@@ -61,8 +61,10 @@ def make_window(theme):
                 [sg.Button("Open File")],
 
                 [sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
-
-                [sg.Combo(values=('Combo 1', 'Combo 2', 'Combo 3'), default_value='Combo 1', readonly=True, k='-COMBO-'),
+                 
+                [sg.Text('Choose what to split by: ')],
+                [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
+                sg.Combo(values=('level', 'Combo 2', 'Combo 3'), default_value='level', readonly=True, k='-COMBO-'),
 
                  sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
 
