@@ -100,8 +100,8 @@ def initialize_settings():
                 copy_frontmatter integer, copy_global_tags integer, backlink integer, create_index_file integer, replace_split_contents integer)''')
     cur.execute("""INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path,  
                 note_types, split_type, split_attrs, file_name_format, file_id_format, file_id_regex create_blocks, 
-                copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, destination_folder_path, 
-                ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
+                copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, 
+                destination_folder_path, ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
                 int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
     connection.close()
@@ -129,8 +129,8 @@ def update_settings():
     cur = connection.cursor()
     cur.execute("""INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path,  
                 note_types, split_type, split_attrs, file_name_format, file_id_format, file_id_regex create_blocks, 
-                copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, destination_folder_path, 
-                ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
+                copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, 
+                destination_folder_path, ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
                 int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
     connection.commit()
     connection.close()
