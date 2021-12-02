@@ -78,8 +78,10 @@ def make_window(theme):
     # specialty_layout = [[sg.Text("Any \"special\" elements will display here!")],
     #                   [sg.Button("Open Folder")],
     #                   [sg.Button("Open File")]]
-
-    settings_layout = [[sg.Text("Any \"setting\" options will be chosen and displayed here!")]]
+  
+    
+    settings_layout = [[sg.Text("Any \"setting\" options will be chosen and displayed here!")],[sg.Checkbox('create index file',key='indexFile')], [sg.Checkbox('copy frontmatter',key='copy_frontmatter')], [sg.Checkbox('copy global tags',key='copy_global_tags')], [sg.Checkbox('backlink',key='backlink')],
+     ]  
     
     theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
                     [sg.Listbox(values = sg.theme_list(), 
