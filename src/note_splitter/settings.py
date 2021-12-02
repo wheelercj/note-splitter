@@ -139,16 +139,16 @@ def reset_settings_to_default():
     """Reset current settings to default"""
     delete_current_settings()
     initialize_settings()
-      
- def format_token_types():
+
+def format_token_types():
     """Format the strings returned by get_all_token_types()"""
-    tokens = get_all_token_types()
+    token_types = tokens.get_all_token_types(tokens)
     new_tokens = []
-    for i in range(len(tokens)):
-          formated_token = ''
-          for i, letter in enumerate(tokens[i].__name__):
+    for i in range(len(token_types)):
+        formated_token = ''
+        for i, letter in enumerate(token_types[i].__name__):
             if i and letter.isupper():
-               formated_token += ' '
+                formated_token += ' '
             formated_token += letter
-          new_tokens.append(formated_token.lower()) 
+        new_tokens.append(formated_token.lower()) 
     return new_tokens
