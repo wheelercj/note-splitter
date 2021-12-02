@@ -4,16 +4,22 @@
 import os
 from typing import List, Callable
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from note_splitter import settings, tokens, note
+from note_splitter import settings, tokens, note, gui
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def main() -> None:
-    """Runs the entire application."""
-    split_files()
+def main_menu():
+    """Displays the main menu."""
+    window = gui.create_main_menu()
+    while True:
+        event, value = window.read()
+        if event == sg.WIN_CLOSED or event == 'exit':
+            window.close()
+            return
+        gui.respond_to_main_menu_event(event, value)
 
 
 def show_progress(note_number: int,
@@ -161,4 +167,4 @@ def create_index_file_(source_note: note.Note,
 
 
 if __name__ == '__main__':
-    main()
+    main_menu()
