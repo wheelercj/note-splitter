@@ -63,12 +63,13 @@ def make_window(theme):
                 [sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
                  
                 [sg.Text('Choose what to split by: ')],
+                [sg.Text('type                attribute           value')],
                 [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
                 sg.Combo(values=('level', 'Combo 2', 'Combo 3'), default_value='level', readonly=True, k='-COMBO-'),
 
                  sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
 
-                [sg.Button('Split'), sg.Button('Split Summary')]]
+                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]]
 
     logging_layout = [[sg.Text("Anything printed will display here!")],
                       [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
@@ -80,8 +81,16 @@ def make_window(theme):
     #                   [sg.Button("Open File")]]
   
     
-    settings_layout = [[sg.Text("Any \"setting\" options will be chosen and displayed here!")],[sg.Checkbox('create index file',key='indexFile')], [sg.Checkbox('copy frontmatter',key='copy_frontmatter')], [sg.Checkbox('copy global tags',key='copy_global_tags')], [sg.Checkbox('backlink',key='backlink')],
-     ]  
+    settings_layout = [
+          [sg.Text("Source folder path "),
+          sg.Button("Browse")],
+          [sg.Text("New file name format"), sg.Input()],
+          [sg.Checkbox('create index file',key='indexFile')],
+          [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
+          [sg.Checkbox('copy global tags',key='copy_global_tags')],
+          [sg.Checkbox('backlink',key='backlink')],
+          [sg.Button('Save'), sg.Button('Cancel')]
+     ] 
     
     theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
                     [sg.Listbox(values = sg.theme_list(), 
