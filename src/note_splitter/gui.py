@@ -38,6 +38,7 @@
 """
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
+import webbrowser
 from typing import Tuple, List, Dict
 from note_splitter import settings
 from note_splitter.note import Note
@@ -45,12 +46,12 @@ from note_splitter.note import Note
 
 def make_window(theme):
     sg.theme(theme)
-    menu_def = [['&Close Application', ['Q&Uit']],
+    menu_def = [['&Close Application', ['Q&uit']],
                 ['&Help', ['&Tips']] ]
     right_click_menu_def = [[], ['Versions', 'Quit']]
 
     frame_layout = [[sg.T('Choose which files to split: ')],
-                [sg.Button("Browse"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
+                [sg.Button("Open File"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
                 [sg.Text('keyword:', size =(15, 1)), sg.InputText()]
                   ]
     
@@ -66,11 +67,21 @@ def make_window(theme):
                 [sg.Text('Choose what to split by: ')],
                 [sg.Text('type                attribute           value')],
                 [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
-                sg.Combo(values=('level', 'Combo 2', 'Combo 3'), default_value='level', readonly=True, k='-COMBO-'),
-
-                 sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
-
+                 
+                # create_split_type_dropdown(),
+                create_split_attr_dropdown(),
+                sg.Text('Enter a number: ', size=(15, 1)), sg.InputText(),
+                 
+                ],
+                # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
+                [sg.Checkbox('create blocks', key='createBlocks')],
+                
                 [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]]
+    
+    splitsummary_layout = [ [sg.T('Number of new files created: ')],
+                           [sg.Multiline('this is where the titles will be listed\n...\n...\n...\n...\n...\n....\nYou get the point.', size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
+                            [sg.Button('open'), sg.Button('move'), sg.Button('delete'), sg.Button('show in file browser')] ]
+    
 
     logging_layout = [[sg.Text("Anything printed will display here!")],
                       [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
@@ -103,10 +114,12 @@ def make_window(theme):
     layout = [ [sg.MenubarCustom(menu_def, key='-MENU-', font='Courier 15', tearoff=True)],
                 [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Home', input_layout),
-                              #  sg.Tab('Dummy Tab', specialty_layout),
-                               sg.Tab('Settings', settings_layout),                 sg.Tab('Change Theme', theme_layout),
+                               #  sg.Tab('Dummy Tab', specialty_layout),
+                               sg.Tab('Settings', settings_layout),
+                               sg.Tab('Split Summary', splitsummary_layout),
                                sg.Tab('Output', logging_layout),
-                             sg.Tab('Documentation', documentation_layout)]],
+                               sg.Tab('Change Theme', theme_layout),
+                               sg.Tab('Documentation', documentation_layout)]],
                             key='-TAB GROUP-', expand_x=True, expand_y=True),
 
                ]]
@@ -127,8 +140,8 @@ def main():
             print('-------- Values Dictionary (key=value) --------')
             for key in values:
                 print(key, ' = ',values[key])
-        if event in (None, 'Exit'):
-            print("[LOG] Clicked Exit!")
+        if event in (None, 'Quit'):
+            print("[LOG] Clicked Quit!")
             break
         elif event == 'Tips':
             print("[LOG] Clicked Tips!")
