@@ -45,22 +45,23 @@ from note_splitter.note import Note
 
 def make_window(theme):
     sg.theme(theme)
-    menu_def = [['&Close Application', ['E&xit']],
-                ['&Help', ['&Documentation']] ]
-    right_click_menu_def = [[], ['Versions', 'Exit']]
+    menu_def = [['&Close Application', ['Q&Uit']],
+                ['&Help', ['&Tips']] ]
+    right_click_menu_def = [[], ['Versions', 'Quit']]
 
-    frame_layout = [[sg.T('Split by:')],
-                  [sg.CB('Check 1'), sg.CB('Check 2'), sg.CB('Check 3')]]
-
+    frame_layout = [[sg.T('Choose which files to split: ')],
+                [sg.Button("Browse"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
+                [sg.Text('keyword:', size =(15, 1)), sg.InputText()]
+                  ]
+    
+    documentation_layout = [[create_hyperlink('Click here for the documentation', 'https://note-splitter.readthedocs.io/en/latest/') ]]
+    
     input_layout =  [
-                [sg.Multiline('Note Splitter User Tips:\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nYou get the point.', size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
-
-                # [sg.Text("Choose some File"), sg.Input(key="-IN2-",change_submits=True), sg.FilesBrowse(key="-IN-")],
-
-                [sg.Button("Open Folder")],
-                [sg.Button("Open File")],
-
                 [sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
+                [sg.T('Files to split:')],
+
+                [sg.Multiline('this is where the files to split will be listed\n...\n...\n...\n...\n...\n....\nYou get the point.', 
+                              size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
                  
                 [sg.Text('Choose what to split by: ')],
                 [sg.Text('type                attribute           value')],
@@ -104,7 +105,9 @@ def make_window(theme):
     layout +=[[sg.TabGroup([[  sg.Tab('Home', input_layout),
                               #  sg.Tab('Dummy Tab', specialty_layout),
                                sg.Tab('Settings', settings_layout),                 sg.Tab('Change Theme', theme_layout),
-                               sg.Tab('Output', logging_layout)]], key='-TAB GROUP-', expand_x=True, expand_y=True),
+                               sg.Tab('Output', logging_layout),
+                             sg.Tab('Documentation', documentation_layout)]],
+                            key='-TAB GROUP-', expand_x=True, expand_y=True),
 
                ]]
     layout[-1].append(sg.Sizegrip())
@@ -127,13 +130,14 @@ def main():
         if event in (None, 'Exit'):
             print("[LOG] Clicked Exit!")
             break
-        elif event == 'Documentation':
-            print("[LOG] Clicked Documentation!")
-            sg.popup('The following link is for the Note Splitter documentation:',
-                     'note-splitter.readthedocs.io',
-                     'Visit each of the tabs to see available applications.',
+        elif event == 'Tips':
+            print("[LOG] Clicked Tips!")
+            sg.popup('Visit each of the tabs to see available applications.',
                      'Various tabs are included such as development environment setup, Note Splitter overview, token hierarchy, program modules, references, and how the documentation is maintained.',
                      'If you have any questions or concerns please message the developers on the GitHub page.', keep_on_top=True)
+        elif event.startswith('URL '):
+            url = event.split(' ')[1]
+            webbrowser.open(url)
         elif event == 'Split Summary':
             print("[LOG] Clicked Popup Button!")
             sg.popup("The number of files split: ", keep_on_top=True)
