@@ -76,12 +76,7 @@ def make_window(theme):
                 # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
                 [sg.Checkbox('create blocks', key='createBlocks')],
                 
-                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]]
-    
-    splitsummary_layout = [ [sg.T('Number of new files created: ')],
-                           [sg.Multiline('this is where the titles will be listed\n...\n...\n...\n...\n...\n....\nYou get the point.', size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
-                            [sg.Button('open'), sg.Button('move'), sg.Button('delete'), sg.Button('show in file browser')] ]
-    
+                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]]    
 
     logging_layout = [[sg.Text("Anything printed will display here!")],
                       [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
@@ -116,7 +111,6 @@ def make_window(theme):
     layout +=[[sg.TabGroup([[  sg.Tab('Home', input_layout),
                                #  sg.Tab('Dummy Tab', specialty_layout),
                                sg.Tab('Settings', settings_layout),
-                               sg.Tab('Split Summary', splitsummary_layout),
                                sg.Tab('Output', logging_layout),
                                sg.Tab('Change Theme', theme_layout),
                                sg.Tab('Documentation', documentation_layout)]],
@@ -152,9 +146,7 @@ def main():
             url = event.split(' ')[1]
             webbrowser.open(url)
         elif event == 'Split Summary':
-            print("[LOG] Clicked Popup Button!")
-            sg.popup("The number of files split: ", keep_on_top=True)
-            print("[LOG] Dismissing Popup!")
+            run_split_summary_window(new_notes)
         elif event == "Open Folder":
             print("[LOG] Clicked Open Folder!")
             folder_or_file = sg.popup_get_folder('Choose your folder', keep_on_top=True)
@@ -231,6 +223,51 @@ def create_split_attr_dropdown() -> sg.Combo:
     return sg.Combo(values=attr_names,
                     default_value=default_value,
                     key='-SPLIT ATTR-')
+
+
+def create_split_summary_window(notes: List[Note]) -> sg.Window:
+    """Creates a window displaying the number of notes split.
+    
+    Parameters
+    ----------
+    notes : List[Note]
+        The notes to split.
+    """
+    splitsummary_layout = [[sg.T(f'Number of new files created: {len(notes)}')]]
+    splitsummary_layout.extend(create_note_listbox_layout_with_buttons(notes, '-LISTBOX-'))
+    return sg.Window('Split Summary', splitsummary_layout)
+
+
+def run_split_summary_window(notes: List[Note]) -> None:
+    """Runs the split summary window.
+    
+    Parameters
+    ----------
+    notes : List[Note]
+        The notes to split.
+    """
+    window = create_split_summary_window(notes)
+    while True:
+        event, value = window.read(timeout=100)
+        if event in (sg.WIN_CLOSED, 'Quit'):
+            window.close()
+            return
+        respond_to_split_summary_event(event, value, notes)
+
+
+def respond_to_split_summary_event() -> None:
+    """Responds to events in the split summary window.
+    
+    Parameters
+    ----------
+    event : str
+        The event that occurred.
+    value : Any
+        The value of the event.
+    notes : List[Note]
+        The notes to split.
+    """
+    raise NotImplementedError
 
 
 def create_note_listbox_layout_with_buttons(
