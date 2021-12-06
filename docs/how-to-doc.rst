@@ -2,7 +2,7 @@
 how to maintain this documentation
 ==================================
 
-You can see [the documentation build status here](https://readthedocs.org/projects/note-splitter/builds/). Click on a build for more details.
+You can see `the documentation build status here <https://readthedocs.org/projects/note-splitter/builds/>`_. Click on a build for more details.
 
 auto-generating documentation
 -----------------------------
