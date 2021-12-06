@@ -48,52 +48,11 @@ def make_window(theme) -> sg.Window:
     sg.theme(theme)
     menu_def = [['&Close Application', ['Q&uit']],
                 ['&Help', ['&Tips']] ]
-    right_click_menu_def = [[], ['Versions', 'Quit']]
-
-    frame_layout = [[sg.T('Choose which files to split: ')],
-                [sg.Button("Open File"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
-                [sg.Text('keyword:', size =(15, 1)), sg.InputText()]
-                  ]
-    
-    documentation_layout = [[create_hyperlink('Click here for the documentation', 'https://note-splitter.readthedocs.io/en/latest/') ]]
-    
-    input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
-                     [sg.T('Files to split:')]]
-    input_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))
-    input_layout.extend([[sg.Text('Choose what to split by: ')],
-                [sg.Text('type                attribute           value')],
-                [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
-                 
-                # create_split_type_dropdown(),
-                create_split_attr_dropdown(),
-                sg.Text('Enter a number: ', size=(15, 1)), sg.InputText(),
-                 
-                ],
-                # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
-                [sg.Checkbox('create blocks', key='createBlocks')],
-                
-                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]])
 
     logging_layout = [[sg.Text("Anything printed will display here!")],
                       [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
                       # [sg.Output(size=(60,15), font='Courier 8', expand_x=True, expand_y=True)]
                       ]
-
-    # specialty_layout = [[sg.Text("Any \"special\" elements will display here!")],
-    #                   [sg.Button("Open Folder")],
-    #                   [sg.Button("Open File")]]
-  
-    
-    settings_layout = [
-          [sg.Text("Source folder path "),
-          sg.Button("Browse")],
-          [sg.Text("New file name format"), sg.Input()],
-          [sg.Checkbox('create index file',key='indexFile')],
-          [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
-          [sg.Checkbox('copy global tags',key='copy_global_tags')],
-          [sg.Checkbox('backlink',key='backlink')],
-          [sg.Button('Save'), sg.Button('Cancel')]
-     ] 
     
     theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
                     [sg.Listbox(values = sg.theme_list(), 
@@ -104,19 +63,17 @@ def make_window(theme) -> sg.Window:
     
     layout = [ [sg.MenubarCustom(menu_def, key='-MENU-', font='Courier 15', tearoff=True)],
                 [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
-    layout +=[[sg.TabGroup([[  sg.Tab('Home', input_layout),
-                               #  sg.Tab('Dummy Tab', specialty_layout),
-                               sg.Tab('Settings', settings_layout),
+    layout +=[[sg.TabGroup([[  sg.Tab('Home', create_home_tab_layout()),
+                               sg.Tab('Settings', create_settings_layout()),
                                sg.Tab('Output', logging_layout),
                                sg.Tab('Change Theme', theme_layout),
-                               sg.Tab('Documentation', documentation_layout)]],
-                            key='-TAB GROUP-', expand_x=True, expand_y=True),
-
-               ]]
+                               sg.Tab('Documentation', create_help_layout())]],
+                            key='-TAB GROUP-', expand_x=True, expand_y=True)]]
     layout[-1].append(sg.Sizegrip())
-    window = sg.Window('Note Splitter Demo and GUI', layout, right_click_menu=right_click_menu_def, right_click_menu_tearoff=True, grab_anywhere=True, resizable=True, margins=(0,0), use_custom_titlebar=True, finalize=True, keep_on_top=True)
+    window = sg.Window('Note Splitter Demo and GUI', layout, grab_anywhere=True, resizable=True, margins=(0,0), use_custom_titlebar=True, finalize=True, keep_on_top=True)
     window.set_min_size(window.size)
     return window
+
 
 def main():
     window = make_window(sg.theme())
@@ -164,6 +121,49 @@ def main():
 
     window.close()
     exit(0)
+
+
+def create_home_tab_layout() -> List[List[sg.Element]]:
+    """Creates the home tab's layout."""
+    frame_layout = [[sg.T('Choose which files to split: ')],
+                [sg.Button("Open File"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
+                [sg.Text('keyword:', size =(15, 1)), sg.InputText()]]
+    
+    input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
+                     [sg.T('Files to split:')]]
+    input_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))  # TODO: use something instead of None.
+    input_layout.extend([[sg.Text('Choose what to split by: ')],
+                [sg.Text('type                attribute           value')],
+                [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
+                 
+                # create_split_type_dropdown(),
+                create_split_attr_dropdown(),
+                sg.Text('Enter a number: ', size=(15, 1)), sg.InputText(),
+                 
+                ],
+                # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
+                [sg.Checkbox('create blocks', key='createBlocks')],
+                
+                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]])
+
+    return input_layout
+
+
+def create_settings_layout() -> List[List[sg.Element]]:
+    """Creates the settings tab's layout."""
+    return [[sg.Text("Source folder path "),
+          sg.Button("Browse")],
+          [sg.Text("New file name format"), sg.Input()],
+          [sg.Checkbox('create index file',key='indexFile')],
+          [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
+          [sg.Checkbox('copy global tags',key='copy_global_tags')],
+          [sg.Checkbox('backlink',key='backlink')],
+          [sg.Button('Save'), sg.Button('Cancel')]]
+
+
+def create_help_layout() -> List[List[sg.Element]]:
+    """Creates the help tab's layout."""
+    return [[create_hyperlink('Click here for the documentation', 'https://note-splitter.readthedocs.io/en/latest/') ]]
 
 
 def create_hyperlink(text: str,
