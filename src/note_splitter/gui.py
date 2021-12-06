@@ -49,11 +49,6 @@ def make_window(theme) -> sg.Window:
     menu_def = [['&Close Application', ['Q&uit']],
                 ['&Help', ['&Tips']] ]
 
-    logging_layout = [[sg.Text("Anything printed will display here!")],
-                      [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
-                      # [sg.Output(size=(60,15), font='Courier 8', expand_x=True, expand_y=True)]
-                      ]
-    
     theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
                     [sg.Listbox(values = sg.theme_list(), 
                       size =(20, 12), 
@@ -65,7 +60,6 @@ def make_window(theme) -> sg.Window:
                 [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Home', create_home_tab_layout()),
                                sg.Tab('Settings', create_settings_layout()),
-                               sg.Tab('Output', logging_layout),
                                sg.Tab('Change Theme', theme_layout),
                                sg.Tab('Documentation', create_help_layout())]],
                             key='-TAB GROUP-', expand_x=True, expand_y=True)]]
@@ -88,10 +82,8 @@ def main():
             for key in values:
                 print(key, ' = ',values[key])
         if event in (None, 'Quit'):
-            print("[LOG] Clicked Quit!")
             break
         elif event == 'Tips':
-            print("[LOG] Clicked Tips!")
             sg.popup('Visit each of the tabs to see available applications.',
                      'Various tabs are included such as development environment setup, Note Splitter overview, token hierarchy, program modules, references, and how the documentation is maintained.',
                      'If you have any questions or concerns please message the developers on the GitHub page.', keep_on_top=True)
@@ -101,19 +93,13 @@ def main():
         elif event == 'Split Summary':
             run_split_summary_window(new_notes)
         elif event == "Open Folder":
-            print("[LOG] Clicked Open Folder!")
             folder_or_file = sg.popup_get_folder('Choose your folder', keep_on_top=True)
             sg.popup("You chose: " + str(folder_or_file), keep_on_top=True)
-            print("[LOG] User chose folder: " + str(folder_or_file))
         elif event == "Open File":
-            print("[LOG] Clicked Open File!")
             folder_or_file = sg.popup_get_file('Choose your file', keep_on_top=True)
             sg.popup("You chose: " + str(folder_or_file), keep_on_top=True)
-            print("[LOG] User chose file: " + str(folder_or_file))
         elif event == "Set Theme":
-            print("[LOG] Clicked Set Theme!")
             theme_chosen = values['-THEME LISTBOX-'][0]
-            print("[LOG] User Chose Theme: " + str(theme_chosen))
             window.close()
             window = make_window(theme_chosen)
         elif event == 'Versions':
