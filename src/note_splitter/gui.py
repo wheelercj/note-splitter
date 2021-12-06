@@ -49,18 +49,10 @@ def make_window(theme) -> sg.Window:
     menu_def = [['&Close Application', ['Q&uit']],
                 ['&Help', ['&Tips']] ]
 
-    theme_layout = [[sg.Text("Change the theme of Note Splitter to your liking.")],
-                    [sg.Listbox(values = sg.theme_list(), 
-                      size =(20, 12), 
-                      key ='-THEME LISTBOX-',
-                      enable_events = True)],
-                      [sg.Button("Set Theme")]]
-    
     layout = [ [sg.MenubarCustom(menu_def, key='-MENU-', font='Courier 15', tearoff=True)],
                 [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Home', create_home_tab_layout()),
                                sg.Tab('Settings', create_settings_layout()),
-                               sg.Tab('Change Theme', theme_layout),
                                sg.Tab('Documentation', create_help_layout())]],
                             key='-TAB GROUP-', expand_x=True, expand_y=True)]]
     layout[-1].append(sg.Sizegrip())
@@ -155,6 +147,12 @@ def create_settings_layout() -> List[List[sg.Element]]:
         [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
         [sg.Checkbox('copy global tags',key='copy_global_tags')],
         [sg.Checkbox('backlink',key='backlink')],
+        # [sg.Text("Change the theme of Note Splitter to your liking.")],
+        #             [sg.Listbox(values = sg.theme_list(), 
+        #               size =(20, 12), 
+        #               key ='-THEME LISTBOX-',
+        #               enable_events = True)],
+        #               [sg.Button("Set Theme")],
         [sg.Button('Save'), sg.Button('Cancel')]]
 
 
