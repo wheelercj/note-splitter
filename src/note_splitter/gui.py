@@ -46,7 +46,7 @@ from note_splitter.note import Note
 
 def create_main_menu_window() -> sg.Window:
     """Creates the main menu window."""
-    window = sg.Window('Note Splitter Demo and GUI',
+    window = sg.Window('Note Splitter',
                        create_main_menu_layout(),
                        grab_anywhere=True,
                        resizable=True,
@@ -115,46 +115,52 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
 
 def create_home_tab_layout() -> List[List[sg.Element]]:
     """Creates the home tab's layout."""
-    frame_layout = [[sg.T('Choose which files to split: ')],
-                [sg.Button('Open File'), sg.T(' or '), sg.Button('find'), sg.T(' by ')],
-                [sg.Text('keyword:', size =(15, 1)), sg.InputText(settings.split_keyword)]]
-    
-    input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
-                     [sg.T('Files to split:')]]
-    input_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))  # TODO: use something instead of None.
-    input_layout.extend([
-                [sg.Text('Choose what to split by: ')],
-                [sg.Text('type                attribute           value')],
-                [create_split_type_dropdown(),
-                 create_split_attr_dropdown(),
-                 sg.Text('Enter a number: ',
-                         size=(15, 1)),
-                         sg.InputText(settings.split_attrs.get('level', ''))],
-                [sg.Checkbox('create blocks',
-                             key='createBlocks',
-                             default=settings.create_blocks)],
-                [sg.Button('Split all'),
-                 sg.Button('Split selected'),
-                 sg.Button('Quit')]])
+    frame_layout = [
+        [sg.T('Choose which files to split: ')],
+        [sg.Button('Open File'),
+         sg.T(' or '),
+         sg.Button('find'),
+         sg.T(' by ')],
+        [sg.Text('keyword:'),
+         sg.InputText(settings.split_keyword)]]
+    tab_layout = [
+        [sg.Frame('',
+                  frame_layout,
+                  font='Any 12',
+                  title_color='blue')],
+        [sg.T('Files to split:')]]
+    tab_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))  # TODO: use something instead of None.
+    tab_layout.extend([
+        [sg.Text('Choose what to split by: ')],
+        [sg.Text('type                                            attribute         value')],
+        [create_split_type_dropdown(),
+         create_split_attr_dropdown(),
+         sg.InputText(settings.split_attrs.get('level', ''))],
+        [sg.Checkbox('parse blocks',
+                     key='createBlocks',
+                     default=settings.create_blocks)],
+        [sg.Button('Split all'),
+         sg.Button('Split selected'),
+         sg.Button('Close')]])
 
-    return input_layout
+    return tab_layout
 
 
-def create_settings_layout() -> List[List[sg.Element]]:
+def create_settings_tab_layout() -> List[List[sg.Element]]:
     """Creates the settings tab's layout."""
     return [
         [sg.Text('Source Folder',
                  size=(15, 1),
                  auto_size_text=False,
                  justification='right'),
-            sg.InputText(settings.source_folder_path),      
-            sg.FolderBrowse()],      
+         sg.InputText(settings.source_folder_path),
+         sg.FolderBrowse()],
         [sg.Text('Destination Folder',
                  size=(15, 1),
                  auto_size_text=False,
                  justification='right'),
-            sg.InputText(settings.destination_folder_path),      
-            sg.FolderBrowse()],  
+         sg.InputText(settings.destination_folder_path),
+         sg.FolderBrowse()],
         [sg.Text("New file name format"),
          sg.Input(settings.file_name_format)],
         [sg.Checkbox('create index file',
