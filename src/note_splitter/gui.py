@@ -269,11 +269,9 @@ def create_note_listbox_layout_with_buttons(
     """Creates a listbox of note titles and relevant buttons.
 
     The listbox itself has the given key, and the buttons have these 
-    keys: 
-     * ``f'-OPEN{key}'`` for the "Open" button
-     * ``f'-DELETE{key}'`` for the "Delete" button
-     * ``f'-MOVE{key}'`` for the "Move" button
-     * ``f'-SHOW{key}'`` for the "Show in file browser" button
+    keys: ``f'-OPEN{key}'`` for the "Open" button, ``f'-DELETE{key}'`` 
+    for the "Delete" button, ``f'-MOVE{key}'`` for the "Move" button, 
+    and ``f'-SHOW{key}'`` for the "Show in file browser" button.
     
     Parameters
     ----------
