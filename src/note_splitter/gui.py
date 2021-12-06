@@ -137,14 +137,25 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
 
 def create_settings_layout() -> List[List[sg.Element]]:
     """Creates the settings tab's layout."""
-    return [[sg.Text("Source folder path "),
-          sg.Button("Browse")],
-          [sg.Text("New file name format"), sg.Input()],
-          [sg.Checkbox('create index file',key='indexFile')],
-          [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
-          [sg.Checkbox('copy global tags',key='copy_global_tags')],
-          [sg.Checkbox('backlink',key='backlink')],
-          [sg.Button('Save'), sg.Button('Cancel')]]
+    return [
+        [sg.Text('Source Folder',
+                 size=(15, 1),
+                 auto_size_text=False,
+                 justification='right'),
+            sg.InputText('Source'),      
+            sg.FolderBrowse()],      
+        [sg.Text('Destination Folder',
+                 size=(15, 1),
+                 auto_size_text=False,
+                 justification='right'),
+            sg.InputText('Dest'),      
+            sg.FolderBrowse()],  
+        [sg.Text("New file name format"), sg.Input()],
+        [sg.Checkbox('create index file',key='indexFile')],
+        [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
+        [sg.Checkbox('copy global tags',key='copy_global_tags')],
+        [sg.Checkbox('backlink',key='backlink')],
+        [sg.Button('Save'), sg.Button('Cancel')]]
 
 
 def create_help_layout() -> List[List[sg.Element]]:
