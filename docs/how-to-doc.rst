@@ -10,7 +10,7 @@ Much of our documentation on Read The Docs is automatically built from the code 
 
 Each time a new Python module is added to the project:
  1. Add its name to the list in docs/modules.rst
- 2. Use this command to automatically generate an rst file for the new module: ``sphinx-apidoc -o docs note_splitter`` (while in the project's root folder)
+ 2. Use this command to automatically generate an rst file for the new module: ``sphinx-apidoc -o docs src/note_splitter -e`` (while in the project's root folder)
 
 Each time a new dependency is added to our project:
  1. See `dependencies <https://note-splitter.readthedocs.io/en/latest/dev-setup.html#dependencies>`_

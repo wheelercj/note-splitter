@@ -125,7 +125,7 @@ class Text(CanHaveInlineElements):
     level : int
         The number of spaces of indentation.
     """
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
 
@@ -142,7 +142,7 @@ class EmptyLine(Token):
     """
     pattern: re.Pattern = patterns.empty_line
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -164,7 +164,7 @@ class Header(CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.header
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         """Parses a line of text and creates a header token."""
         self.content: str = line
         self.body = line.lstrip('#')
@@ -184,7 +184,7 @@ class HorizontalRule(Token):
     """
     pattern: re.Pattern = patterns.horizontal_rule
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -202,7 +202,7 @@ class Blockquote(CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.blockquote
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
 
@@ -215,7 +215,7 @@ class BlockquoteBlock(Block):
     content : List[Blockquote]
         The consecutive blockquote tokens.
     """
-    def __init__(self, tokens_: List[Blockquote]):
+    def __init__(self, tokens_: List[Blockquote] = None):
         self.content: list = tokens_
 
 
@@ -234,9 +234,12 @@ class Footnote(CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.footnote
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
-        self.reference: str = line.split(':')[0]
+        if line:
+            self.reference: str = line.split(':')[0]
+        else:
+            self.reference: str = ''
 
 
 class Task(TextListItem, CanHaveInlineElements):
@@ -255,7 +258,7 @@ class Task(TextListItem, CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.task
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
         self.is_done = patterns.finished_task.match(line) is not None
@@ -276,7 +279,7 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.unordered_list_item
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
 
@@ -295,7 +298,7 @@ class OrderedListItem(TextListItem, CanHaveInlineElements):
     """
     pattern: re.Pattern = patterns.ordered_list_item
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
 
@@ -315,9 +318,12 @@ class TextList(Block):
         The number of spaces of indentation of the first item in the 
         list.
     """
-    def __init__(self, tokens_: List[Union[TextListItem, 'TextList']] = []):
+    def __init__(self, tokens_: List[Union[TextListItem, 'TextList']] = None):
         self.content: list = tokens_
-        self.level = tokens_[0].level
+        if tokens_:
+            self.level: int = tokens_[0].level
+        else:
+            self.level: int = 0
 
 
 class TableRow(TablePart):
@@ -332,7 +338,7 @@ class TableRow(TablePart):
     """
     pattern: re.Pattern = patterns.table_row
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -349,7 +355,7 @@ class TableDivider(TablePart):
     """
     pattern: re.Pattern = patterns.table_divider
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -361,7 +367,7 @@ class Table(Block):
     content : List[Union[TableRow, TableDivider]]
         The table's row token(s) and possibly divider token(s).
     """
-    def __init__(self, tokens_: List[Union[TableRow, TableDivider]]):
+    def __init__(self, tokens_: List[Union[TableRow, TableDivider]] = None):
         self.content: list = tokens_
 
 
@@ -382,7 +388,7 @@ class CodeFence(Fence):
     """
     pattern: re.Pattern = patterns.code_fence
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
         self.language: str = line.lstrip('~').lstrip('`').strip()
 
@@ -395,7 +401,7 @@ class Code(Fenced):
     content : str
         The content of the line of text.
     """
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -411,9 +417,12 @@ class CodeBlock(Block):
         line of the opening code fence. Surrounding whitespace 
         characters are removed.
     """
-    def __init__(self, tokens_: List[Union[CodeFence, Code]]):
+    def __init__(self, tokens_: List[Union[CodeFence, Code]] = None):
         self.content: list = tokens_
-        self.language: str = tokens_[0].language
+        if tokens_:
+            self.language: str = tokens_[0].language
+        else:
+            self.language: str = ''
 
 
 class MathFence(Fence):
@@ -428,7 +437,7 @@ class MathFence(Fence):
     """
     pattern: re.Pattern = patterns.math_fence
 
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -440,7 +449,7 @@ class Math(Fenced):
     content : str
         The content of the line of text.
     """
-    def __init__(self, line: str):
+    def __init__(self, line: str = ''):
         self.content: str = line
 
 
@@ -455,7 +464,7 @@ class MathBlock(Block):
     content : List[Math]
         The mathblock's math fence tokens surrounding math token(s).
     """
-    def __init__(self, tokens_: List[Union[MathFence, Math]]):
+    def __init__(self, tokens_: List[Union[MathFence, Math]] = None):
         self.content: list = tokens_
 
 
@@ -472,8 +481,11 @@ class Section(Block):
         The tokens in this section, starting with a token of the chosen 
         split type.
     """
-    def __init__(self, tokens_: List[Token]):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Token] = None):
+        if tokens_:
+            self.content: list = tokens_
+        else:
+            self.content: list = []
 
 
 def __is_token_type(obj: Any) -> bool:

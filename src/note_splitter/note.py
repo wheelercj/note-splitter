@@ -4,11 +4,16 @@
 import os
 import re
 import uuid
+import webbrowser
+import subprocess
+import platform
 from copy import copy
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
-from note_splitter import settings
-from note_splitter.patterns import header as header_pattern
+from send2trash import send2trash  # https://github.com/arsenetar/send2trash
+from tkinter import filedialog
+import PySimpleGUI as sg
+from note_splitter import settings, patterns
 
 
 class Note:
@@ -59,6 +64,87 @@ class Note:
             contents = file.read()
         self.title = get_title(contents)
 
+    def open(self) -> Optional[bool]:
+        """Opens the note in the device's default editor.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was opened successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        webbrowser.open('file://' + self.path)
+        return True
+
+    def show(self) -> Optional[bool]:
+        """Shows the note in the file browser.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was shown successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        if platform.system() == 'Windows':
+            temp_path = self.path.replace('/', '\\')
+            subprocess.Popen(['explorer', '/select,', temp_path])
+        elif platform.system() == 'Darwin':  # macOS
+            subprocess.call(['open', '-R', self.path])
+        else:  # Linux
+            subprocess.call(['xdg-open', '-R', self.path])
+        return True
+
+    def move(self,
+             new_folder_path: str,
+             all_notes: List['Note']) -> Optional[bool]:
+        """Moves the note file to a new folder.
+
+        Parameters
+        ----------
+        new_folder_path : str
+            The absolute path to the new folder.
+        all_notes : List[Note]
+            A list of all the notes in the user's notes folder.
+
+        Returns
+        -------
+        bool, None
+            True if the note was moved successfully, None if the note 
+            does not exist, False otherwise.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        new_path = os.path.join(new_folder_path, self.name)
+        if os.path.exists(new_path):
+            sg.Popup(f'File already exists: {new_path}')
+            return False
+        move_files([self.path], new_folder_path, all_notes)
+        self.path = new_path
+        self.folder_path = new_folder_path
+        return True
+        
+    def delete(self) -> Optional[bool]:
+        """Moves the note file to the trash or recycle bin.
+        
+        Returns
+        -------
+        bool, None
+            True if the note was deleted successfully, None if the note 
+            does not exist.
+        """
+        if not os.path.exists(self.path):
+            sg.Popup(f'File not found: {self.path}')
+            return None
+        send2trash(self.path)
+        return True
+
 
 def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     """Gets the notes that the user chose to split.
@@ -72,6 +158,8 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     """
     if all_notes is None:
         all_notes: List[Note] = get_all_notes()
+    if not all_notes:
+        return []
 
     chosen_notes: List[Note] = []
     for note in all_notes:
@@ -83,17 +171,26 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     return chosen_notes
 
 
+def request_source_folder_path() -> bool:
+    """Prompts the user to select a folder to search for notes to split."""
+    folder_path = filedialog.askdirectory(title='Please select the folder ' \
+                                            'with your notes.', mustexist=True)
+    if not folder_path:
+        return False
+    settings.source_folder_path = folder_path
+    settings.update_settings()
+    return True
+
+
 def get_all_notes() -> List[Note]:
     """Gets all the notes in the user's chosen folder."""
     notes: List[Note] = []
     folder_path = settings.source_folder_path
-    if not folder_path:
-        pass  # TODO: prompt the user for a valid folder path instead.
     try:
         folder_list = os.listdir(folder_path)
     except FileNotFoundError:
-        print(f'Folder {folder_path} does not exist.')
-        raise  # TODO: prompt the user for a valid folder path instead.
+        if not request_source_folder_path():
+            return []
     
     for file_name in folder_list:
         file_path = os.path.join(folder_path, file_name)
@@ -225,7 +322,7 @@ def get_title(file_contents: str) -> str:
         The contents of the file to get the title from.
     """
     for line in file_contents.split('\n'):
-        if header_pattern.match(line):
+        if patterns.header.match(line):
             return line.lstrip('#').strip()
     title = file_contents.split('\n')[0].strip()
     if title:
@@ -292,3 +389,116 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
         file_name_and_ext = file_name + file_ext
         file_path = os.path.join(folder_path, file_name_and_ext)
     return file_path
+
+
+def move_files(paths_of_files_to_move: List[str],
+               destination_path: str,
+               all_notes: List[Note] = None) -> None:
+    """Moves files and updates all relevant references everywhere.
+
+    Updates paths to these files in any of the notes in the source 
+    folder chosen in settings, and updates any relative paths in these 
+    files if they are of a note type.
+
+    Parameters
+    ----------
+    paths_of_files_to_move : List[str]
+        List of absolute paths of files to be moved. These can be files 
+        of any type.
+    destination_path : str
+        Absolute path to the destination folder.
+    all_notes : List[Note], optional
+        List of all notes in the source folder. If not given, it will be
+        loaded from the source folder.
+    """
+    if all_notes is None:
+        all_notes = get_all_notes()
+    for path in paths_of_files_to_move:        
+        file_name_with_ext = os.path.basename(path)
+        _, file_ext = os.path.splitext(file_name_with_ext)
+        if file_ext in settings.note_types:
+            make_file_paths_absolute(note_path=path)
+        new_path = os.path.join(destination_path, file_name_with_ext)
+        __change_all_links_to_file(path, new_path, all_notes)
+        os.rename(path, new_path)
+
+
+def make_file_paths_absolute(note_path: str) -> None:
+    """Makes all file paths in a note's file links absolute.
+    
+    Assumes that all the file paths that should be made absolute are 
+    valid. Invalid paths are ignored.
+
+    Parameters
+    ----------
+    note_path : str
+        Absolute path to the note.
+    """
+    note_folder_path = os.path.dirname(note_path)
+    with open(note_path, 'r', encoding='utf8') as file:
+        content = file.read()
+    file_paths: List[Tuple[str, str]] = \
+        get_file_paths(content, note_folder_path)
+    for original_path, formatted_path in file_paths:
+        content = content.replace(original_path, formatted_path)
+    with open(note_path, 'w', encoding='utf8') as file:
+        file.write(content)
+
+
+def __change_all_links_to_file(current_path_to_change: str,
+                               new_path: str,
+                               all_notes: List[Note]) -> None:
+    """Changes the path to a file in all notes' links.
+
+    Use this before moving a file to a different location.
+
+    Parameters
+    ----------
+    current_path_to_change : str
+        Absolute path to the file.
+    new_path : str
+        Absolute path the file will have after being moved.
+    all_notes : List[Note]
+        List of all notes in the source folder.
+    """
+    for note_ in all_notes:
+        with open(note_.path, 'r', encoding='utf8') as file:
+            content = file.read()
+        file_paths = get_file_paths(content, note_.folder_path)
+        for original_path, formatted_path in file_paths:
+            if os.path.samefile(formatted_path, current_path_to_change):
+                content = content.replace(original_path, new_path)
+        with open(note_.path, 'w', encoding='utf8') as file:
+            file.write(content)
+
+
+def get_file_paths(note_content: str,
+                   note_folder_path: str) -> List[Tuple[str, str]]:
+    """Gets the original and formatted file paths in links in a note.
+
+    Parameters
+    ----------
+    note_content : str
+        The note's content.
+    note_folder_path : str
+        The absolute path to the note's folder.
+
+    Returns
+    -------
+    List[Tuple[str, str]]
+        List of tuples of the original file path in the note and its 
+        normalized, absolute version. All the paths are valid. (Broken 
+        file links and links to websites are ignored.)
+    """
+    noted_file_paths: List[str] = \
+        patterns.file_path_in_link.findall(note_content)
+    file_paths: List[Tuple[str, str]] = []
+    for file_path in noted_file_paths:
+        if os.path.isabs(file_path):
+            abs_path = file_path
+        else:
+            abs_path = os.path.join(note_folder_path, file_path)
+        norm_path = os.path.normpath(abs_path)
+        if os.path.exists(norm_path):
+            file_paths.append((file_path, norm_path))
+    return file_paths

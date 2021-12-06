@@ -1,15 +1,7 @@
-Note Splitter modules
-=====================
+note_splitter
+=============
 
 .. toctree::
    :maxdepth: 4
 
-   formatter_
-   lexer
-   main
-   note
-   parser_
-   patterns
-   settings
-   splitter
-   tokens
+   note_splitter

@@ -8,3 +8,4 @@ dependencies:
   - myst-parser
   - pyyaml
   - pysimplegui==4.53
+  - send2trash==1.8

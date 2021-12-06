@@ -3,34 +3,81 @@
 
 import os
 from typing import List, Callable
-from note_splitter import settings, tokens, note
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
+from note_splitter import settings, tokens, note, gui
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def main() -> None:
-    """Runs the entire application."""
+def main_menu():
+    """Displays the main menu."""
+    window = gui.create_main_menu()
+    while True:
+        event, value = window.read()
+        if event == sg.WIN_CLOSED or event == 'exit':
+            window.close()
+            return
+        gui.respond_to_main_menu_event(event, value)
+
+
+def show_progress(note_number: int,
+                  note_count: int,
+                  call_number: int,
+                  call_count: int) -> None:
+    """Shows the progress of the application.
+
+    Parameters
+    ----------
+    note_number: int
+        The number of the note being processed.
+    note_count: int
+        The total number of notes being processed.
+    call_number: int
+        The number of the call to this function.
+    call_count: int
+        The total number of calls to this function.
+    """
+    n = int((note_number + call_number) / (note_count * call_count) * 100)
+    sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
+
+
+def split_files(notes: List[note.Note] = None) -> None:
+    """Splits files into multiple smaller files.
+    
+    If no notes are provided, they will be found using the split keyword
+    and the source folder path chosen in settings.
+
+    Parameters
+    ----------
+    notes: List[note.Note]
+        The notes to be split.
+    """
     tokenize: Callable = Lexer()
     split: Callable = Splitter()
     format_: Callable = Formatter()
     
-    notes: List[note.Note] = note.get_chosen_notes()
-    for source_note in notes:
+    if notes is None:
+        notes: List[note.Note] = note.get_chosen_notes()
+    for i, source_note in enumerate(notes):
+        show_progress(i, len(notes), 1, 5)
         with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
+        show_progress(i, len(notes), 2, 5)
         split_contents: List[str] = split_text(content,
                                                tokenize,
                                                split,
                                                format_)
+        show_progress(i, len(notes), 3, 5)
         new_file_names: List[str] = note.create_file_names(source_note.ext,
                                                            split_contents)
+        show_progress(i, len(notes), 4, 5)
         new_notes = save_new_notes(split_contents, new_file_names)
+        show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
         if settings.create_index_file:
-            index_path = create_index_file_(source_note,
-                                            new_notes)
+            index_path = create_index_file_(source_note, new_notes)
             print(f'Created index file at {index_path}')
 
 
@@ -120,4 +167,4 @@ def create_index_file_(source_note: note.Note,
 
 
 if __name__ == '__main__':
-    main()
+    main_menu()
