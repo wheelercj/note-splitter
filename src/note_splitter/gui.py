@@ -39,12 +39,12 @@
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 import webbrowser
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Dict
 from note_splitter import settings
 from note_splitter.note import Note
 
 
-def make_window(theme) -> sg.Window:
+def make_window(theme):
     sg.theme(theme)
     menu_def = [['&Close Application', ['Q&uit']],
                 ['&Help', ['&Tips']] ]
@@ -57,10 +57,14 @@ def make_window(theme) -> sg.Window:
     
     documentation_layout = [[create_hyperlink('Click here for the documentation', 'https://note-splitter.readthedocs.io/en/latest/') ]]
     
-    input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
-                     [sg.T('Files to split:')]]
-    input_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))
-    input_layout.extend([[sg.Text('Choose what to split by: ')],
+    input_layout =  [
+                [sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
+                [sg.T('Files to split:')],
+
+                [sg.Multiline('this is where the files to split will be listed\n...\n...\n...\n...\n...\n....\nYou get the point.', 
+                              size=(45,5), expand_x=True, expand_y=True, k='-MLINE-')],
+                 
+                [sg.Text('Choose what to split by: ')],
                 [sg.Text('type                attribute           value')],
                 [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
                  
@@ -72,7 +76,7 @@ def make_window(theme) -> sg.Window:
                 # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
                 [sg.Checkbox('create blocks', key='createBlocks')],
                 
-                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]])
+                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]]    
 
     logging_layout = [[sg.Text("Anything printed will display here!")],
                       [sg.Multiline(size=(60,15), font='Courier 8', expand_x=True, expand_y=True, reroute_stdout=True, reroute_stderr=True, echo_stdout_stderr=True, autoscroll=True, auto_refresh=True)]
@@ -85,8 +89,10 @@ def make_window(theme) -> sg.Window:
   
     
     settings_layout = [
-          [sg.Text("Source folder path "),
-          sg.Button("Browse")],
+          [sg.Text('Source Folder', size=(15, 1), auto_size_text=False, justification='right'), sg.InputText('Source'),      
+            sg.FolderBrowse()],      
+          [sg.Text('Destination Folder', size=(15, 1), auto_size_text=False, justification='right'), sg.InputText('Dest'),      
+            sg.FolderBrowse()],   
           [sg.Text("New file name format"), sg.Input()],
           [sg.Checkbox('create index file',key='indexFile')],
           [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
@@ -285,21 +291,18 @@ def create_note_listbox_layout_with_buttons(
     return layout
 
 
-def create_note_listbox_layout(notes: Optional[List[Note]],
+def create_note_listbox_layout(notes: List[Note],
                                key: str) -> List[List[sg.Element]]:
     """Creates a listbox of note titles.
 
     Parameters
     ----------
-    notes : List[Note], optional
+    notes : List[Note]
         The notes to display in the listbox.
     key : str
         The key to use for the listbox.
     """
-    if notes is None:
-        note_titles = []
-    else:
-        note_titles = [n.title for n in notes]
+    note_titles = [n.title for n in notes]
     return [[sg.Listbox(note_titles, key=key, size=(80, 6))]]
 
 
