@@ -110,16 +110,12 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
     input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
                      [sg.T('Files to split:')]]
     input_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))  # TODO: use something instead of None.
-    input_layout.extend([[sg.Text('Choose what to split by: ')],
+    input_layout.extend([
+                [sg.Text('Choose what to split by: ')],
                 [sg.Text('type                attribute           value')],
-                [sg.Combo(values=('header', 'Combo 2', 'Combo 3'), default_value='header', readonly=True, k='-COMBO-'),
-                 
-                # create_split_type_dropdown(),
-                create_split_attr_dropdown(),
-                sg.Text('Enter a number: ', size=(15, 1)), sg.InputText(),
-                 
-                ],
-                # sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
+                [create_split_type_dropdown(),
+                 create_split_attr_dropdown(),
+                 sg.Text('Enter a number: ', size=(15, 1)), sg.InputText()],
                 [sg.Checkbox('create blocks', key='createBlocks')],
                 
                 [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]])
@@ -200,6 +196,8 @@ def create_split_type_dropdown() -> sg.Combo:
     The Section type is excluded.
     """
     token_type_names = settings.get_all_token_type_names()
+    if token_type_names is None:
+        token_type_names = ['header', 'table', 'text', 'section']  # TODO: delete this when get_all_token_type_names is available.
     token_type_names.remove('section')
     return sg.Combo(values=token_type_names,
                     default_value='header',
