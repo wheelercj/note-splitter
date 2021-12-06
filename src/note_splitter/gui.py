@@ -64,7 +64,6 @@ def make_window(theme) -> sg.Window:
 def main():
     window = make_window(sg.theme())
     
-    # This is an event Loop 
     while True:
         event, values = window.read(timeout=100)
 
@@ -83,7 +82,7 @@ def main():
             url = event.split(' ')[1]
             webbrowser.open(url)
         elif event == 'Split Summary':
-            run_split_summary_window(new_notes)
+            run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
         elif event == "Open Folder":
             folder_or_file = sg.popup_get_folder('Choose your folder', keep_on_top=True)
             sg.popup("You chose: " + str(folder_or_file), keep_on_top=True)
@@ -104,8 +103,8 @@ def main():
 def create_home_tab_layout() -> List[List[sg.Element]]:
     """Creates the home tab's layout."""
     frame_layout = [[sg.T('Choose which files to split: ')],
-                [sg.Button("Open File"), sg.T(' or '), sg.Button("find"), sg.T(' by ')],
-                [sg.Text('keyword:', size =(15, 1)), sg.InputText()]]
+                [sg.Button('Open File'), sg.T(' or '), sg.Button('find'), sg.T(' by ')],
+                [sg.Text('keyword:', size =(15, 1)), sg.InputText(settings.split_keyword)]]
     
     input_layout =  [[sg.Frame('', frame_layout, font='Any 12', title_color='blue')],
                      [sg.T('Files to split:')]]
@@ -115,10 +114,15 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
                 [sg.Text('type                attribute           value')],
                 [create_split_type_dropdown(),
                  create_split_attr_dropdown(),
-                 sg.Text('Enter a number: ', size=(15, 1)), sg.InputText()],
-                [sg.Checkbox('create blocks', key='createBlocks')],
-                
-                [sg.Button('Split all'), sg.Button('Split selected'), sg.Button('Quit')]])
+                 sg.Text('Enter a number: ',
+                         size=(15, 1)),
+                         sg.InputText(settings.split_attrs.get('level', ''))],
+                [sg.Checkbox('create blocks',
+                             key='createBlocks',
+                             default=settings.create_blocks)],
+                [sg.Button('Split all'),
+                 sg.Button('Split selected'),
+                 sg.Button('Quit')]])
 
     return input_layout
 
@@ -138,23 +142,33 @@ def create_settings_layout() -> List[List[sg.Element]]:
                  justification='right'),
             sg.InputText(settings.destination_folder_path),      
             sg.FolderBrowse()],  
-        [sg.Text("New file name format"), sg.Input(settings.file_name_format)],
-        [sg.Checkbox('create index file',key='indexFile')],
-        [sg.Checkbox('copy frontmatter',key='copy_frontmatter')],
-        [sg.Checkbox('copy global tags',key='copy_global_tags')],
-        [sg.Checkbox('backlink',key='backlink')],
+        [sg.Text("New file name format"),
+         sg.Input(settings.file_name_format)],
+        [sg.Checkbox('create index file',
+                     key='indexFile',
+                     default=settings.create_index_file)],
+        [sg.Checkbox('copy frontmatter',
+                     key='copy_frontmatter',
+                     default=settings.copy_frontmatter)],
+        [sg.Checkbox('copy global tags',
+                     key='copy_global_tags',
+                     default=settings.copy_global_tags)],
+        [sg.Checkbox('backlink',
+                     key='backlink',
+                     default=settings.backlink)],
         # [sg.Text("Change the theme of Note Splitter to your liking.")],
-        #             [sg.Listbox(values = sg.theme_list(), 
-        #               size =(20, 12), 
-        #               key ='-THEME LISTBOX-',
-        #               enable_events = True)],
-        #               [sg.Button("Set Theme")],
+        # [sg.Listbox(values = sg.theme_list(), 
+        #             size =(20, 12), 
+        #             key ='-THEME LISTBOX-',
+        #             enable_events = True)],
+        # [sg.Button("Set Theme")],
         [sg.Button('Save')]]
 
 
 def create_help_layout() -> List[List[sg.Element]]:
     """Creates the help tab's layout."""
-    return [[create_hyperlink('Click here for the documentation', 'https://note-splitter.readthedocs.io/en/latest/') ]]
+    return [[create_hyperlink('Click here for the documentation',
+                        'https://note-splitter.readthedocs.io/en/latest/')]]
 
 
 def create_hyperlink(text: str,
@@ -197,8 +211,9 @@ def create_split_type_dropdown() -> sg.Combo:
     """
     token_type_names = settings.get_all_token_type_names()
     token_type_names.remove('section')
+    default_split_type_name = settings.get_token_type_name(settings.split_type)
     return sg.Combo(values=token_type_names,
-                    default_value='header',
+                    default_value=default_split_type_name,
                     key='-SPLIT TYPE-')
 
 
@@ -212,7 +227,8 @@ def create_split_attr_dropdown() -> sg.Combo:
                     key='-SPLIT ATTR-')
 
 
-def create_split_summary_window(notes: List[Note], listbox_key: str) -> sg.Window:
+def create_split_summary_window(notes: List[Note],
+                                listbox_key: str) -> sg.Window:
     """Creates a window displaying the number of notes split.
     
     Parameters

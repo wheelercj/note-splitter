@@ -87,7 +87,7 @@ file_name_format: str = r'%id'
 note_types: List[str] = [".md", ".markdown", ".txt"]
 replace_split_contents: bool = False
 source_folder_path: str = ''
-split_attrs: dict = {}
+split_attrs: dict = {'level': 2}
 split_keyword: str = '#split'
 split_type: Type = tokens.Header
 
@@ -144,14 +144,24 @@ def get_all_token_type_names() -> List[str]:
     """Get all token type names."""
     all_token_types: List[Type] = tokens.get_all_token_types(tokens)
     new_tokens = []
-    for i in range(len(all_token_types)):
-        formated_token = ''
-        for i, letter in enumerate(all_token_types[i].__name__):
-            if i and letter.isupper():
-                formated_token += ' '
-            formated_token += letter
-        new_tokens.append(formated_token.lower()) 
+    for token_type in all_token_types:
+        new_tokens.append(get_token_type_name(token_type))
     return new_tokens
+
+def get_token_type_name(token_type: Type) -> str:
+    """Get the token type name.
+    
+    Parameters
+    ----------
+    token_type : Type
+        The token type to get the name of.
+    """
+    formated_token = ''
+    for i, letter in enumerate(token_type.__name__):
+        if i and letter.isupper():
+            formated_token += ' '
+        formated_token += letter
+    return formated_token.lower()
 
 def get_token_type(name: str) -> Type:
     """Get a token type by name."""
