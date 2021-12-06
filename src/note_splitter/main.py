@@ -11,13 +11,13 @@ from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def run_main_menu():
+def run_main_menu() -> None:
     """Displays the main menu."""
     sg.theme('TanBlue')
     window = gui.create_main_menu_window()
     while True:
         event, values = window.read()
-        if event in (sg.WIN_CLOSED, 'Quit'):
+        if event in (sg.WIN_CLOSED, 'Close'):
             window.close()
             return
         gui.handle_main_menu_event(event, values, window)
