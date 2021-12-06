@@ -225,16 +225,20 @@ def create_split_attr_dropdown() -> sg.Combo:
                     key='-SPLIT ATTR-')
 
 
-def create_split_summary_window(notes: List[Note]) -> sg.Window:
+def create_split_summary_window(notes: List[Note], listbox_key: str) -> sg.Window:
     """Creates a window displaying the number of notes split.
     
     Parameters
     ----------
     notes : List[Note]
-        The notes to split.
+        The notes displayed in the listbox.
+    listbox_key : str
+        The key of the listbox.
     """
     splitsummary_layout = [[sg.T(f'Number of new files created: {len(notes)}')]]
-    splitsummary_layout.extend(create_note_listbox_layout_with_buttons(notes, '-LISTBOX-'))
+    listbox_layout = create_note_listbox_layout_with_buttons(notes, listbox_key)
+    splitsummary_layout.extend(listbox_layout)
+    splitsummary_layout.append([sg.Button('OK', key='OK')])
     return sg.Window('Split Summary', splitsummary_layout)
 
 
@@ -244,30 +248,16 @@ def run_split_summary_window(notes: List[Note]) -> None:
     Parameters
     ----------
     notes : List[Note]
-        The notes to split.
+        The notes displayed in the listbox.
     """
-    window = create_split_summary_window(notes)
+    listbox_key = '-LISTBOX-'
+    window = create_split_summary_window(notes, listbox_key)
     while True:
-        event, value = window.read(timeout=100)
-        if event in (sg.WIN_CLOSED, 'Quit'):
+        event, values = window.read(timeout=100)
+        if event in (sg.WIN_CLOSED, 'OK'):
             window.close()
             return
-        respond_to_split_summary_event(event, value, notes)
-
-
-def respond_to_split_summary_event() -> None:
-    """Responds to events in the split summary window.
-    
-    Parameters
-    ----------
-    event : str
-        The event that occurred.
-    value : Any
-        The value of the event.
-    notes : List[Note]
-        The notes to split.
-    """
-    raise NotImplementedError
+        handle_note_listbox_event(event, values, notes, listbox_key)
 
 
 def create_note_listbox_layout_with_buttons(
@@ -315,62 +305,43 @@ def create_note_listbox_layout(notes: List[Note],
 
 
 def handle_note_listbox_event(event: str,
-                              selected_titles: List[str],
-                              listbox_notes: List[Note]) -> None:
+                              values,
+                              listbox_notes: List[Note],
+                              listbox_key: str) -> None:
     """Handles an event from a listbox of notes.
 
     Parameters
     ----------
     event : str
         The event to handle.
-    selected_titles : List[str]
-        The titles of the notes selected in the listbox.
+    values : Any
+        The value of the event.
     listbox_notes : List[Note]
         The notes displayed in the listbox.
+    listbox_key : str
+        The key of the listbox.
     """
     listbox_notes_dict = {n.title: n for n in listbox_notes}
-    event_methods = (('-OPEN', 'open'),
-                     ('-SHOW', 'show'),
-                     ('-MOVE', 'move'),
-                     ('-DELETE', 'delete'))
-    for event_prefix, method_name in event_methods:
-        if event.startswith(event_prefix):
-            if method_name == 'delete':
-                answer = sg.popup_yes_no('Are you sure you want to delete ' \
-                                       'the selected notes?', keep_on_top=True)
-                if answer != 'Yes':
-                    return
-            call_note_listbox_method(method_name,
-                                     selected_titles,
-                                     listbox_notes_dict,
-                                     listbox_notes)
-            break
-
-
-def call_note_listbox_method(method_name: str,
-                             titles: List[str],
-                             listbox_notes_dict: Dict[str, Note],
-                             listbox_notes: List[Note]) -> None:
-    """Calls a method on a note in a listbox.
-
-    Assumes that the method name is valid.
-
-    Parameters
-    ----------
-    method_name : str
-        The name of the method to call.
-    titles : List[str]
-        The titles of the notes to call the method on.
-    listbox_notes_dict : dict
-        A dictionary mapping note titles to notes.
-    listbox_notes : List[Note]
-        The notes displayed in the listbox.
-    """
-    for title in titles:
-        note_: Note = listbox_notes_dict[title]
-        method = getattr(note_, method_name)
-        if method() is None:
-            listbox_notes.remove(note_)
+    selected_titles = values[listbox_key]
+    if event.startswith('-DELETE'):
+        answer = sg.popup_yes_no('Are you sure you want to delete ' \
+                            'the selected notes?', keep_on_top=True)
+        if answer != 'Yes':
+            return
+    for title in selected_titles:
+            note_: Note = listbox_notes_dict[title]
+            if event.startswith('-OPEN'):
+                if note_.open() is None:
+                    listbox_notes.remove(note_)
+            if event.startswith('-SHOW'):
+                if note_.show() is None:
+                    listbox_notes.remove(note_)
+            if event.startswith('-MOVE'):
+                if note_.move() is None:
+                    listbox_notes.remove(note_)
+            if event.startswith('-DELETE'):
+                note_.delete()
+                listbox_notes.remove(note_)
 
 
 if __name__ == '__main__':
