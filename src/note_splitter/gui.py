@@ -221,7 +221,7 @@ def create_hyperlink(text: str,
     font : Tuple[str, int, str]
         The font to use for the Text object. The first element is the 
         font family, the second is the font size, and the third is the
-        font style. The default is ('Arial', 18, 'underline').
+        font style. The default is ('Arial', 14, 'underline').
 
     Returns
     -------
