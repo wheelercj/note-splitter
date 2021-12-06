@@ -196,8 +196,6 @@ def create_split_type_dropdown() -> sg.Combo:
     The Section type is excluded.
     """
     token_type_names = settings.get_all_token_type_names()
-    if token_type_names is None:
-        token_type_names = ['header', 'table', 'text', 'section']  # TODO: delete this when get_all_token_type_names is available.
     token_type_names.remove('section')
     return sg.Combo(values=token_type_names,
                     default_value='header',
