@@ -149,7 +149,7 @@ def create_settings_layout() -> List[List[sg.Element]]:
         #               key ='-THEME LISTBOX-',
         #               enable_events = True)],
         #               [sg.Button("Set Theme")],
-        [sg.Button('Save'), sg.Button('Cancel')]]
+        [sg.Button('Save')]]
 
 
 def create_help_layout() -> List[List[sg.Element]]:
