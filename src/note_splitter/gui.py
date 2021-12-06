@@ -231,12 +231,12 @@ def create_split_type_dropdown() -> sg.Combo:
 
 
 def create_split_attr_dropdown() -> sg.Combo:
-    """Creates a dropdown element listing token attributes."""
+    """Creates a dropdown element listing token attributes and None."""
     obj = settings.split_type()
     attr_names: List[str] = list(obj.__dict__.keys())
-    default_value = 'level' if 'level' in attr_names else None
+    attr_names.append(None)
     return sg.Combo(values=attr_names,
-                    default_value=default_value,
+                    default_value='level' if 'level' in attr_names else None,
                     key='-SPLIT ATTR-')
 
 
