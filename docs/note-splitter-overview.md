@@ -40,7 +40,7 @@ Here's an example that shows the result of tokenization with each token's type o
          EmptyLine |
 ```
 
-You can find all token types this program uses on the [tokens page](tokens.rst), see their [hierarchy](token-hierarchy.md), and see how this program tokenizes text in the [Lexer class](https://github.com/wheelercj/note-splitter/blob/master/src/note_splitter/lexer.py).
+You can find all token types this program uses on the [tokens page](note_splitter.tokens.rst), see their [hierarchy](token-hierarchy.md), and see how this program tokenizes text in the [Lexer class](https://github.com/wheelercj/note-splitter/blob/master/src/note_splitter/lexer.py).
 
 ## parsing
 Next, an optional step is to group together some tokens into larger tokens. For example, table row tokens that are next to each other are put together into one table token, and two code fence tokens surrounding code tokens become a code block token. This process is called **syntax analysis**, or **parsing**. The inner tokens are still tokens, but the overall token list is shorter and more organized now. (The reason why this step is optional is because sometimes the extra layer of organization is not needed and only makes operations more difficult.)
