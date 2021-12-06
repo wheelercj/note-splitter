@@ -91,8 +91,8 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
         ['&Help', ['&Tips']]]
     tabgroup_layout = [
         [sg.Tab('Home', create_home_tab_layout()),
-         sg.Tab('Settings', create_settings_layout()),
-         sg.Tab('Documentation', create_help_layout())]]
+         sg.Tab('Settings', create_settings_tab_layout()),
+         sg.Tab('About', create_about_tab_layout())]]
     layout = [
         [sg.MenubarCustom(menu_def,
                           key='-MENU-',
@@ -178,10 +178,24 @@ def create_settings_layout() -> List[List[sg.Element]]:
         [sg.Button('Save')]]
 
 
-def create_help_layout() -> List[List[sg.Element]]:
-    """Creates the help tab's layout."""
-    return [[create_hyperlink('Click here for the documentation',
-                        'https://note-splitter.readthedocs.io/en/latest/')]]
+def create_about_tab_layout() -> List[List[sg.Element]]:
+    """Creates the about tab's layout."""
+    return [
+        [sg.Text('•', font=('Arial', 16)),
+         create_hyperlink('instructions',
+                          'https://github.com/wheelercj/note-splitter/blob/master/README.md')],
+        [sg.Text('•', font=('Arial', 16)),
+         create_hyperlink('request a feature or report a bug',
+                          'https://github.com/wheelercj/note-splitter/issues')],
+        [sg.Text('•', font=('Arial', 16)),
+         create_hyperlink('join the discussion',
+                          'https://github.com/wheelercj/note-splitter/discussions')],
+        [sg.Text('•', font=('Arial', 16)),
+         create_hyperlink('browse the developer documentation',
+                          'https://note-splitter.readthedocs.io/en/latest/')],
+        [sg.Text('•', font=('Arial', 16)),
+         create_hyperlink('see the software license',
+                          'https://github.com/wheelercj/note-splitter/blob/master/LICENSE')]]
 
 
 def create_hyperlink(text: str,
@@ -209,7 +223,7 @@ def create_hyperlink(text: str,
         A PySimpleGUI Text object with a clickable hyperlink.
     """
     if font is None:
-        font = ('Arial', 18, 'underline')
+        font = ('Arial', 14, 'underline')
     return sg.Text(text,
                    tooltip=url,
                    enable_events=True,
