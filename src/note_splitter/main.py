@@ -11,15 +11,16 @@ from note_splitter.splitter import Splitter
 from note_splitter.formatter_ import Formatter
 
 
-def main_menu():
+def run_main_menu():
     """Displays the main menu."""
-    window = gui.create_main_menu()
+    sg.theme('TanBlue')
+    window = gui.create_main_menu_window()
     while True:
-        event, value = window.read()
-        if event == sg.WIN_CLOSED or event == 'exit':
+        event, values = window.read()
+        if event in (sg.WIN_CLOSED, 'Quit'):
             window.close()
             return
-        gui.respond_to_main_menu_event(event, value)
+        gui.handle_main_menu_event(event, values, window)
 
 
 def show_progress(note_number: int,
@@ -167,4 +168,4 @@ def create_index_file_(source_note: note.Note,
 
 
 if __name__ == '__main__':
-    main_menu()
+    run_main_menu()

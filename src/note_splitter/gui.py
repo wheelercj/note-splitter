@@ -44,60 +44,73 @@ from note_splitter import settings
 from note_splitter.note import Note
 
 
-def make_window(theme) -> sg.Window:
-    sg.theme(theme)
-    menu_def = [['&Close Application', ['Q&uit']],
-                ['&Help', ['&Tips']] ]
-
-    layout = [ [sg.MenubarCustom(menu_def, key='-MENU-', font='Courier 15', tearoff=True)],
-                [sg.Text('Note Splitter', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
-    layout +=[[sg.TabGroup([[  sg.Tab('Home', create_home_tab_layout()),
-                               sg.Tab('Settings', create_settings_layout()),
-                               sg.Tab('Documentation', create_help_layout())]],
-                            key='-TAB GROUP-', expand_x=True, expand_y=True)]]
-    layout[-1].append(sg.Sizegrip())
-    window = sg.Window('Note Splitter Demo and GUI', layout, grab_anywhere=True, resizable=True, margins=(0,0), use_custom_titlebar=True, finalize=True, keep_on_top=True)
+def create_main_menu_window() -> sg.Window:
+    """Creates the main menu window."""
+    window = sg.Window('Note Splitter Demo and GUI',
+                       create_main_menu_layout(),
+                       grab_anywhere=True,
+                       resizable=True,
+                       margins=(0,0),
+                       use_custom_titlebar=True,
+                       finalize=True,
+                       keep_on_top=True)
     window.set_min_size(window.size)
     return window
 
 
-def main():
-    window = make_window(sg.theme())
-    
-    while True:
-        event, values = window.read(timeout=100)
+def handle_main_menu_event(event, values, window):
+    """Handles the main menu's events."""
+    if event == 'Tips':
+        sg.popup('Visit each of the tabs to see available applications.',
+                 'Various tabs are included such as development environment ' \
+                 'setup, Note Splitter overview, token hierarchy, program ' \
+                 'modules, references, and how the documentation is ' \
+                 'maintained.',
+                 'If you have any questions or concerns please message the ' \
+                 'developers on the GitHub page.', keep_on_top=True)
+    elif event.startswith('URL '):
+        url = event.split(' ')[1]
+        webbrowser.open(url)
+    elif event == 'Split Summary':
+        new_notes = []
+        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+    elif event == 'Open Folder':
+        folder_or_file = sg.popup_get_folder('Choose your folder',
+                                             keep_on_top=True)
+        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
+    elif event == 'Open File':
+        folder_or_file = sg.popup_get_file('Choose your file',
+                                           keep_on_top=True)
+        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
 
-        if event not in (sg.TIMEOUT_EVENT, sg.WIN_CLOSED):
-            print('============ Event = ', event, ' ==============')
-            print('-------- Values Dictionary (key=value) --------')
-            for key in values:
-                print(key, ' = ',values[key])
-        if event in (None, 'Quit'):
-            break
-        elif event == 'Tips':
-            sg.popup('Visit each of the tabs to see available applications.',
-                     'Various tabs are included such as development environment setup, Note Splitter overview, token hierarchy, program modules, references, and how the documentation is maintained.',
-                     'If you have any questions or concerns please message the developers on the GitHub page.', keep_on_top=True)
-        elif event.startswith('URL '):
-            url = event.split(' ')[1]
-            webbrowser.open(url)
-        elif event == 'Split Summary':
-            run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
-        elif event == "Open Folder":
-            folder_or_file = sg.popup_get_folder('Choose your folder', keep_on_top=True)
-            sg.popup("You chose: " + str(folder_or_file), keep_on_top=True)
-        elif event == "Open File":
-            folder_or_file = sg.popup_get_file('Choose your file', keep_on_top=True)
-            sg.popup("You chose: " + str(folder_or_file), keep_on_top=True)
-        elif event == "Set Theme":
-            theme_chosen = values['-THEME LISTBOX-'][0]
-            window.close()
-            window = make_window(theme_chosen)
-        elif event == 'Versions':
-            sg.popup(sg.get_versions(), keep_on_top=True)
 
-    window.close()
-    exit(0)
+def create_main_menu_layout() -> List[List[sg.Element]]:
+    """Creates the main menu's layout."""
+    menu_def = [
+        ['&Close Application', ['Q&uit']],
+        ['&Help', ['&Tips']]]
+    tabgroup_layout = [
+        [sg.Tab('Home', create_home_tab_layout()),
+         sg.Tab('Settings', create_settings_layout()),
+         sg.Tab('Documentation', create_help_layout())]]
+    layout = [
+        [sg.MenubarCustom(menu_def,
+                          key='-MENU-',
+                          font='Courier 15',
+                          tearoff=True)],
+        [sg.Text('Note Splitter',
+                 size=(38, 1),
+                 justification='center',
+                 font=("Helvetica", 16),
+                 relief=sg.RELIEF_RIDGE,
+                 k='-TEXT HEADING-',
+                 enable_events=True)],
+        [sg.TabGroup(tabgroup_layout,
+                     key='-TAB GROUP-',
+                     expand_x=True,
+                     expand_y=True)]]
+    layout[-1].append(sg.Sizegrip())
+    return layout
 
 
 def create_home_tab_layout() -> List[List[sg.Element]]:
@@ -346,8 +359,3 @@ def handle_note_listbox_event(event: str,
             if event.startswith('-DELETE'):
                 note_.delete()
                 listbox_notes.remove(note_)
-
-
-if __name__ == '__main__':
-    sg.theme('TanBlue')
-    main()
