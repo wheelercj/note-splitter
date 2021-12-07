@@ -143,10 +143,11 @@ def reset_settings_to_default():
 def get_all_token_type_names() -> List[str]:
     """Get all token type names."""
     all_token_types: List[Type] = tokens.get_all_token_types(tokens)
-    new_tokens = []
+    token_names = []
     for token_type in all_token_types:
-        new_tokens.append(get_token_type_name(token_type))
-    return new_tokens
+        token_names.append(get_token_type_name(token_type))
+    return token_names
+
 
 def get_token_type_name(token_type: Type) -> str:
     """Get the token type name.
@@ -156,12 +157,13 @@ def get_token_type_name(token_type: Type) -> str:
     token_type : Type
         The token type to get the name of.
     """
-    formated_token = ''
+    token_name = ''
     for i, letter in enumerate(token_type.__name__):
         if i and letter.isupper():
-            formated_token += ' '
-        formated_token += letter
-    return formated_token.lower()
+            token_name += ' '
+        token_name += letter
+    return token_name.lower()
+
 
 def get_token_type(name: str) -> Type:
     """Get a token type by name."""
