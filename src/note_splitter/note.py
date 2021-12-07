@@ -178,7 +178,6 @@ def request_source_folder_path() -> bool:
     if not folder_path:
         return False
     settings.source_folder_path = folder_path
-    settings.update_settings()
     return True
 
 
