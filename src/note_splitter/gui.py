@@ -94,7 +94,7 @@ def handle_main_menu_event(event, values, window):
 def create_main_menu_layout() -> List[List[sg.Element]]:
     """Creates the main menu's layout."""
     menu_def = [
-        ['&Close Application', ['Q&uit']],
+        ['&Close Application', ['C&lose']],
         ['&Help', ['&Tips']]]
     tabgroup_layout = [
         [sg.Tab('Home', create_home_tab_layout()),
