@@ -71,9 +71,6 @@ def handle_main_menu_event(event, values, window):
     elif event.startswith('URL '):
         url = event.split(' ')[1]
         webbrowser.open(url)
-    elif event == 'Split Summary':
-        new_notes = []
-        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
     elif event == 'Open Folder':
         folder_or_file = sg.popup_get_folder('Choose your folder',
                                              keep_on_top=True)
@@ -82,6 +79,16 @@ def handle_main_menu_event(event, values, window):
         folder_or_file = sg.popup_get_file('Choose your file',
                                            keep_on_top=True)
         sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
+    elif event == 'Save':
+        settings.update_settings()
+    elif event == 'Split all':
+        settings.update_settings()
+        new_notes = []
+        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+    elif event == 'Split selected':
+        settings.update_settings()
+        new_notes = []
+        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
 
 
 def create_main_menu_layout() -> List[List[sg.Element]]:
