@@ -159,9 +159,9 @@ def get_current_settings() -> None:
         cur.execute('SELECT * from settings')
     except sqlite3.OperationalError:
         initialize_settings()
-        cur.execute('SELECT * from settings')
-    result = cur.fetchall()
-    # TODO: put the settings from result into the other variables.
+    else:
+        result = cur.fetchall()
+        # TODO: put the settings from result into the other variables.
 
 
 def delete_current_settings() -> None:
@@ -177,11 +177,7 @@ def delete_current_settings() -> None:
         connection.close()
 
 
-def update_settings() -> None:
-    """Update the user settings in the database"""
-    delete_current_settings()
-    connection = sqlite3.connect('store-transactions.db') 
-    cur = connection.cursor()
+def insert_settings_to_db(cur, connection) -> None:
     cur.execute("""
         INSERT INTO settings
             (split_keyword,
@@ -216,7 +212,21 @@ def update_settings() -> None:
         int(create_index_file),
         int(replace_split_contents)))
     connection.commit()
-    connection.close()
+
+
+def save_settings_to_db() -> None:
+    """Update the user settings in the database"""
+    delete_current_settings()
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
+    try:
+        insert_settings_to_db(cur, connection)
+    except sqlite3.OperationalError:
+        initialize_settings()
+        insert_settings_to_db(cur, connection)
+    finally:
+        connection.commit()
+        connection.close()
 
 
 def reset_settings_to_default() -> None:
