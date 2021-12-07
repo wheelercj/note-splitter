@@ -75,6 +75,7 @@ import sqlite3
 import json 
 from note_splitter import tokens
 
+
 backlink: bool = True
 copy_frontmatter: bool = True
 copy_global_tags: bool = True
@@ -91,24 +92,65 @@ split_attrs: dict = {'level': 2}
 split_keyword: str = '#split'
 split_type: Type = tokens.Header
 
+
 def initialize_settings():
     """Initialize the settings with default values"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute('''CREATE TABLE settings (split_keyword text, source_folder_path text, destination_folder_path text,  
-        note_types text, split_type text, split_attrs text, file_name_format text, file_id_format text, file_id_regex text, create_blocks integer, 
-        copy_frontmatter integer, copy_global_tags integer, backlink integer, create_index_file integer, replace_split_contents integer)''')
-    cur.execute("""INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path,  
-        note_types, split_type, split_attrs, file_name_format, file_id_format, file_id_regex create_blocks, 
-        copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, 
-        destination_folder_path, ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
-        int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
+    cur.execute('''
+        CREATE TABLE settings
+            (split_keyword TEXT,
+            source_folder_path TEXT,
+            destination_folder_path TEXT,
+            note_types TEXT,
+            split_type TEXT,
+            split_attrs TEXT,
+            file_name_format TEXT,
+            file_id_format TEXT,
+            file_id_regex TEXT,
+            create_blocks INTEGER,
+            copy_frontmatter INTEGER,
+            copy_global_tags INTEGER,
+            backlink INTEGER,
+            create_index_file INTEGER,
+            replace_split_contents INTEGER)''')
+    cur.execute("""
+        INSERT INTO settings
+            (split_keyword,
+            source_folder_path,
+            destination_folder_path,
+            note_types,
+            split_type,
+            split_attrs,
+            file_name_format,
+            file_id_format,
+            file_id_regex create_blocks,
+            copy_frontmatter,
+            copy_global_tags,
+            backlink,
+            create_index_file,
+            replace_split_contents)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (split_keyword,
+        source_folder_path,
+        destination_folder_path,
+        ','.join(note_types),
+        split_type.__name__,
+        json.dumps(split_attrs),
+        file_name_format,
+        int(create_blocks),
+        int(copy_frontmatter),
+        int(copy_global_tags),
+        int(backlink),
+        int(create_index_file),
+        int(replace_split_contents)))
     connection.commit()
     connection.close()
 
-def get_current_settings():
+
+def get_current_settings() -> None:
     """Fetch the current user settings from the database"""
-    connection = sqlite3.connect('store-transactions.db') 
+    connection = sqlite3.connect('store-transactions.db')
     cur = connection.cursor()
     try:
         cur.execute('SELECT * from settings')
@@ -118,31 +160,60 @@ def get_current_settings():
     result = cur.fetchall()
     # TODO: put the settings from result into the other variables.
 
-def delete_current_settings():
-    """Delete the user settings from the database"""
+
+def delete_current_settings() -> None:
+    """Delete the user settings database."""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
     cur.execute('DROP TABLE settings')
     connection.commit()
     connection.close()
 
-def update_settings():
+
+def update_settings() -> None:
     """Update the user settings in the database"""
     delete_current_settings()
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute("""INSERT INTO settings  (split_keyword, source_folder_path, destination_folder_path,  
-        note_types, split_type, split_attrs, file_name_format, file_id_format, file_id_regex create_blocks, 
-        copy_frontmatter, copy_global_tags, backlink, create_index_file, replace_split_contents) VALUES(?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)""", (split_keyword, source_folder_path, 
-        destination_folder_path, ','.join(note_types), split_type.__name__, json.dumps(split_attrs), file_name_format, int(create_blocks), int(copy_frontmatter), 
-        int(copy_global_tags), int(backlink), int(create_index_file), int(replace_split_contents)))
+    cur.execute("""
+        INSERT INTO settings
+            (split_keyword,
+            source_folder_path,
+            destination_folder_path,
+            note_types,
+            split_type,
+            split_attrs,
+            file_name_format,
+            file_id_format,
+            file_id_regex create_blocks,
+            copy_frontmatter,
+            copy_global_tags,
+            backlink,
+            create_index_file,
+            replace_split_contents)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (split_keyword,
+        source_folder_path,
+        destination_folder_path,
+        ','.join(note_types),
+        split_type.__name__,
+        json.dumps(split_attrs),
+        file_name_format,
+        int(create_blocks),
+        int(copy_frontmatter),
+        int(copy_global_tags),
+        int(backlink),
+        int(create_index_file),
+        int(replace_split_contents)))
     connection.commit()
     connection.close()
 
-def reset_settings_to_default():
+
+def reset_settings_to_default() -> None:
     """Reset current settings to default"""
     delete_current_settings()
     initialize_settings()
+
 
 def get_all_token_type_names() -> List[str]:
     """Get all token type names."""
