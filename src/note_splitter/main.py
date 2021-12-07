@@ -19,7 +19,7 @@ def run_main_menu() -> None:
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Close'):
-            settings.update_settings()
+            settings.save_settings_to_db()
             window.close()
             return
         gui.handle_main_menu_event(event, values, window)
