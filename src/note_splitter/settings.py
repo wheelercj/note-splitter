@@ -118,7 +118,7 @@ def delete_current_settings():
     """Delete the user settings from the database"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute("DELETE from settings")
+    cur.execute('DROP TABLE settings')
     connection.commit()
     connection.close()
 
