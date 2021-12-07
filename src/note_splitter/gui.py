@@ -79,14 +79,10 @@ def handle_main_menu_event(event, values, window):
         folder_or_file = sg.popup_get_file('Choose your file',
                                            keep_on_top=True)
         sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
-    elif event == 'Save':
-        settings.update_settings()
     elif event == 'Split all':
-        settings.update_settings()
         new_notes = []
         run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
     elif event == 'Split selected':
-        settings.update_settings()
         new_notes = []
         run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
 
@@ -181,14 +177,13 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
                      default=settings.copy_global_tags)],
         [sg.Checkbox('backlink',
                      key='backlink',
-                     default=settings.backlink)],
+                     default=settings.backlink)]]
         # [sg.Text("Change the theme of Note Splitter to your liking.")],
         # [sg.Listbox(values = sg.theme_list(), 
         #             size =(20, 12), 
         #             key ='-THEME LISTBOX-',
         #             enable_events = True)],
         # [sg.Button("Set Theme")],
-        [sg.Button('Save')]]
 
 
 def create_about_tab_layout() -> List[List[sg.Element]]:
