@@ -55,8 +55,8 @@ def __manual_test() -> None:
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
     __print_lexer_output(tokens_)
 
-    settings.create_blocks = True
-    ast = AST(tokens_, settings.create_blocks)
+    settings.parse_blocks = True
+    ast = AST(tokens_, settings.parse_blocks)
     __print_parser_output(ast)
 
     settings.split_type = tokens.Header

@@ -32,7 +32,7 @@ copy_frontmatter : bool
 copy_global_tags : bool
     Whether or not to copy global tags from the source file to each new 
     file.
-create_blocks : bool
+parse_blocks : bool
     Whether or not to create ``Block`` tokens while parsing.
 create_index_file : bool
     Whether or not to create an index file.
@@ -79,7 +79,7 @@ from note_splitter import tokens
 backlink: bool = True
 copy_frontmatter: bool = True
 copy_global_tags: bool = True
-create_blocks: bool = True
+parse_blocks: bool = True
 create_index_file: bool = True
 destination_folder_path: str = ''
 file_id_format: str = r'%Y%M%D%h%m%s'
@@ -108,7 +108,7 @@ def initialize_settings():
             file_name_format TEXT,
             file_id_format TEXT,
             file_id_regex TEXT,
-            create_blocks INTEGER,
+            parse_blocks INTEGER,
             copy_frontmatter INTEGER,
             copy_global_tags INTEGER,
             backlink INTEGER,
@@ -124,7 +124,8 @@ def initialize_settings():
             split_attrs,
             file_name_format,
             file_id_format,
-            file_id_regex create_blocks,
+            file_id_regex,
+            parse_blocks,
             copy_frontmatter,
             copy_global_tags,
             backlink,
@@ -138,7 +139,7 @@ def initialize_settings():
         get_token_type_name(split_type),
         json.dumps(split_attrs),
         file_name_format,
-        int(create_blocks),
+        int(parse_blocks),
         int(copy_frontmatter),
         int(copy_global_tags),
         int(backlink),
@@ -189,7 +190,8 @@ def update_settings() -> None:
             split_attrs,
             file_name_format,
             file_id_format,
-            file_id_regex create_blocks,
+            file_id_regex,
+            parse_blocks,
             copy_frontmatter,
             copy_global_tags,
             backlink,
@@ -203,7 +205,7 @@ def update_settings() -> None:
         get_token_type_name(split_type),
         json.dumps(split_attrs),
         file_name_format,
-        int(create_blocks),
+        int(parse_blocks),
         int(copy_frontmatter),
         int(copy_global_tags),
         int(backlink),

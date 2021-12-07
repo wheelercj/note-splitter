@@ -25,14 +25,14 @@ class AST:
     def __init__(
             self,
             tokens_: List[tokens.Token],
-            create_blocks: bool = True):
+            parse_blocks: bool = True):
         """Creates an AST from a list of tokens.
 
         Parameters
         ----------
         tokens_ : List[tokens.Token]
             A list of tokens created from a Lexer object.
-        create_blocks : bool
+        parse_blocks : bool
             If True, some of the tokens will be grouped together into 
             larger tokens in the resulting AST. Otherwise, the token
             list will be put into the content attribute unchanged. The 
@@ -46,8 +46,8 @@ class AST:
         self.global_tags: List[str] = self.__get_global_tags()
         self.footnotes: List[tokens.Footnote] = self.__get_footnotes()
         self.content: List[tokens.Token] = []
-        if create_blocks:
-            self.__create_blocks()
+        if parse_blocks:
+            self.__parse_blocks()
         else:
             self.content = self.__tokens
         del self.__tokens  # This should be empty if blocks were created.
@@ -96,7 +96,7 @@ class AST:
                 return None
 
 
-    def __create_blocks(self) -> None:
+    def __parse_blocks(self) -> None:
         """Groups together all tokens that should be grouped together.
         
         No tokens are changed, some are only put together into new 

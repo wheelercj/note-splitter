@@ -105,7 +105,7 @@ def split_text(content: str,
         formatting of each section and converts them to strings.
     """
     tokens_: List[tokens.Token] = tokenize(content)
-    ast = AST(tokens_, settings.create_blocks)
+    ast = AST(tokens_, settings.parse_blocks)
     sections: List[tokens.Section] = split(ast.content,
                                            settings.split_type,
                                            settings.split_attrs)

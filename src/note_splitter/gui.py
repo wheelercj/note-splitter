@@ -141,7 +141,7 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
          sg.InputText(settings.split_attrs.get('level', ''))],
         [sg.Checkbox('parse blocks',
                      key='createBlocks',
-                     default=settings.create_blocks)],
+                     default=settings.parse_blocks)],
         [sg.Button('Split all'),
          sg.Button('Split selected'),
          sg.Button('Close')]])
