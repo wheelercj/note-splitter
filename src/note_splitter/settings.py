@@ -165,9 +165,13 @@ def delete_current_settings() -> None:
     """Delete the user settings database."""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute('DROP TABLE settings')
-    connection.commit()
-    connection.close()
+    try:
+        cur.execute('DROP TABLE settings')
+    except sqlite3.OperationalError:
+        pass
+    else:
+        connection.commit()
+        connection.close()
 
 
 def update_settings() -> None:
