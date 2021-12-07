@@ -110,9 +110,13 @@ def get_current_settings():
     """Fetch the current user settings from the database"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
-    cur.execute("SELECT * from settings")
+    try:
+        cur.execute('SELECT * from settings')
+    except sqlite3.OperationalError:
+        initialize_settings()
+        cur.execute('SELECT * from settings')
     result = cur.fetchall()
-    print(result)
+    # TODO: put the settings from result into the other variables.
 
 def delete_current_settings():
     """Delete the user settings from the database"""
