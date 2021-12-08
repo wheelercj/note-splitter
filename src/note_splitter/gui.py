@@ -52,8 +52,7 @@ def create_main_menu_window() -> sg.Window:
                        resizable=True,
                        margins=(0,0),
                        use_custom_titlebar=True,
-                       finalize=True,
-                       keep_on_top=True)
+                       finalize=True)
     window.set_min_size(window.size)
     return window
 
