@@ -272,10 +272,14 @@ def create_split_summary_window(notes: List[Note],
     listbox_key : str
         The key of the listbox.
     """
-    splitsummary_layout = [[sg.T(f'Number of new files created: {len(notes)}')]]
-    listbox_layout = create_note_listbox_layout_with_buttons(notes, listbox_key)
+    splitsummary_layout = [
+        [sg.T(f'Number of new files created: {len(notes)}')]]
+    listbox_layout = create_note_listbox_layout_with_buttons(notes,
+                                                             listbox_key)
     splitsummary_layout.extend(listbox_layout)
-    splitsummary_layout.append([sg.Button('OK', key='OK')])
+    splitsummary_layout.extend([
+        [sg.HorizontalSeparator()],
+        [sg.Button('OK', key='OK')]])
     return sg.Window('Split Summary', splitsummary_layout)
 
 
