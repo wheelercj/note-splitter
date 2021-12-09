@@ -17,17 +17,19 @@ def run_main_menu() -> None:
     sg.theme('TanBlue')
     settings.get_current_settings()
     window = gui.create_main_menu_window()
-    listbox_notes: List[str] = []
+    listbox_notes: List[note.Note] = []
+    all_notes: List[note.Note] = []
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Close'):
             settings.save_settings_to_db()
             window.close()
             return
-        listbox_notes = handle_main_menu_event(event,
-                                               values,
-                                               window,
-                                               listbox_notes)
+        listbox_notes, all_notes = handle_main_menu_event(event,
+                                                          values,
+                                                          window,
+                                                          listbox_notes,
+                                                          all_notes)
 
 
 def split_files(notes: List[note.Note] = None) -> List[note.Note]:
@@ -38,12 +40,12 @@ def split_files(notes: List[note.Note] = None) -> List[note.Note]:
 
     Parameters
     ----------
-    notes: List[note.Note]
+    notes : List[note.Note]
         The notes to be split.
 
     Returns
     -------
-    new_notes: List[note.Note]
+    new_notes : List[note.Note]
         The newly created notes.
     """
     tokenize: Callable = Lexer()
@@ -86,21 +88,21 @@ def split_text(content: str,
     
     Attributes
     ----------
-    content: str
+    content : str
         The string to be split.
-    tokenize: Callable
+    tokenize : Callable
         A function created from the Lexer class that converts a string 
         into a list of tokens.
-    split: Callable
+    split : Callable
         A function created from the Splitter class that groups the 
         tokens into sections.
-    format_: Callable
+    format_ : Callable
         A function created from the Formatter class that adjusts the 
         formatting of each section and converts them to strings.
 
     Returns
     -------
-    split_contents: List[str]
+    split_contents : List[str]
         A list of strings that are the sections of the original string.
     """
     tokens_: List[tokens.Token] = tokenize(content)
@@ -122,14 +124,14 @@ def save_new_notes(split_contents: List[str],
 
     Attributes
     ----------
-    split_contents: List[str]
+    split_contents : List[str]
         A list of strings to each be saved into a new file.
-    new_file_names: List[str]
+    new_file_names : List[str]
         A list of names of files to be created.
 
     Returns
     -------
-    new_notes: List[note.Note]
+    new_notes : List[note.Note]
         The newly created notes.
     """
     new_notes = []
@@ -152,14 +154,14 @@ def create_index_file_(source_note: note.Note,
     
     Parameters
     ----------
-    source_note: note.Note
+    source_note : note.Note
         The note that the new notes were created from.
-    new_notes: List[note.Note]
+    new_notes : List[note.Note]
         The newly created notes.
 
     Returns
     -------
-    index_file_path: str
+    index_file_path : str
         The absolute path to the newly created index file.
     """
     index_name = note.validate_file_name(f'index - {source_note.title}.md', 35)
@@ -176,22 +178,29 @@ def handle_main_menu_event(
         event,
         values,
         window,
-        listbox_notes: List[note.Note]) -> Optional[List[note.Note]]:
+        listbox_notes: List[note.Note],
+        all_notes: List[note.Note]) -> Optional[List[note.Note]]:
     """Handles the main menu's events.
     
     Parameters
     ----------
-    event: tkinter.Event
+    event : tkinter.Event
         The event that occurred.
-    values: dict
+    values : dict
         The values of the widgets in the main menu.
-    window: tkinter.Tk
+    window : tkinter.Tk
         The main menu window.
+    listbox_notes : List[note.Note]
+        The notes in the listbox.
+    all_notes : List[note.Note]
+        All of the user's notes.
 
     Returns
     -------
-    new_notes: List[note.Note], optional
+    listbox_notes : List[note.Note], optional
         The notes displayed in the listbox.
+    all_notes : List[note.Note], optional
+        All of the user's notes.
     """
     if event == 'Tips':
         sg.popup('Visit each of the tabs to see available applications.',
@@ -214,7 +223,7 @@ def handle_main_menu_event(
         sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
     elif event == 'Split all':
         new_notes: List[note.Note] = split_files(listbox_notes)
-        gui.run_split_summary_window(new_notes)
+        gui.run_split_summary_window(new_notes, all_notes)
     elif event == 'Split selected':
         notes_to_split = [note.get_by_title(listbox_notes, t)
                           for t in values['-NOTES TO SPLIT-']]
@@ -222,13 +231,14 @@ def handle_main_menu_event(
             sg.popup('No notes selected.', keep_on_top=True)
         else:
             new_notes: List[note.Note] = split_files(notes_to_split)
-            gui.run_split_summary_window(new_notes)
+            gui.run_split_summary_window(new_notes, all_notes)
     elif event == 'find':
-        listbox_notes: List[note.Note] = note.get_chosen_notes()
+        all_notes = note.get_all_notes()
+        listbox_notes: List[note.Note] = note.get_chosen_notes(all_notes)
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
     
-    return listbox_notes
+    return listbox_notes, all_notes
 
 
 if __name__ == '__main__':

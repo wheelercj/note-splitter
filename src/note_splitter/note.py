@@ -531,8 +531,9 @@ def get_file_paths(note_content: str,
         normalized, absolute version. All the paths are valid. (Broken 
         file links and links to websites are ignored.)
     """
-    noted_file_paths: List[str] = \
+    noted_file_paths: List[Tuple[str]] = \
         patterns.file_path_in_link.findall(note_content)
+    noted_file_paths: List[str] = [t[0] for t in noted_file_paths]
     file_paths: List[Tuple[str, str]] = []
     for file_path in noted_file_paths:
         if os.path.isabs(file_path):

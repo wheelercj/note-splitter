@@ -39,8 +39,7 @@
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from typing import Tuple, List, Optional
-from note_splitter import settings
-from note_splitter.note import Note
+from note_splitter import settings, note
 
 
 def show_progress(note_number: int,
@@ -252,13 +251,13 @@ def create_split_attr_dropdown() -> sg.Combo:
                     key='-SPLIT ATTR-')
 
 
-def create_split_summary_window(notes: List[Note],
+def create_split_summary_window(notes: List[note.Note],
                                 listbox_key: str) -> sg.Window:
     """Creates a window displaying the number of notes split.
     
     Parameters
     ----------
-    notes : List[Note]
+    notes : List[note.Note]
         The notes displayed in the listbox.
     listbox_key : str
         The key of the listbox.
@@ -274,12 +273,13 @@ def create_split_summary_window(notes: List[Note],
     return sg.Window('Split Summary', splitsummary_layout)
 
 
-def run_split_summary_window(notes: List[Note]) -> None:
+def run_split_summary_window(notes: List[note.Note],
+                             all_notes: List[note.Note]) -> None:
     """Runs the split summary window.
     
     Parameters
     ----------
-    notes : List[Note]
+    notes : List[note.Note]
         The notes displayed in the listbox.
     """
     listbox_key = '-LISTBOX-'
@@ -289,11 +289,16 @@ def run_split_summary_window(notes: List[Note]) -> None:
         if event in (sg.WIN_CLOSED, 'OK'):
             window.close()
             return
-        handle_note_listbox_event(event, values, window, notes, listbox_key)
+        handle_note_listbox_event(event,
+                                  values,
+                                  window,
+                                  notes,
+                                  listbox_key,
+                                  all_notes)
 
 
 def create_note_listbox_layout_with_buttons(
-        notes: List[Note],
+        notes: List[note.Note],
         key: str) -> List[List[sg.Element]]:
     """Creates a listbox of note titles and relevant buttons.
 
@@ -304,7 +309,7 @@ def create_note_listbox_layout_with_buttons(
     
     Parameters
     ----------
-    notes : List[Note]
+    notes : List[note.Note]
         The notes to display in the listbox.
     key : str
         The key to use for the listbox and part of each of its buttons.
@@ -319,13 +324,13 @@ def create_note_listbox_layout_with_buttons(
     return layout
 
 
-def create_note_listbox_layout(notes: Optional[List[Note]],
+def create_note_listbox_layout(notes: Optional[List[note.Note]],
                                key: str) -> List[List[sg.Element]]:
     """Creates a listbox of note titles.
 
     Parameters
     ----------
-    notes : List[Note], optional
+    notes : List[note.Note], optional
         The notes to display in the listbox.
     key : str
         The key to use for the listbox.
@@ -340,8 +345,9 @@ def create_note_listbox_layout(notes: Optional[List[Note]],
 def handle_note_listbox_event(event: str,
                               values,
                               window,
-                              listbox_notes: List[Note],
-                              listbox_key: str) -> None:
+                              listbox_notes: List[note.Note],
+                              listbox_key: str,
+                              all_notes: List[note.Note]) -> None:
     """Handles an event from a listbox of notes.
 
     Parameters
@@ -352,10 +358,12 @@ def handle_note_listbox_event(event: str,
         The value of the event.
     window : sg.Window
         The window containing the listbox.
-    listbox_notes : List[Note]
+    listbox_notes : List[note.Note]
         The notes displayed in the listbox.
     listbox_key : str
         The key of the listbox.
+    all_notes : List[note.Note]
+        All of the user's notes.
     """
     listbox_notes_dict = {n.title: n for n in listbox_notes}
     selected_titles = values[listbox_key]
@@ -367,7 +375,7 @@ def handle_note_listbox_event(event: str,
         if answer != 'Yes':
             return
     for title in selected_titles:
-            note_: Note = listbox_notes_dict[title]
+            note_: note.Note = listbox_notes_dict[title]
             if event.startswith('-OPEN'):
                 if note_.open() is None:
                     del listbox_notes_dict[note_.title]
@@ -375,8 +383,10 @@ def handle_note_listbox_event(event: str,
                 if note_.show() is None:
                     del listbox_notes_dict[note_.title]
             if event.startswith('-MOVE'):
-                if note_.move() is None:  # TODO: move needs args
-                    del listbox_notes_dict[note_.title]
+                dest_path = note.request_folder_path('destination')
+                if dest_path:
+                    if note_.move(dest_path, all_notes) is None:
+                        del listbox_notes_dict[note_.title]
             if event.startswith('-DELETE'):
                 note_.delete()
                 del listbox_notes_dict[note_.title]
