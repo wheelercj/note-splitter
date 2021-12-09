@@ -38,7 +38,6 @@
 """
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-import webbrowser
 from typing import Tuple, List, Optional
 from note_splitter import settings
 from note_splitter.note import Note
@@ -123,7 +122,7 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
                   font='Any 12',
                   title_color='blue')],
         [sg.T('Files to split:')]]
-    tab_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))  # TODO: use something instead of None.
+    tab_layout.extend(create_note_listbox_layout(None, '-NOTES TO SPLIT-'))
     tab_layout.extend([
         [sg.Text('Choose what to split by: ')],
         [sg.Text('type                                            attribute         value')],

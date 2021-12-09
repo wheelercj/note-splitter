@@ -191,6 +191,10 @@ def handle_main_menu_event(event, values, window):
     elif event == 'Split selected':
         new_notes = []
         gui.run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+    elif event == 'find':
+        chosen_notes: List[note.Note] = note.get_chosen_notes()
+        titles: List[str] = [n.title for n in chosen_notes]
+        window['-NOTES TO SPLIT-'].update(values=titles)
 
 
 if __name__ == '__main__':
