@@ -33,7 +33,8 @@ def run_main_menu() -> None:
                                                           all_notes)
 
 
-def split_files(notes: List[note.Note] = None) -> List[note.Note]:
+def split_files(window: sg.Window,
+                notes: List[note.Note] = None) -> List[note.Note]:
     """Splits files into multiple smaller files.
     
     If no notes are provided, they will be found using the split keyword
@@ -41,6 +42,8 @@ def split_files(notes: List[note.Note] = None) -> List[note.Note]:
 
     Parameters
     ----------
+    window : sg.Window
+        The main menu window.
     notes : List[note.Note]
         The notes to be split.
 
@@ -54,7 +57,7 @@ def split_files(notes: List[note.Note] = None) -> List[note.Note]:
     format_: Callable = Formatter()
     
     if not notes:
-        notes: List[note.Note] = note.get_chosen_notes()
+        notes: List[note.Note] = note.get_chosen_notes(window)
     all_new_notes: List[note.Note] = []
     for i, source_note in enumerate(notes):
         gui.show_progress(i, len(notes), 1, 5)
@@ -215,18 +218,19 @@ def handle_main_menu_event(
         url = event.split(' ')[1]
         webbrowser.open(url)
     elif event == 'Open File':
-        all_notes = note.get_all_notes()
+        all_notes = note.get_all_notes(window)
         file_paths: Tuple[str] = filedialog.askopenfilenames()
         listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'find':
-        all_notes = note.get_all_notes()
-        listbox_notes: List[note.Note] = note.get_chosen_notes(all_notes)
+        all_notes = note.get_all_notes(window)
+        listbox_notes: List[note.Note] = note.get_chosen_notes(window,
+                                                               all_notes)
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'Split all':
-        new_notes: List[note.Note] = split_files(listbox_notes)
+        new_notes: List[note.Note] = split_files(window, listbox_notes)
         gui.run_split_summary_window(new_notes, all_notes)
         window['-NOTES TO SPLIT-'].update(values=[])
     elif event == 'Split selected':
@@ -235,7 +239,7 @@ def handle_main_menu_event(
         if not notes_to_split:
             sg.popup('No notes selected.', keep_on_top=True)
         else:
-            new_notes: List[note.Note] = split_files(notes_to_split)
+            new_notes: List[note.Note] = split_files(window, notes_to_split)
             gui.run_split_summary_window(new_notes, all_notes)
             listbox_notes = [n for n in listbox_notes 
                              if n.title not in values['-NOTES TO SPLIT-']]

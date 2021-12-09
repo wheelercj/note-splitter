@@ -102,6 +102,7 @@ class Note:
 
     def move(self,
              new_folder_path: str,
+             window: sg.Window,
              all_notes: List['Note']) -> Optional[bool]:
         """Moves the note file to a new folder.
 
@@ -109,6 +110,8 @@ class Note:
         ----------
         new_folder_path : str
             The absolute path to the new folder.
+        window : sg.Window
+            The application window.
         all_notes : List[Note]
             A list of all the notes in the user's notes folder.
 
@@ -125,7 +128,7 @@ class Note:
         if os.path.exists(new_path):
             sg.Popup(f'File already exists: {new_path}')
             return False
-        move_files([self.path], new_folder_path, all_notes)
+        move_files([self.path], new_folder_path, window, all_notes)
         self.path = new_path
         self.folder_path = new_folder_path
         return True
@@ -147,18 +150,21 @@ class Note:
         return True
 
 
-def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
+def get_chosen_notes(window: sg.Window,
+                     all_notes: List[Note] = None) -> List[Note]:
     """Gets the notes that the user chose to split.
     
     Parameters
     ----------
+    window : sg.Window
+        The application window.
     all_notes : List[Note], optional
         The list of all the notes in the user's chosen folder. If not 
         provided, the list of all the notes in the user's chosen folder 
         will be retrieved.
     """
     if all_notes is None:
-        all_notes: List[Note] = get_all_notes()
+        all_notes: List[Note] = get_all_notes(window)
     if not all_notes:
         return []
 
@@ -213,8 +219,14 @@ def request_folder_path(folder_description: str) -> Optional[str]:
     return folder_path
 
 
-def get_all_notes() -> List[Note]:
-    """Gets all the notes in the user's chosen folder."""
+def get_all_notes(window: sg.Window) -> List[Note]:
+    """Gets all the notes in the user's chosen folder.
+    
+    Parameters
+    ----------
+    window : sg.Window
+        The application window.
+    """
     notes: List[Note] = []
     try:
         folder_list = os.listdir(settings.source_folder_path)
@@ -224,6 +236,7 @@ def get_all_notes() -> List[Note]:
             return []
         else:
             settings.source_folder_path = source_folder_path
+            window['-SOURCE FOLDER-'].update(settings.source_folder_path)
             folder_list = os.listdir(source_folder_path)
     
     for file_name in folder_list:
@@ -432,6 +445,7 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
 
 def move_files(paths_of_files_to_move: List[str],
                destination_path: str,
+               window: sg.Window,
                all_notes: List[Note] = None) -> None:
     """Moves files and updates all relevant references everywhere.
 
@@ -446,12 +460,14 @@ def move_files(paths_of_files_to_move: List[str],
         of any type.
     destination_path : str
         Absolute path to the destination folder.
+    window : sg.Window
+        The window to update.
     all_notes : List[Note], optional
         List of all notes in the source folder. If not given, it will be
         loaded from the source folder.
     """
     if all_notes is None:
-        all_notes = get_all_notes()
+        all_notes = get_all_notes(window)
     for path in paths_of_files_to_move:
         path = os.path.normpath(path)
         file_name_with_ext = os.path.basename(path)

@@ -145,16 +145,19 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
                  size=(15, 1),
                  auto_size_text=False,
                  justification='right'),
-         sg.InputText(settings.source_folder_path),
+         sg.InputText(settings.source_folder_path,
+                      key='-SOURCE FOLDER-'),
          sg.FolderBrowse()],
         [sg.Text('Destination Folder',
                  size=(15, 1),
                  auto_size_text=False,
                  justification='right'),
-         sg.InputText(settings.destination_folder_path),
+         sg.InputText(settings.destination_folder_path,
+                      key='-DESTINATION FOLDER-'),
          sg.FolderBrowse()],
-        [sg.Text("New file name format"),
-         sg.Input(settings.file_name_format)],
+        [sg.Text('New file name format'),
+         sg.Input(settings.file_name_format, 
+                  key='-FILE NAME FORMAT-')],
         [sg.Checkbox('create index file',
                      key='indexFile',
                      default=settings.create_index_file)],
@@ -167,12 +170,12 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
         [sg.Checkbox('backlink',
                      key='backlink',
                      default=settings.backlink)]]
-        # [sg.Text("Change the theme of Note Splitter to your liking.")],
+        # [sg.Text('Change the theme of Note Splitter to your liking.')],
         # [sg.Listbox(values = sg.theme_list(), 
         #             size =(20, 12), 
         #             key ='-THEME LISTBOX-',
         #             enable_events = True)],
-        # [sg.Button("Set Theme")],
+        # [sg.Button('Set Theme')],
 
 
 def create_about_tab_layout() -> List[List[sg.Element]]:
@@ -345,8 +348,8 @@ def create_note_listbox_layout(notes: Optional[List[note.Note]],
 
 
 def handle_note_listbox_event(event: str,
-                              values,
-                              window,
+                              values: dict,
+                              window: sg.Window,
                               listbox_notes: List[note.Note],
                               listbox_key: str,
                               all_notes: List[note.Note]) -> None:
@@ -356,8 +359,8 @@ def handle_note_listbox_event(event: str,
     ----------
     event : str
         The event to handle.
-    values : Any
-        The value of the event.
+    values : dict
+        The values of the event.
     window : sg.Window
         The window containing the listbox.
     listbox_notes : List[note.Note]
@@ -387,7 +390,7 @@ def handle_note_listbox_event(event: str,
             if event.startswith('-MOVE'):
                 dest_path = note.request_folder_path('destination')
                 if dest_path:
-                    if note_.move(dest_path, all_notes) is None:
+                    if note_.move(dest_path, window, all_notes) is None:
                         del listbox_notes_dict[note_.title]
             if event.startswith('-DELETE'):
                 note_.delete()
