@@ -46,7 +46,7 @@ def show_progress(note_number: int,
     sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
 
 
-def split_files(notes: List[note.Note] = None) -> None:
+def split_files(notes: List[note.Note] = None) -> List[note.Note]:
     """Splits files into multiple smaller files.
     
     If no notes are provided, they will be found using the split keyword
@@ -56,6 +56,11 @@ def split_files(notes: List[note.Note] = None) -> None:
     ----------
     notes: List[note.Note]
         The notes to be split.
+
+    Returns
+    -------
+    new_notes: List[note.Note]
+        The newly created notes.
     """
     tokenize: Callable = Lexer()
     split: Callable = Splitter()
@@ -63,6 +68,7 @@ def split_files(notes: List[note.Note] = None) -> None:
     
     if notes is None:
         notes: List[note.Note] = note.get_chosen_notes()
+    all_new_notes: List[note.Note] = []
     for i, source_note in enumerate(notes):
         show_progress(i, len(notes), 1, 5)
         with open(source_note.path, 'r', encoding='utf8') as file:
@@ -77,11 +83,15 @@ def split_files(notes: List[note.Note] = None) -> None:
                                                            split_contents)
         show_progress(i, len(notes), 4, 5)
         new_notes = save_new_notes(split_contents, new_file_names)
+        all_new_notes.extend(new_notes)
         show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
         if settings.create_index_file:
             index_path = create_index_file_(source_note, new_notes)
             print(f'Created index file at {index_path}')
+            all_new_notes.append(note.Note(index_path))
+
+    return all_new_notes
 
 
 def split_text(content: str,
@@ -103,6 +113,11 @@ def split_text(content: str,
     format_: Callable
         A function created from the Formatter class that adjusts the 
         formatting of each section and converts them to strings.
+
+    Returns
+    -------
+    split_contents: List[str]
+        A list of strings that are the sections of the original string.
     """
     tokens_: List[tokens.Token] = tokenize(content)
     ast = AST(tokens_, settings.parse_blocks)
