@@ -44,6 +44,27 @@ from note_splitter import settings
 from note_splitter.note import Note
 
 
+def show_progress(note_number: int,
+                  note_count: int,
+                  call_number: int,
+                  call_count: int) -> None:
+    """Shows the progress of the application.
+
+    Parameters
+    ----------
+    note_number: int
+        The number of the note being processed.
+    note_count: int
+        The total number of notes being processed.
+    call_number: int
+        The number of the call to this function.
+    call_count: int
+        The total number of calls to this function.
+    """
+    n = int((note_number + call_number) / (note_count * call_count) * 100)
+    sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
+
+
 def create_main_menu_window() -> sg.Window:
     """Creates the main menu window."""
     window = sg.Window('Note Splitter',
@@ -55,35 +76,6 @@ def create_main_menu_window() -> sg.Window:
                        finalize=True)
     window.set_min_size(window.size)
     return window
-
-
-def handle_main_menu_event(event, values, window):
-    """Handles the main menu's events."""
-    if event == 'Tips':
-        sg.popup('Visit each of the tabs to see available applications.',
-                 'Various tabs are included such as development environment ' \
-                 'setup, Note Splitter overview, token hierarchy, program ' \
-                 'modules, references, and how the documentation is ' \
-                 'maintained.',
-                 'If you have any questions or concerns please message the ' \
-                 'developers on the GitHub page.', keep_on_top=True)
-    elif event.startswith('URL '):
-        url = event.split(' ')[1]
-        webbrowser.open(url)
-    elif event == 'Open Folder':
-        folder_or_file = sg.popup_get_folder('Choose your folder',
-                                             keep_on_top=True)
-        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
-    elif event == 'Open File':
-        folder_or_file = sg.popup_get_file('Choose your file',
-                                           keep_on_top=True)
-        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
-    elif event == 'Split all':
-        new_notes = []
-        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
-    elif event == 'Split selected':
-        new_notes = []
-        run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
 
 
 def create_main_menu_layout() -> List[List[sg.Element]]:

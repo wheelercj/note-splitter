@@ -3,6 +3,7 @@
 
 import os
 from typing import List, Callable
+import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from note_splitter import settings, tokens, note, gui
 from note_splitter.lexer import Lexer
@@ -22,28 +23,7 @@ def run_main_menu() -> None:
             settings.save_settings_to_db()
             window.close()
             return
-        gui.handle_main_menu_event(event, values, window)
-
-
-def show_progress(note_number: int,
-                  note_count: int,
-                  call_number: int,
-                  call_count: int) -> None:
-    """Shows the progress of the application.
-
-    Parameters
-    ----------
-    note_number: int
-        The number of the note being processed.
-    note_count: int
-        The total number of notes being processed.
-    call_number: int
-        The number of the call to this function.
-    call_count: int
-        The total number of calls to this function.
-    """
-    n = int((note_number + call_number) / (note_count * call_count) * 100)
-    sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
+        handle_main_menu_event(event, values, window)
 
 
 def split_files(notes: List[note.Note] = None) -> List[note.Note]:
@@ -70,21 +50,21 @@ def split_files(notes: List[note.Note] = None) -> List[note.Note]:
         notes: List[note.Note] = note.get_chosen_notes()
     all_new_notes: List[note.Note] = []
     for i, source_note in enumerate(notes):
-        show_progress(i, len(notes), 1, 5)
+        gui.show_progress(i, len(notes), 1, 5)
         with open(source_note.path, 'r', encoding='utf8') as file:
             content: str = file.read()
-        show_progress(i, len(notes), 2, 5)
+        gui.show_progress(i, len(notes), 2, 5)
         split_contents: List[str] = split_text(content,
                                                tokenize,
                                                split,
                                                format_)
-        show_progress(i, len(notes), 3, 5)
+        gui.show_progress(i, len(notes), 3, 5)
         new_file_names: List[str] = note.create_file_names(source_note.ext,
                                                            split_contents)
-        show_progress(i, len(notes), 4, 5)
+        gui.show_progress(i, len(notes), 4, 5)
         new_notes = save_new_notes(split_contents, new_file_names)
         all_new_notes.extend(new_notes)
-        show_progress(i, len(notes), 5, 5)
+        gui.show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
         if settings.create_index_file:
             index_path = create_index_file_(source_note, new_notes)
@@ -182,6 +162,35 @@ def create_index_file_(source_note: note.Note,
         for n in new_notes:
             file.write(f'* [{n.title}]({n.path})\n')
     return index_file_path
+
+
+def handle_main_menu_event(event, values, window):
+    """Handles the main menu's events."""
+    if event == 'Tips':
+        sg.popup('Visit each of the tabs to see available applications.',
+                 'Various tabs are included such as development environment ' \
+                 'setup, Note Splitter overview, token hierarchy, program ' \
+                 'modules, references, and how the documentation is ' \
+                 'maintained.',
+                 'If you have any questions or concerns please message the ' \
+                 'developers on the GitHub page.', keep_on_top=True)
+    elif event.startswith('URL '):
+        url = event.split(' ')[1]
+        webbrowser.open(url)
+    elif event == 'Open Folder':
+        folder_or_file = sg.popup_get_folder('Choose your folder',
+                                             keep_on_top=True)
+        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
+    elif event == 'Open File':
+        folder_or_file = sg.popup_get_file('Choose your file',
+                                           keep_on_top=True)
+        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
+    elif event == 'Split all':
+        new_notes = []
+        gui.run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+    elif event == 'Split selected':
+        new_notes = []
+        gui.run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
 
 
 if __name__ == '__main__':
