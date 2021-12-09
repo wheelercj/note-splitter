@@ -171,14 +171,45 @@ def get_chosen_notes(all_notes: List[Note] = None) -> List[Note]:
     return chosen_notes
 
 
-def request_source_folder_path() -> bool:
-    """Prompts the user to select a folder to search for notes to split."""
-    folder_path = filedialog.askdirectory(title='Please select the folder ' \
-                                            'with your notes.', mustexist=True)
+def require_folder_path(folder_description: str) -> str:
+    """Requires the user to choose a folder.
+
+    Parameters
+    ----------
+    folder_description : str
+        The description of the folder that the user will be choosing.
+    
+    Returns
+    -------
+    str
+        The absolute path to a folder.
+    """
+    while True:
+        folder_path = request_folder_path(folder_description)
+        if folder_path:
+            return folder_path
+
+
+def request_folder_path(folder_description: str) -> Optional[str]:
+    """Prompts the user to select a folder.
+
+    Parameters
+    ----------
+    folder_description : str
+        The description of the folder.
+    
+    Returns
+    -------
+    str, None
+        The absolute path to a folder, or None if the user canceled.
+    """
+    folder_path = filedialog.askdirectory(
+        title=f'Please select the {folder_description} folder.',
+        mustexist=True)
     if not folder_path:
-        return False
+        return None
     settings.source_folder_path = folder_path
-    return True
+    return folder_path
 
 
 def get_all_notes() -> List[Note]:
@@ -187,10 +218,12 @@ def get_all_notes() -> List[Note]:
     try:
         folder_list = os.listdir(settings.source_folder_path)
     except FileNotFoundError:
-        if not request_source_folder_path():
+        source_folder_path = request_folder_path('source')
+        if not source_folder_path:
             return []
         else:
-            folder_list = os.listdir(settings.source_folder_path)
+            settings.source_folder_path = source_folder_path
+            folder_list = os.listdir(source_folder_path)
     
     for file_name in folder_list:
         file_path = os.path.join(settings.source_folder_path, file_name)
@@ -504,3 +537,24 @@ def get_file_paths(note_content: str,
         if os.path.exists(norm_path):
             file_paths.append((file_path, norm_path))
     return file_paths
+
+
+def get_by_title(notes: List[Note], title: str) -> Note:
+    """Gets a note by its title.
+
+    Parameters
+    ----------
+    notes : List[Note]
+        List of all notes in the source folder.
+    title : str
+        The title of the note.
+
+    Returns
+    -------
+    Note
+        The note with the given title.
+    """
+    for note in notes:
+        if note.title == title:
+            return note
+    raise ValueError(f'Note with title "{title}" not found.')

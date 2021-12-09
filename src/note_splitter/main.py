@@ -2,7 +2,7 @@
 
 
 import os
-from typing import List, Callable
+from typing import List, Callable, Optional
 import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from note_splitter import settings, tokens, note, gui
@@ -17,13 +17,17 @@ def run_main_menu() -> None:
     sg.theme('TanBlue')
     settings.get_current_settings()
     window = gui.create_main_menu_window()
+    listbox_notes: List[str] = []
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Close'):
             settings.save_settings_to_db()
             window.close()
             return
-        handle_main_menu_event(event, values, window)
+        listbox_notes = handle_main_menu_event(event,
+                                               values,
+                                               window,
+                                               listbox_notes)
 
 
 def split_files(notes: List[note.Note] = None) -> List[note.Note]:
@@ -46,7 +50,7 @@ def split_files(notes: List[note.Note] = None) -> List[note.Note]:
     split: Callable = Splitter()
     format_: Callable = Formatter()
     
-    if notes is None:
+    if not notes:
         notes: List[note.Note] = note.get_chosen_notes()
     all_new_notes: List[note.Note] = []
     for i, source_note in enumerate(notes):
@@ -130,7 +134,11 @@ def save_new_notes(split_contents: List[str],
     """
     new_notes = []
     for new_file_name, split_content in zip(new_file_names, split_contents):
-        new_file_path = os.path.join(settings.new_notes_folder, new_file_name)
+        if not settings.destination_folder_path:
+            settings.destination_folder_path = \
+                note.require_folder_path('destination')
+        new_file_path = os.path.join(settings.destination_folder_path,
+                                     new_file_name)
         new_file_path = note.ensure_file_path_uniqueness(new_file_path)
         with open(new_file_path, 'x', encoding='utf8') as file:
             file.write(split_content)
@@ -164,8 +172,27 @@ def create_index_file_(source_note: note.Note,
     return index_file_path
 
 
-def handle_main_menu_event(event, values, window):
-    """Handles the main menu's events."""
+def handle_main_menu_event(
+        event,
+        values,
+        window,
+        listbox_notes: List[note.Note]) -> Optional[List[note.Note]]:
+    """Handles the main menu's events.
+    
+    Parameters
+    ----------
+    event: tkinter.Event
+        The event that occurred.
+    values: dict
+        The values of the widgets in the main menu.
+    window: tkinter.Tk
+        The main menu window.
+
+    Returns
+    -------
+    new_notes: List[note.Note], optional
+        The notes displayed in the listbox.
+    """
     if event == 'Tips':
         sg.popup('Visit each of the tabs to see available applications.',
                  'Various tabs are included such as development environment ' \
@@ -186,15 +213,21 @@ def handle_main_menu_event(event, values, window):
                                            keep_on_top=True)
         sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
     elif event == 'Split all':
-        new_notes = []
-        gui.run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+        notes_to_split = [note.get_by_title(listbox_notes, t)
+                          for t in listbox_notes]
+        new_notes: List[note.Note] = split_files(notes_to_split)
+        gui.run_split_summary_window(new_notes)
     elif event == 'Split selected':
-        new_notes = []
-        gui.run_split_summary_window(new_notes)  # TODO: define new_notes before this is called.
+        notes_to_split = [note.get_by_title(listbox_notes, t)
+                          for t in values['-NOTES TO SPLIT-']]
+        new_notes: List[note.Note] = split_files(notes_to_split)
+        gui.run_split_summary_window(new_notes)
     elif event == 'find':
-        chosen_notes: List[note.Note] = note.get_chosen_notes()
-        titles: List[str] = [n.title for n in chosen_notes]
+        listbox_notes: List[note.Note] = note.get_chosen_notes()
+        titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
+    
+    return listbox_notes
 
 
 if __name__ == '__main__':
