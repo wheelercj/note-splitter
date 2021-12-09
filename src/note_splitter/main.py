@@ -3,7 +3,7 @@
 
 import os
 from tkinter import filedialog
-from typing import List, Tuple, Callable, Optional
+from typing import List, Tuple, Callable
 import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from note_splitter import settings, tokens, note, gui
@@ -180,7 +180,7 @@ def handle_main_menu_event(
         values,
         window,
         listbox_notes: List[note.Note],
-        all_notes: List[note.Note]) -> Optional[List[note.Note]]:
+        all_notes: List[note.Note]) -> List[note.Note]:
     """Handles the main menu's events.
     
     Parameters
@@ -192,16 +192,16 @@ def handle_main_menu_event(
     window : tkinter.Tk
         The main menu window.
     listbox_notes : List[note.Note]
-        The notes in the listbox.
+        The notes displayed in the listbox. This list may be empty.
     all_notes : List[note.Note]
-        All of the user's notes.
+        All of the user's notes. This list may be empty.
 
     Returns
     -------
-    listbox_notes : List[note.Note], optional
-        The notes displayed in the listbox.
-    all_notes : List[note.Note], optional
-        All of the user's notes.
+    listbox_notes : List[note.Note]
+        The notes displayed in the listbox. This list may be empty.
+    all_notes : List[note.Note]
+        All of the user's notes. This list may be empty.
     """
     if event == 'Tips':
         sg.popup('Visit each of the tabs to see available applications.',
