@@ -184,19 +184,22 @@ def request_source_folder_path() -> bool:
 def get_all_notes() -> List[Note]:
     """Gets all the notes in the user's chosen folder."""
     notes: List[Note] = []
-    folder_path = settings.source_folder_path
     try:
-        folder_list = os.listdir(folder_path)
+        folder_list = os.listdir(settings.source_folder_path)
     except FileNotFoundError:
         if not request_source_folder_path():
             return []
+        else:
+            folder_list = os.listdir(settings.source_folder_path)
     
     for file_name in folder_list:
-        file_path = os.path.join(folder_path, file_name)
+        file_path = os.path.join(settings.source_folder_path, file_name)
         if os.path.isfile(file_path):
             _, file_ext = os.path.splitext(file_name)
             if file_ext in settings.note_types:
-                notes.append(Note(file_path, folder_path, file_name))
+                notes.append(Note(file_path,
+                                  settings.source_folder_path,
+                                  file_name))
 
     return notes
 
