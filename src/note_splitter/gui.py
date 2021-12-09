@@ -285,11 +285,11 @@ def run_split_summary_window(notes: List[Note]) -> None:
     listbox_key = '-LISTBOX-'
     window = create_split_summary_window(notes, listbox_key)
     while True:
-        event, values = window.read(timeout=100)
+        event, values = window.read()
         if event in (sg.WIN_CLOSED, 'OK'):
             window.close()
             return
-        handle_note_listbox_event(event, values, notes, listbox_key)
+        handle_note_listbox_event(event, values, window, notes, listbox_key)
 
 
 def create_note_listbox_layout_with_buttons(
@@ -339,6 +339,7 @@ def create_note_listbox_layout(notes: Optional[List[Note]],
 
 def handle_note_listbox_event(event: str,
                               values,
+                              window,
                               listbox_notes: List[Note],
                               listbox_key: str) -> None:
     """Handles an event from a listbox of notes.
@@ -349,6 +350,8 @@ def handle_note_listbox_event(event: str,
         The event to handle.
     values : Any
         The value of the event.
+    window : sg.Window
+        The window containing the listbox.
     listbox_notes : List[Note]
         The notes displayed in the listbox.
     listbox_key : str
@@ -356,22 +359,25 @@ def handle_note_listbox_event(event: str,
     """
     listbox_notes_dict = {n.title: n for n in listbox_notes}
     selected_titles = values[listbox_key]
+    if not selected_titles:
+        selected_titles = [str(key) for key in listbox_notes_dict.keys()]
     if event.startswith('-DELETE'):
-        answer = sg.popup_yes_no('Are you sure you want to delete ' \
-                            'the selected notes?', keep_on_top=True)
+        answer = sg.popup_yes_no('Are you sure you want to delete notes?',
+                                 keep_on_top=True)
         if answer != 'Yes':
             return
     for title in selected_titles:
             note_: Note = listbox_notes_dict[title]
             if event.startswith('-OPEN'):
                 if note_.open() is None:
-                    listbox_notes.remove(note_)
+                    del listbox_notes_dict[note_.title]
             if event.startswith('-SHOW'):
                 if note_.show() is None:
-                    listbox_notes.remove(note_)
+                    del listbox_notes_dict[note_.title]
             if event.startswith('-MOVE'):
-                if note_.move() is None:
-                    listbox_notes.remove(note_)
+                if note_.move() is None:  # TODO: move needs args
+                    del listbox_notes_dict[note_.title]
             if event.startswith('-DELETE'):
                 note_.delete()
-                listbox_notes.remove(note_)
+                del listbox_notes_dict[note_.title]
+    window[listbox_key].update(values=listbox_notes_dict.keys())
