@@ -2,7 +2,8 @@
 
 
 import os
-from typing import List, Callable, Optional
+from tkinter import filedialog
+from typing import List, Tuple, Callable, Optional
 import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from note_splitter import settings, tokens, note, gui
@@ -213,14 +214,17 @@ def handle_main_menu_event(
     elif event.startswith('URL '):
         url = event.split(' ')[1]
         webbrowser.open(url)
-    elif event == 'Open Folder':
-        folder_or_file = sg.popup_get_folder('Choose your folder',
-                                             keep_on_top=True)
-        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
     elif event == 'Open File':
-        folder_or_file = sg.popup_get_file('Choose your file',
-                                           keep_on_top=True)
-        sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
+        all_notes = note.get_all_notes()
+        file_paths: Tuple[str] = filedialog.askopenfilenames()
+        listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
+        titles: List[str] = [n.title for n in listbox_notes]
+        window['-NOTES TO SPLIT-'].update(values=titles)
+    elif event == 'find':
+        all_notes = note.get_all_notes()
+        listbox_notes: List[note.Note] = note.get_chosen_notes(all_notes)
+        titles: List[str] = [n.title for n in listbox_notes]
+        window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'Split all':
         new_notes: List[note.Note] = split_files(listbox_notes)
         gui.run_split_summary_window(new_notes, all_notes)
@@ -232,11 +236,6 @@ def handle_main_menu_event(
         else:
             new_notes: List[note.Note] = split_files(notes_to_split)
             gui.run_split_summary_window(new_notes, all_notes)
-    elif event == 'find':
-        all_notes = note.get_all_notes()
-        listbox_notes: List[note.Note] = note.get_chosen_notes(all_notes)
-        titles: List[str] = [n.title for n in listbox_notes]
-        window['-NOTES TO SPLIT-'].update(values=titles)
     
     return listbox_notes, all_notes
 
