@@ -11,7 +11,6 @@ from copy import copy
 from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
 from send2trash import send2trash  # https://github.com/arsenetar/send2trash
-from tkinter import filedialog
 import PySimpleGUI as sg
 from note_splitter import settings, patterns
 
@@ -210,9 +209,8 @@ def request_folder_path(folder_description: str) -> Optional[str]:
     str, None
         The absolute path to a folder, or None if the user canceled.
     """
-    folder_path = filedialog.askdirectory(
-        title=f'Please select the {folder_description} folder.',
-        mustexist=True)
+    message = f'Please select the {folder_description} folder.'
+    folder_path = sg.PopupGetFolder(message, keep_on_top=True)
     if not folder_path:
         return None
     settings.source_folder_path = folder_path
