@@ -213,9 +213,7 @@ def handle_main_menu_event(
                                            keep_on_top=True)
         sg.popup(f'You chose: {folder_or_file}', keep_on_top=True)
     elif event == 'Split all':
-        notes_to_split = [note.get_by_title(listbox_notes, t)
-                          for t in listbox_notes]
-        new_notes: List[note.Note] = split_files(notes_to_split)
+        new_notes: List[note.Note] = split_files(listbox_notes)
         gui.run_split_summary_window(new_notes)
     elif event == 'Split selected':
         notes_to_split = [note.get_by_title(listbox_notes, t)
