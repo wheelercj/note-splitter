@@ -142,7 +142,8 @@ class Note:
         if not os.path.exists(self.path):
             sg.Popup(f'File not found: {self.path}')
             return None
-        send2trash(self.path)
+        path = os.path.normpath(self.path)
+        send2trash([path])
         return True
 
 
@@ -451,12 +452,14 @@ def move_files(paths_of_files_to_move: List[str],
     """
     if all_notes is None:
         all_notes = get_all_notes()
-    for path in paths_of_files_to_move:        
+    for path in paths_of_files_to_move:
+        path = os.path.normpath(path)
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
         if file_ext in settings.note_types:
             make_file_paths_absolute(note_path=path)
         new_path = os.path.join(destination_path, file_name_with_ext)
+        new_path = os.path.normpath(new_path)
         __change_all_links_to_file(path, new_path, all_notes)
         os.rename(path, new_path)
 
