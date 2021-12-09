@@ -218,8 +218,11 @@ def handle_main_menu_event(
     elif event == 'Split selected':
         notes_to_split = [note.get_by_title(listbox_notes, t)
                           for t in values['-NOTES TO SPLIT-']]
-        new_notes: List[note.Note] = split_files(notes_to_split)
-        gui.run_split_summary_window(new_notes)
+        if not notes_to_split:
+            sg.popup('No notes selected.', keep_on_top=True)
+        else:
+            new_notes: List[note.Note] = split_files(notes_to_split)
+            gui.run_split_summary_window(new_notes)
     elif event == 'find':
         listbox_notes: List[note.Note] = note.get_chosen_notes()
         titles: List[str] = [n.title for n in listbox_notes]
