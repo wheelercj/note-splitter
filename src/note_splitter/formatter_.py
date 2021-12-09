@@ -5,9 +5,13 @@ and global tags to each section, and then converts the section tokens to
 strings.
 """
 
+# external imports
 from typing import List, Optional
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-from note_splitter import settings, tokens
+
+# internal imports
+import settings
+import tokens
 
 
 class Formatter:
@@ -45,7 +49,9 @@ class Formatter:
             for i, each in enumerate(sections):
                 # print(f"{i} - beofre", each.content[0].level)
                 # if the section's first token (a header) has a level greater than 1:
-                #   then reduce the level of all headers in the section equally so that the first header has a level of 1
+                #  then reduce the level of all headers in the section equally so that the first header has a level of 1
+                each.content[0].content = each.content[0].content.replace("#", "")
+                print("header level check befor", each.content[0].level)
                 if i == 0:
                     if each.content[0].level > 1:
                         difference_level = each.content[0].level - 1
@@ -54,27 +60,37 @@ class Formatter:
                 else:
                     if check_for_level:
                         each.content[0].level -= difference_level
+                if each.content[0].level < 1:
+                    each.content[0].level = 1
+                each.content[0].content = "#" * each.content[0].level + each.content[0].content
 
-                # print(f"{i} - aftter", each.content[0].level)
-        # for each in sections:
-        #     print("gg", each.content[0].level)
         # TODO: Insert the frontmatter and global tags into each section.
         #   The frontmatter may be any standard Python object (dict, list, etc.).
-        #   If the frontmatter is a dictionary with a 'title' key, then that key's value will need to be changed to whatever the new file's title will be.
+        #   If the frontmatter is a dictionary with a 'title' key, then that key's value will need to be changed to
+        #   whatever the new file's title will be.
         #       We can just use placeholder names for now.
         if isinstance(frontmatter, dict):
             if "title" in frontmatter:
                 frontmatter["new_name"] = frontmatter.pop('title')
         #   We can convert Python objects back to YAML with `frontmatter_string = yaml.dump(frontmatter_object)`.
         frontmatter_string = yaml.dump(frontmatter)
-        # print("efwgfwgdfwefc", frontmatter_string, type(frontmatter_string))
         #   If there is frontmatter, it should be inserted at the very top of the file, surrounded by lines
         #   containing only '---'.
         if frontmatter:
             for i in range(len(sections)):
-                sections[i].content = ["---\n" + frontmatter_string + "---\n"] + sections[i].content
+                sections[i].content = ["---\n" + frontmatter_string + "---\n"] + global_tags + sections[i].content
+        else:
+            for i in range(len(sections)):
+                if sections[i].content[0] == tokens.Header:
+                    sections[i].content = [sections[i].content[0]] + global_tags + sections[i].content[1:]
+                else:
+                    sections[i].content = global_tags + sections[i].content
+
         #   The global tags should be inserted under the first header, if there is one. Otherwise, they should be
         #   inserted under at the top of the file (under frontmatter if it's there).
+
+        # print("rehgoiwgaerfdasv", global_tags)
+        # print("wefweg", sections[0].content[0], type(sections[0].content[0]))
 
         # TODO: convert the sections to strings and return them.
         #  * For each section, combine its tokens into one string (use `str(section)`).
