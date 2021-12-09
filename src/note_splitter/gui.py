@@ -281,6 +281,8 @@ def run_split_summary_window(notes: List[note.Note],
     ----------
     notes : List[note.Note]
         The notes displayed in the listbox.
+    all_notes : List[note.Note]
+        All of the user's notes.
     """
     listbox_key = '-LISTBOX-'
     window = create_split_summary_window(notes, listbox_key)
