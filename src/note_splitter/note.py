@@ -256,6 +256,9 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
     now = datetime.now()
     for file_contents in files_contents:
         file_name_format = copy(settings.file_name_format)
+        if r'%id' in file_name_format:
+            file_name_format = file_name_format.replace(r'%id',
+                                                       settings.file_id_format)
         new_file_name = __create_file_name(file_ext,
                                            file_name_format,
                                            file_contents,
