@@ -413,7 +413,7 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
     file_path : str
         The absolute path for the file, including the unique file name.
     """
-    if os.path.exists(file_path):
+    while os.path.exists(file_path):
         folder_path, file_name_and_ext = os.path.split(file_path)
         file_name, file_ext = os.path.splitext(file_name_and_ext)
         match = re.match(r'.+\((\d+)\)$', file_name)
