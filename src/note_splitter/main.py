@@ -230,10 +230,14 @@ def handle_main_menu_event(
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'Split all':
+        settings.split_attrs = { values['-SPLIT ATTR-']:
+                                 values['-SPLIT ATTR VALUE-'] }
         new_notes: List[note.Note] = split_files(window, listbox_notes)
         gui.run_split_summary_window(new_notes, all_notes)
         window['-NOTES TO SPLIT-'].update(values=[])
     elif event == 'Split selected':
+        settings.split_attrs = { values['-SPLIT ATTR-']:
+                                 values['-SPLIT ATTR VALUE-'] }
         notes_to_split = [note.get_by_title(listbox_notes, title)
                           for title in values['-NOTES TO SPLIT-']]
         if not notes_to_split:
@@ -246,10 +250,12 @@ def handle_main_menu_event(
             titles = [n.title for n in listbox_notes]
             window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'parseBlocks':
+        settings.parse_blocks = values['parseBlocks']
         gui.update_split_types(values, window)
+        gui.update_split_attrs(window)
     elif event == '-SPLIT TYPE-':
         settings.split_type = settings.get_token_type(values['-SPLIT TYPE-'])
-        gui.update_split_attrs(values, window)
+        gui.update_split_attrs(window)
     else:
         print('Unhandled event:', event)
 

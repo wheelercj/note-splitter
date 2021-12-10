@@ -130,7 +130,8 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
         [sg.Text('type                                            attribute         value')],
         [create_split_type_dropdown(),
          create_split_attr_dropdown(),
-         sg.InputText(settings.split_attrs.get('level', ''))],
+         sg.InputText(settings.split_attrs.get('level', ''),
+                      key='-SPLIT ATTR VALUE-')],
         [sg.Checkbox('parse blocks',
                      key='parseBlocks',
                      default=settings.parse_blocks,
@@ -264,8 +265,8 @@ def create_split_type_dropdown() -> sg.Combo:
 
 
 def update_split_types(values: dict, window: sg.Window) -> None:
-    """Updates the dropdown of split types.
-    
+    """Updates the split type dropdown and setting.
+
     Parameters
     ----------
     values : dict
@@ -280,10 +281,14 @@ def update_split_types(values: dict, window: sg.Window) -> None:
     else:
         type_names: List[str] = settings.get_token_type_names(
                                     lambda t: not issubclass(t, tokens.Block))
-        default_value = settings.split_type \
-                        if settings.split_type in type_names else 'header'
+        current_type_name = settings.get_token_type_name(settings.split_type)
+        if current_type_name in type_names:
+            default_value = current_type_name
+        else:
+            default_value = 'header'
+            settings.split_type = tokens.Header
     window['-SPLIT TYPE-'].update(default_value, values=type_names)
-    update_split_attrs(values, window)
+    update_split_attrs(window)
 
 
 def create_split_attr_dropdown() -> sg.Combo:
@@ -298,23 +303,24 @@ def create_split_attr_dropdown() -> sg.Combo:
                             'if the type choice is not specific enough.')
 
 
-def update_split_attrs(values: dict, window: sg.Window) -> None:
-    """Updates the dropdown of split attributes.
+def update_split_attrs(window: sg.Window) -> None:
+    """Updates the split attribute dropdown, but not the setting.
 
     Parameters
     ----------
-    values : dict
-        The values of the window.
     window : sg.Window
         The window to update.
     """
-    split_type: Type = settings.get_token_type(values['-SPLIT TYPE-'])
-    if inspect.isabstract(split_type):
+    if inspect.isabstract(settings.split_type):
         attr_names: List[str] = []
+        default_value = None
     else:
-        attr_names = sorted(list(split_type().__dict__.keys()))
+        attr_names = sorted(list(settings.split_type().__dict__.keys()))
         attr_names.insert(0, None)
-    default_value = 'level' if 'level' in attr_names else None
+        if 'level' in attr_names:
+            default_value = 'level'
+        else:
+            default_value = attr_names[-1]
     window['-SPLIT ATTR-'].update(default_value, values=attr_names)
 
 
