@@ -39,6 +39,7 @@
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 from typing import Tuple, List, Optional
+from textwrap import dedent
 from note_splitter import settings, note
 
 
@@ -88,8 +89,7 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
     layout = [
         [sg.MenubarCustom(menu_def,
                           key='-MENU-',
-                          font='Courier 15',
-                          tearoff=True)],
+                          font='Courier 15')],
         [sg.Text('Note Splitter',
                  size=(38, 1),
                  justification='center',
@@ -114,7 +114,9 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
          sg.Button('find'),
          sg.T(' by ')],
         [sg.Text('keyword:'),
-         sg.InputText(settings.split_keyword)]]
+         sg.InputText(settings.split_keyword,
+                      tooltip='Choose a keyword to search for to find which ' \
+                              'files to split.')]]
     tab_layout = [
         [sg.Frame('',
                   frame_layout,
@@ -130,7 +132,9 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
          sg.InputText(settings.split_attrs.get('level', ''))],
         [sg.Checkbox('parse blocks',
                      key='createBlocks',
-                     default=settings.parse_blocks)],
+                     default=settings.parse_blocks,
+                     tooltip='Detect multiline elements, e.g. lists, ' \
+                             'tables, code blocks, etc.')],
         [sg.Button('Split all'),
          sg.Button('Split selected'),
          sg.Button('Close')]])
@@ -157,7 +161,19 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
          sg.FolderBrowse()],
         [sg.Text('New file name format'),
          sg.Input(settings.file_name_format, 
-                  key='-FILE NAME FORMAT-')],
+                  key='-FILE NAME FORMAT-',
+                  tooltip=dedent(r'''
+                    The file name format setting can use these variables:
+
+                    %uuid4 - A universally unique identifier.
+                    %title - The title of the file (the first header).
+                    %Y - The current year.
+                    %M - The current month.
+                    %D - The current day.
+                    %h - The current hour.
+                    %m - The current minute.
+                    %s - The current second.
+                    %id - The same as entering %Y%M%D%h%m%s.'''))],
         [sg.Checkbox('create index file',
                      key='indexFile',
                      default=settings.create_index_file)],
@@ -251,7 +267,9 @@ def create_split_attr_dropdown() -> sg.Combo:
     attr_names.append(None)
     return sg.Combo(values=attr_names,
                     default_value='level' if 'level' in attr_names else None,
-                    key='-SPLIT ATTR-')
+                    key='-SPLIT ATTR-',
+                    tooltip='Optionally choose a split attribute and value ' \
+                            'if the type choice is not specific enough.')
 
 
 def create_split_summary_window(notes: List[note.Note],
