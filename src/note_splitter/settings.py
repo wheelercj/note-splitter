@@ -236,24 +236,29 @@ def reset_settings_to_default() -> None:
 
 
 def get_token_type_names(
-        predicate: Callable[[Type], bool] = None) -> List[str]:
-    """Get all token type names.
+        filter_predicate: Callable[[Type], bool] = None,
+        all_token_types: List[Type] = None) -> List[str]:
+    """Get all token types' output-formatted names.
     
     Parameters
     ----------
     predicate : Callable, optional
         A function that filters the token types.
+    all_token_types : List, optional
+        A list of all token types. If not provided, the list of all 
+        token types will be fetched.
     """
-    all_token_types: List[Type] = tokens.get_all_token_types(tokens)
+    if not all_token_types:
+        all_token_types: List[Type] = tokens.get_all_token_types(tokens)
     token_names = []
     for token_type in all_token_types:
-        if not predicate or predicate(token_type):
+        if not filter_predicate or filter_predicate(token_type):
             token_names.append(get_token_type_name(token_type))
     return token_names
 
 
 def get_token_type_name(token_type: Type) -> str:
-    """Get the token type name.
+    """Get the token type's output-formatted name.
     
     Parameters
     ----------
@@ -268,6 +273,17 @@ def get_token_type_name(token_type: Type) -> str:
     return token_name.lower()
 
 
-def get_token_type(name: str) -> Type:
-    """Get a token type by name."""
-    # TODO
+def get_token_type(chosen_name: str) -> Type:
+    """Get a token type by name.
+    
+    Parameters
+    ----------
+    chosen_name : str
+        The output-formatted name of the token type to get.
+    """
+    all_token_types: List[Type] = tokens.get_all_token_types(tokens)
+    token_type_names = get_token_type_names(None, all_token_types)
+    for name, type_ in zip(token_type_names, all_token_types):
+        if name == chosen_name:
+            return type_
+    raise ValueError(f'Token type "{chosen_name}" not found.')

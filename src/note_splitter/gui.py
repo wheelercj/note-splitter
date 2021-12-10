@@ -38,9 +38,10 @@
 """
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Type
+import inspect
 from textwrap import dedent
-from note_splitter import settings, note
+from note_splitter import settings, note, tokens
 
 
 def show_progress(note_number: int,
@@ -258,19 +259,63 @@ def create_split_type_dropdown() -> sg.Combo:
     default_split_type_name = settings.get_token_type_name(settings.split_type)
     return sg.Combo(values=token_type_names,
                     default_value=default_split_type_name,
-                    key='-SPLIT TYPE-')
+                    key='-SPLIT TYPE-',
+                    enable_events=True)
+
+
+def update_split_types(values: dict, window: sg.Window) -> None:
+    """Updates the dropdown of split types.
+    
+    Parameters
+    ----------
+    values : dict
+        The values of the window.
+    window : sg.Window
+        The window to update.
+    """
+    if values['parseBlocks']:
+        type_names: List[str] = settings.get_token_type_names()
+        type_names.remove('section')
+        default_value = settings.get_token_type_name(settings.split_type)
+    else:
+        type_names: List[str] = settings.get_token_type_names(
+                                    lambda t: not issubclass(t, tokens.Block))
+        default_value = settings.split_type \
+                        if settings.split_type in type_names else 'header'
+    window['-SPLIT TYPE-'].update(default_value, values=type_names)
+    update_split_attrs(values, window)
 
 
 def create_split_attr_dropdown() -> sg.Combo:
     """Creates a dropdown element listing token attributes and None."""
     obj = settings.split_type()
-    attr_names: List[str] = list(obj.__dict__.keys())
-    attr_names.append(None)
+    attr_names: List[str] = sorted(list(obj.__dict__.keys()))
+    attr_names.insert(0, None)
     return sg.Combo(values=attr_names,
                     default_value='level' if 'level' in attr_names else None,
                     key='-SPLIT ATTR-',
                     tooltip='Optionally choose a split attribute and value ' \
                             'if the type choice is not specific enough.')
+
+
+def update_split_attrs(values: dict, window: sg.Window) -> None:
+    """Updates the dropdown of split attributes.
+
+    Parameters
+    ----------
+    values : dict
+        The values of the window.
+    window : sg.Window
+        The window to update.
+    """
+    split_type: Type = settings.get_token_type(values['-SPLIT TYPE-'])
+    if inspect.isabstract(split_type):
+        attr_names: List[str] = []
+    else:
+        attr_names = sorted(list(split_type().__dict__.keys()))
+        attr_names.insert(0, None)
+    default_value = 'level' if 'level' in attr_names else None
+    window['-SPLIT ATTR-'].update(default_value, values=attr_names)
 
 
 def create_split_summary_window(notes: List[note.Note],
