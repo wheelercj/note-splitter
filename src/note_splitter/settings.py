@@ -70,7 +70,7 @@ split_type : Type
 # https://python-patterns.guide/python/module-globals/#id1
 
 
-from typing import List, Type
+from typing import List, Type, Callable, Optional
 import sqlite3
 import json 
 from note_splitter import tokens
@@ -235,12 +235,20 @@ def reset_settings_to_default() -> None:
     initialize_settings()
 
 
-def get_all_token_type_names() -> List[str]:
-    """Get all token type names."""
+def get_token_type_names(
+        predicate: Callable[[Type], bool] = None) -> List[str]:
+    """Get all token type names.
+    
+    Parameters
+    ----------
+    predicate : Callable, optional
+        A function that filters the token types.
+    """
     all_token_types: List[Type] = tokens.get_all_token_types(tokens)
     token_names = []
     for token_type in all_token_types:
-        token_names.append(get_token_type_name(token_type))
+        if not predicate or predicate(token_type):
+            token_names.append(get_token_type_name(token_type))
     return token_names
 
 

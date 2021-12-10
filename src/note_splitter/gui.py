@@ -252,7 +252,7 @@ def create_split_type_dropdown() -> sg.Combo:
     
     The Section type is excluded.
     """
-    token_type_names = settings.get_all_token_type_names()
+    token_type_names = settings.get_token_type_names()
     token_type_names.remove('section')
     default_split_type_name = settings.get_token_type_name(settings.split_type)
     return sg.Combo(values=token_type_names,
