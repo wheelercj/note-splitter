@@ -131,8 +131,9 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
          create_split_attr_dropdown(),
          sg.InputText(settings.split_attrs.get('level', ''))],
         [sg.Checkbox('parse blocks',
-                     key='createBlocks',
+                     key='parseBlocks',
                      default=settings.parse_blocks,
+                     enable_events=True,
                      tooltip='Detect multiline elements, e.g. lists, ' \
                              'tables, code blocks, etc.')],
         [sg.Button('Split all'),

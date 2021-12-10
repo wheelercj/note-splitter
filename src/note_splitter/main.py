@@ -245,7 +245,22 @@ def handle_main_menu_event(
                              if n.title not in values['-NOTES TO SPLIT-']]
             titles = [n.title for n in listbox_notes]
             window['-NOTES TO SPLIT-'].update(values=titles)
-    
+    elif event == 'parseBlocks':
+        if values['parseBlocks']:
+            type_names: List[str] = settings.get_token_type_names()
+            type_names.remove('section')
+            default_value = settings.get_token_type_name(settings.split_type)
+        else:
+            type_names: List[str] = settings.get_token_type_names(
+                                     lambda t: not issubclass(t, tokens.Block))
+            default_value = settings.split_type \
+                            if settings.split_type in type_names else 'header'
+        window['-SPLIT TYPE-'].update(default_value, values=type_names)
+    # elif event == '-SPLIT TYPE-':
+    #     pass
+    else:
+        print('Unhandled event:', event)
+
     return listbox_notes, all_notes
 
 
