@@ -70,7 +70,7 @@ split_type : Type
 # https://python-patterns.guide/python/module-globals/#id1
 
 
-from typing import List, Type, Callable, Optional
+from typing import List, Type, Callable
 import sqlite3
 import json 
 from note_splitter import tokens
@@ -93,7 +93,7 @@ split_keyword: str = '#split'
 split_type: Type = tokens.Header
 
 
-def initialize_settings():
+def initialize():
     """Initialize the settings with default values"""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
@@ -147,24 +147,59 @@ def initialize_settings():
         int(backlink),
         int(create_index_file),
         int(replace_split_contents)))
+
     connection.commit()
     connection.close()
 
 
-def get_current_settings() -> None:
+def load() -> None:
     """Fetch the current user settings from the database"""
     connection = sqlite3.connect('store-transactions.db')
     cur = connection.cursor()
     try:
         cur.execute('SELECT * from settings')
     except sqlite3.OperationalError:
-        initialize_settings()
+        initialize()
     else:
         result = cur.fetchall()
-        # TODO: put the settings from result into the other variables.
+
+        global split_keyword
+        global source_folder_path
+        global destination_folder_path
+        global note_types
+        global split_type
+        global split_attrs
+        global file_name_format
+        global file_id_format
+        global file_id_regex
+        global parse_blocks
+        global copy_frontmatter
+        global copy_global_tags
+        global backlink
+        global create_index_file
+        global replace_split_contents
+
+        split_keyword = str(result[0][0])
+        source_folder_path = str(result[0][1])
+        destination_folder_path = str(result[0][2])
+        note_types = result[0][3].split(',')
+        split_type = get_token_type(result[0][4])
+        split_attrs = json.loads(result[0][5])
+        file_name_format = str(result[0][6])
+        file_id_format = str(result[0][7])
+        file_id_regex = str(result[0][8])
+        parse_blocks = bool(result[0][9])
+        copy_frontmatter = bool(result[0][10])
+        copy_global_tags = bool(result[0][11])
+        backlink = bool(result[0][12])
+        create_index_file = bool(result[0][13])
+        replace_split_contents = bool(result[0][14])
+    
+    connection.commit()
+    connection.close()
 
 
-def delete_current_settings() -> None:
+def drop_table() -> None:
     """Delete the user settings database."""
     connection = sqlite3.connect('store-transactions.db') 
     cur = connection.cursor()
@@ -177,25 +212,27 @@ def delete_current_settings() -> None:
         connection.close()
 
 
-def insert_settings_to_db(cur, connection) -> None:
+def save() -> None:
+    """Saves the user's settings to the database."""
+    connection = sqlite3.connect('store-transactions.db') 
+    cur = connection.cursor()
     cur.execute("""
-        INSERT INTO settings
-            (split_keyword,
-            source_folder_path,
-            destination_folder_path,
-            note_types,
-            split_type,
-            split_attrs,
-            file_name_format,
-            file_id_format,
-            file_id_regex,
-            parse_blocks,
-            copy_frontmatter,
-            copy_global_tags,
-            backlink,
-            create_index_file,
-            replace_split_contents)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        UPDATE settings
+        SET split_keyword = ?,
+            source_folder_path = ?,
+            destination_folder_path = ?,
+            note_types = ?,
+            split_type = ?,
+            split_attrs = ?,
+            file_name_format = ?,
+            file_id_format = ?,
+            file_id_regex = ?,
+            parse_blocks = ?,
+            copy_frontmatter = ?,
+            copy_global_tags = ?,
+            backlink = ?,
+            create_index_file = ?,
+            replace_split_contents = ?""",
         (split_keyword,
         source_folder_path,
         destination_folder_path,
@@ -212,27 +249,13 @@ def insert_settings_to_db(cur, connection) -> None:
         int(create_index_file),
         int(replace_split_contents)))
     connection.commit()
+    connection.close()
 
 
-def save_settings_to_db() -> None:
-    """Update the user settings in the database"""
-    delete_current_settings()
-    connection = sqlite3.connect('store-transactions.db') 
-    cur = connection.cursor()
-    try:
-        insert_settings_to_db(cur, connection)
-    except sqlite3.OperationalError:
-        initialize_settings()
-        insert_settings_to_db(cur, connection)
-    finally:
-        connection.commit()
-        connection.close()
-
-
-def reset_settings_to_default() -> None:
+def reset() -> None:
     """Reset current settings to default"""
-    delete_current_settings()
-    initialize_settings()
+    drop_table()
+    initialize()
 
 
 def get_token_type_names(

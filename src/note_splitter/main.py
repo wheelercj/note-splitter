@@ -15,15 +15,15 @@ from note_splitter.formatter_ import Formatter
 
 def run_main_menu() -> None:
     """Displays the main menu."""
+    settings.load()
     sg.theme('TanBlue')
-    settings.get_current_settings()
     window = gui.create_main_menu_window()
     listbox_notes: List[note.Note] = []
     all_notes: List[note.Note] = []
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Close'):
-            settings.save_settings_to_db()
+            settings.save()
             window.close()
             return
         listbox_notes, all_notes = handle_main_menu_event(event,
