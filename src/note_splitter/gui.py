@@ -116,6 +116,8 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
          sg.T(' by ')],
         [sg.Text('keyword:'),
          sg.InputText(settings.split_keyword,
+                      key='-SPLIT KEYWORD-',
+                      enable_events=True,
                       tooltip='Choose a keyword to search for to find which ' \
                               'files to split.')]]
     tab_layout = [
@@ -131,7 +133,8 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
         [create_split_type_dropdown(),
          create_split_attr_dropdown(),
          sg.InputText(settings.split_attrs.get('level', ''),
-                      key='-SPLIT ATTR VALUE-')],
+                      key='-SPLIT ATTR VALUE-',
+                      enable_events=True)],
         [sg.Checkbox('parse blocks',
                      key='parseBlocks',
                      default=settings.parse_blocks,
@@ -153,18 +156,21 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
                  auto_size_text=False,
                  justification='right'),
          sg.InputText(settings.source_folder_path,
-                      key='-SOURCE FOLDER-'),
+                      key='-SOURCE FOLDER-',
+                      enable_events=True),
          sg.FolderBrowse()],
         [sg.Text('Destination Folder',
                  size=(15, 1),
                  auto_size_text=False,
                  justification='right'),
          sg.InputText(settings.destination_folder_path,
-                      key='-DESTINATION FOLDER-'),
+                      key='-DESTINATION FOLDER-',
+                      enable_events=True),
          sg.FolderBrowse()],
         [sg.Text('New file name format'),
          sg.Input(settings.file_name_format, 
                   key='-FILE NAME FORMAT-',
+                  enable_events=True,
                   tooltip=dedent(r'''
                     The file name format setting can use these variables:
 
@@ -179,16 +185,20 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
                     %id - The same as entering %Y%M%D%h%m%s.'''))],
         [sg.Checkbox('create index file',
                      key='indexFile',
-                     default=settings.create_index_file)],
+                     default=settings.create_index_file,
+                     enable_events=True)],
         [sg.Checkbox('copy frontmatter',
                      key='copy_frontmatter',
-                     default=settings.copy_frontmatter)],
+                     default=settings.copy_frontmatter,
+                     enable_events=True)],
         [sg.Checkbox('copy global tags',
                      key='copy_global_tags',
-                     default=settings.copy_global_tags)],
+                     default=settings.copy_global_tags,
+                     enable_events=True)],
         [sg.Checkbox('backlink',
                      key='backlink',
-                     default=settings.backlink)]]
+                     default=settings.backlink,
+                     enable_events=True)]]
         # [sg.Text('Change the theme of Note Splitter to your liking.')],
         # [sg.Listbox(values = sg.theme_list(), 
         #             size =(20, 12), 
@@ -264,8 +274,8 @@ def create_split_type_dropdown() -> sg.Combo:
                     enable_events=True)
 
 
-def update_split_types(values: dict, window: sg.Window) -> None:
-    """Updates the split type dropdown and setting.
+def update_split_type_and_attrs(values: dict, window: sg.Window) -> None:
+    """Updates the split type and attrs dropdowns and settings.
 
     Parameters
     ----------
@@ -288,14 +298,17 @@ def update_split_types(values: dict, window: sg.Window) -> None:
             default_value = 'header'
             settings.split_type = tokens.Header
     window['-SPLIT TYPE-'].update(default_value, values=type_names)
-    update_split_attrs(window)
+    update_split_attrs(values, window)
 
 
 def create_split_attr_dropdown() -> sg.Combo:
     """Creates a dropdown element listing token attributes and None."""
-    obj = settings.split_type()
-    attr_names: List[str] = sorted(list(obj.__dict__.keys()))
-    attr_names.insert(0, None)
+    if inspect.isabstract(settings.split_type):
+        attr_names = [None]
+    else:
+        obj = settings.split_type()
+        attr_names: List[str] = sorted(list(obj.__dict__.keys()))
+        attr_names.insert(0, None)
     return sg.Combo(values=attr_names,
                     default_value='level' if 'level' in attr_names else None,
                     key='-SPLIT ATTR-',
@@ -303,25 +316,29 @@ def create_split_attr_dropdown() -> sg.Combo:
                             'if the type choice is not specific enough.')
 
 
-def update_split_attrs(window: sg.Window) -> None:
-    """Updates the split attribute dropdown, but not the setting.
+def update_split_attrs(values: dict, window: sg.Window) -> None:
+    """Updates the split attribute dropdown and the setting.
 
     Parameters
     ----------
+    values : dict
+        The values of the window.
     window : sg.Window
         The window to update.
     """
     if inspect.isabstract(settings.split_type):
         attr_names: List[str] = []
-        default_value = None
+        default_attr = None
+        settings.split_attr = {}
     else:
         attr_names = sorted(list(settings.split_type().__dict__.keys()))
         attr_names.insert(0, None)
         if 'level' in attr_names:
-            default_value = 'level'
+            default_attr = 'level'
         else:
-            default_value = attr_names[-1]
-    window['-SPLIT ATTR-'].update(default_value, values=attr_names)
+            default_attr = attr_names[-1]
+        settings.split_attrs = { default_attr: values['-SPLIT ATTR VALUE-'] }
+    window['-SPLIT ATTR-'].update(default_attr, values=attr_names)
 
 
 def create_split_summary_window(notes: List[note.Note],

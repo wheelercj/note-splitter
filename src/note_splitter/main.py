@@ -218,7 +218,7 @@ def handle_main_menu_event(
         url = event.split(' ')[1]
         webbrowser.open(url)
     elif event == 'Open File':
-        all_notes = note.get_all_notes(window)
+        all_notes: List[note.Note] = note.get_all_notes(window)
         file_paths: Tuple[str] = filedialog.askopenfilenames()
         listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
         titles: List[str] = [n.title for n in listbox_notes]
@@ -230,14 +230,10 @@ def handle_main_menu_event(
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'Split all':
-        settings.split_attrs = { values['-SPLIT ATTR-']:
-                                 values['-SPLIT ATTR VALUE-'] }
         new_notes: List[note.Note] = split_files(window, listbox_notes)
         gui.run_split_summary_window(new_notes, all_notes)
         window['-NOTES TO SPLIT-'].update(values=[])
     elif event == 'Split selected':
-        settings.split_attrs = { values['-SPLIT ATTR-']:
-                                 values['-SPLIT ATTR VALUE-'] }
         notes_to_split = [note.get_by_title(listbox_notes, title)
                           for title in values['-NOTES TO SPLIT-']]
         if not notes_to_split:
@@ -251,11 +247,29 @@ def handle_main_menu_event(
             window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'parseBlocks':
         settings.parse_blocks = values['parseBlocks']
-        gui.update_split_types(values, window)
-        gui.update_split_attrs(window)
+        gui.update_split_type_and_attrs(values, window)
     elif event == '-SPLIT TYPE-':
         settings.split_type = settings.get_token_type(values['-SPLIT TYPE-'])
-        gui.update_split_attrs(window)
+        gui.update_split_attrs(values, window)
+    elif event in ('-SPLIT ATTR-', '-SPLIT ATTR VALUE-'):
+        settings.split_attrs = { values['-SPLIT ATTR-']:
+                                 values['-SPLIT ATTR VALUE-'] }
+    elif event == '-SPLIT KEYWORD-':
+        settings.split_keyword = values['-SPLIT KEYWORD-']
+    elif event == '-SOURCE FOLDER-':
+        settings.source_folder_path = values['-SOURCE FOLDER-']
+    elif event == '-DESTINATION FOLDER-':
+        settings.destination_folder_path = values['-DESTINATION FOLDER-']
+    elif event == '-FILE NAME FORMAT-':
+        settings.file_name_format = values['-FILE NAME FORMAT-']
+    elif event == 'indexFile':
+        settings.create_index_file = values['indexFile']
+    elif event == 'copy_frontmatter':
+        settings.copy_frontmatter = values['copy_frontmatter']
+    elif event == 'copy_global_tags':
+        settings.copy_global_tags = values['copy_global_tags']
+    elif event == 'backlink':
+        settings.backlink = values['backlink']
     else:
         print('Unhandled event:', event)
 
