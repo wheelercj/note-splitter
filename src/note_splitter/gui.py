@@ -80,17 +80,11 @@ def create_main_menu_window() -> sg.Window:
 
 def create_main_menu_layout() -> List[List[sg.Element]]:
     """Creates the main menu's layout."""
-    menu_def = [
-        ['&Close Application', ['C&lose']],
-        ['&Help', ['&Tips']]]
     tabgroup_layout = [
         [sg.Tab('Home', create_home_tab_layout()),
          sg.Tab('Settings', create_settings_tab_layout()),
          sg.Tab('About', create_about_tab_layout())]]
     layout = [
-        [sg.MenubarCustom(menu_def,
-                          key='-MENU-',
-                          font='Courier 15')],
         [sg.Text('Note Splitter',
                  size=(38, 1),
                  justification='center',

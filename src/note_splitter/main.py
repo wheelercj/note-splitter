@@ -208,15 +208,7 @@ def handle_main_menu_event(
     all_notes : List[note.Note]
         All of the user's notes. This list may be empty.
     """
-    if event == 'Tips':
-        sg.popup('Visit each of the tabs to see available applications.',
-                 'Various tabs are included such as development environment ' \
-                 'setup, Note Splitter overview, token hierarchy, program ' \
-                 'modules, references, and how the documentation is ' \
-                 'maintained.',
-                 'If you have any questions or concerns please message the ' \
-                 'developers on the GitHub page.', keep_on_top=True)
-    elif event.startswith('URL '):
+    if event.startswith('URL '):
         url = event.split(' ')[1]
         webbrowser.open(url)
     elif event == 'Open File':
