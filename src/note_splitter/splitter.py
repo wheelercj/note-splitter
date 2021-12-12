@@ -139,7 +139,7 @@ class Splitter:
         if not isinstance(token, split_type):
             return False
         for key, value in split_attrs.items():
-            if value.isnumeric():
+            if isinstance(value, str) and value.isnumeric():
                 value = int(value)
             if is_splitting and key == 'level':
                 if token.level > value:
