@@ -462,7 +462,8 @@ def handle_note_listbox_event(event: str,
     if not selected_titles:
         selected_titles = [str(key) for key in listbox_notes_dict.keys()]
     if event.startswith('-DELETE'):
-        answer = sg.popup_yes_no('Are you sure you want to delete notes?',
+        answer = sg.popup_yes_no('Are you sure you want to delete ' \
+                                 f'{len(selected_titles)} notes?',
                                  keep_on_top=True)
         if answer != 'Yes':
             return
