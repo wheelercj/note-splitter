@@ -254,8 +254,8 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
 
     The returned file names are in the format specified in the
     file_name_format setting. If more than one file name is created and 
-    file_name_format contains an at least one hour, minute, or seconds 
-    variable, the time will be incremented for each file name.
+    file_name_format contains a time variable, the time will be 
+    incremented for each file name.
 
     Parameters
     ----------
