@@ -434,6 +434,36 @@ def create_note_listbox_layout(notes: Optional[List[note.Note]],
     return [[sg.Listbox(note_titles, key=key, size=(80, 6))]]
 
 
+def request_confirmation(event: str,
+                         note_count: int) -> bool:
+    """Requests confirmation from the user for a note method.
+
+    Parameters
+    ----------
+    event : str
+        The event that triggered the confirmation request.
+    note_count : int
+        The number of notes to confirm.
+
+    Returns
+    -------
+    bool
+        Whether or not the user confirmed.
+    """
+    key_prefixes = ('-DELETE', '-MOVE', '-SHOW', '-OPEN')
+    descriptions = ('delete', 'move', 'show', 'open')
+    for key_prefix, description in zip(key_prefixes, descriptions):
+        if event.startswith(key_prefix) and (note_count > 5 \
+                    or key_prefix == '-DELETE'):
+            answer = sg.popup_yes_no('Are you sure you want to ' \
+                                     f'{description} {note_count} notes?',
+                                     keep_on_top=True)
+            if answer != 'Yes':
+                return False
+            return True
+    return True
+
+
 def handle_note_listbox_event(event: str,
                               values: dict,
                               window: sg.Window,
@@ -461,12 +491,8 @@ def handle_note_listbox_event(event: str,
     selected_titles = values[listbox_key]
     if not selected_titles:
         selected_titles = [str(key) for key in listbox_notes_dict.keys()]
-    if event.startswith('-DELETE'):
-        answer = sg.popup_yes_no('Are you sure you want to delete ' \
-                                 f'{len(selected_titles)} notes?',
-                                 keep_on_top=True)
-        if answer != 'Yes':
-            return
+    if not request_confirmation(event, len(selected_titles)):
+        return
     for title in selected_titles:
             note_: note.Note = listbox_notes_dict[title]
             if event.startswith('-OPEN'):
