@@ -143,6 +143,8 @@ def save_new_notes(split_contents: List[str],
         if not settings.destination_folder_path:
             settings.destination_folder_path = \
                 note.require_folder_path('destination')
+        if settings.destination_folder_path != settings.source_folder_path:
+            split_content = note.make_file_paths_absolute(split_content)
         new_file_path = os.path.join(settings.destination_folder_path,
                                      new_file_name)
         new_file_path = note.ensure_file_path_uniqueness(new_file_path)

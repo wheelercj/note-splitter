@@ -471,14 +471,38 @@ def move_files(paths_of_files_to_move: List[str],
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
         if file_ext in settings.note_types:
-            make_file_paths_absolute(note_path=path)
+            _make_file_paths_absolute(note_path=path)
         new_path = os.path.join(destination_path, file_name_with_ext)
         new_path = os.path.normpath(new_path)
         __change_all_links_to_file(path, new_path, all_notes)
         os.rename(path, new_path)
 
 
-def make_file_paths_absolute(note_path: str) -> None:
+def make_file_paths_absolute(note_content: str) -> str:
+    """Makes all file paths in a note's file links absolute.
+    
+    Assumes that all the file paths that should be made absolute are 
+    valid. Invalid paths are ignored.
+
+    Parameters
+    ----------
+    note_content : str
+        The note's content.
+
+    Returns
+    -------
+    note_content : str
+        The note's content with all file paths made absolute.
+    """
+    note_folder_path = os.path.dirname(note_content)
+    file_paths: List[Tuple[str, str]] = \
+        get_file_paths(note_content, note_folder_path)
+    for original_path, formatted_path in file_paths:
+        note_content = note_content.replace(original_path, formatted_path)
+    return note_content
+
+
+def _make_file_paths_absolute(note_path: str) -> None:
     """Makes all file paths in a note's file links absolute.
     
     Assumes that all the file paths that should be made absolute are 
@@ -489,13 +513,9 @@ def make_file_paths_absolute(note_path: str) -> None:
     note_path : str
         Absolute path to the note.
     """
-    note_folder_path = os.path.dirname(note_path)
     with open(note_path, 'r', encoding='utf8') as file:
         content = file.read()
-    file_paths: List[Tuple[str, str]] = \
-        get_file_paths(content, note_folder_path)
-    for original_path, formatted_path in file_paths:
-        content = content.replace(original_path, formatted_path)
+    content = make_file_paths_absolute(content)
     with open(note_path, 'w', encoding='utf8') as file:
         file.write(content)
 
