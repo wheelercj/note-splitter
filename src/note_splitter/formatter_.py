@@ -8,7 +8,7 @@ strings.
 
 from typing import List, Optional
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-from note_splitter import tokens
+from note_splitter import tokens, settings
 
 
 class Formatter:
@@ -45,8 +45,10 @@ class Formatter:
                 continue
             if isinstance(section.content[0], tokens.Header):
                 section_title = self.normalize_headers(section)
-            self.insert_global_tags(global_tags, section)
-            self.prepend_frontmatter(frontmatter, section_title, section)
+            if settings.copy_global_tags:
+                self.insert_global_tags(global_tags, section)
+            if settings.copy_frontmatter:
+                self.prepend_frontmatter(frontmatter, section_title, section)
             self.append_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
