@@ -62,7 +62,7 @@ def show_progress(note_number: int,
         The total number of calls to this function.
     """
     n = int((note_number + call_number) / (note_count * call_count) * 100)
-    sg.one_line_progress_meter('Splitting', n, 100, '-PROGRESS_METER-')
+    sg.one_line_progress_meter('splitting', n, 100, 'splitting progress')
 
 
 def create_main_menu_window() -> sg.Window:
