@@ -23,7 +23,8 @@ class Formatter:
             self,
             sections: List[tokens.Section],
             global_tags: List[str],
-            frontmatter: Optional[object] = None) -> List[str]:
+            frontmatter: Optional[object] = None,
+            footnotes: Optional[List[tokens.Footnote]] = None) -> List[str]:
         """Formats sections for output.
         
         Parameters
@@ -34,6 +35,9 @@ class Formatter:
             The global tags to add to each section.
         frontmatter : Optional[object]
             The frontmatter to add to each section.
+        footnotes : Optional[List[tokens.Footnote]]
+            The footnotes to add to each section with the respective 
+            footnote reference.
         """
         split_contents: List[str] = []
         for section in sections:
@@ -43,6 +47,7 @@ class Formatter:
                 section_title = self.normalize_headers(section)
             self.insert_global_tags(global_tags, section)
             self.prepend_frontmatter(frontmatter, section_title, section)
+            self.append_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
 
@@ -119,3 +124,26 @@ class Formatter:
         frontmatter_string = '---\n' + frontmatter_string + '---\n'
         frontmatter_string = frontmatter_string.replace('\n\n', '\n')
         section.content.insert(0, tokens.Text(frontmatter_string))
+
+
+    def append_footnotes(self,
+                         footnotes: Optional[List[tokens.Footnote]],
+                         section: tokens.Section) -> None:
+        """Appends the footnotes to a section.
+        
+        Parameters
+        ----------
+        footnotes : Optional[List[tokens.Footnote]]
+            The footnotes to add to the section if it contains 
+            references to them.
+        section : tokens.Section
+            The section to append the footnotes to.
+        """
+        if not footnotes:
+            return
+        for footnote in footnotes:
+            for token in section.content:
+                if isinstance(token, tokens.CanHaveInlineElements):
+                    if footnote.reference and \
+                            footnote.reference in token.content:
+                        section.content.append(footnote)

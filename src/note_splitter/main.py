@@ -116,7 +116,8 @@ def split_text(content: str,
                                            settings.split_attrs)
     split_contents: List[str] = format_(sections,
                                         ast.global_tags,
-                                        ast.frontmatter)
+                                        ast.frontmatter,
+                                        ast.footnotes)
     return split_contents
 
 
