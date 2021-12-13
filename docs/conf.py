@@ -122,7 +122,7 @@ def __create_token_subhierarchy(
             class_name = c[0].__name__
             if class_name not in ('object', 'ABC', 'module'):
                 abstract = ' (abstract)' if inspect.isabstract(c[0]) else ''
-                line = f'{indentation[4:]}* :py:class:`tokens.{class_name}`{abstract}'
+                line = f'{indentation[4:]}* :py:class:`note_splitter.tokens.{class_name}`{abstract}'
                 token_hierarchy.append(line)
 
 
