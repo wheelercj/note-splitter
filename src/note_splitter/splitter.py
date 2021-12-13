@@ -144,6 +144,6 @@ class Splitter:
             if is_splitting and key == 'level':
                 if token.level > value:
                     return False
-            elif getattr(token, key) != value:
+            elif key is not None and getattr(token, key) != value:
                 return False
         return True

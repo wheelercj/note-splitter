@@ -195,6 +195,9 @@ def load() -> None:
         create_index_file = bool(result[0][13])
         replace_split_contents = bool(result[0][14])
     
+    if 'null' in split_attrs:
+        split_attrs = {None: ''}
+
     connection.commit()
     connection.close()
 

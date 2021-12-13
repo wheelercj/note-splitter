@@ -76,7 +76,7 @@ def split_files(window: sg.Window,
         all_new_notes.extend(new_notes)
         gui.show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
-        if settings.create_index_file:
+        if settings.create_index_file and new_notes:
             index_path = create_index_file_(source_note, new_notes)
             print(f'Created index file at {index_path}')
             all_new_notes.append(note.Note(index_path))

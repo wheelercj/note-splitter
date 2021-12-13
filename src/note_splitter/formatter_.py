@@ -6,6 +6,7 @@ strings.
 """
 
 
+import uuid
 from typing import List, Optional
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 from note_splitter import tokens, settings
@@ -43,11 +44,14 @@ class Formatter:
         for section in sections:
             if not section.content:
                 continue
+            section_title = None
             if isinstance(section.content[0], tokens.Header):
                 section_title = self.normalize_headers(section)
             if settings.copy_global_tags:
                 self.insert_global_tags(global_tags, section)
             if settings.copy_frontmatter:
+                if not section_title:
+                    section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
             self.append_footnotes(footnotes, section)
             split_contents.append(str(section))
@@ -100,6 +104,27 @@ class Formatter:
             section.content.insert(i, tokens.Text(' '.join(global_tags)))
         else:
             section.content.insert(0, tokens.Text(' '.join(global_tags)))
+
+
+    def get_section_title(self, section) -> str:
+        """Gets the title of a section.
+        
+        The title is the body of the first header, or the first token's
+        content if there is no header, or a random string if the section
+        is empty.
+
+        Parameters
+        ----------
+        section : tokens.Section
+            The section to get the title of.
+        """
+        for token in section.content:
+            if isinstance(token, tokens.Header):
+                return token.body
+        title = section.content[0].content.strip()
+        if title:
+            return title
+        return str(uuid.uuid4())
 
 
     def prepend_frontmatter(self,
