@@ -70,7 +70,8 @@ def __manual_test() -> None:
     format_: Callable = Formatter()
     split_contents: List[str] = format_(sections,
                                         ast.global_tags,
-                                        ast.frontmatter)
+                                        ast.frontmatter,
+                                        ast.footnotes)
     __print_formatter_output(split_contents)
 
 
@@ -148,8 +149,8 @@ def __print_parser_output(ast: AST) -> None:
         print(f'global tags: {ast.global_tags}\n')
     if ast.footnotes:
         print('footnotes:')
-        for i, footnote in enumerate(ast.footnotes):
-            print(f'    {i}: {footnote}')
+        for footnote in ast.footnotes:
+            print(f'  {footnote}')
         print()
     __print_tokens(ast.content)
     input('**Press enter to continue**')
