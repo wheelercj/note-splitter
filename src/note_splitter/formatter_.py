@@ -170,7 +170,8 @@ class Formatter:
             return
         for footnote in footnotes:
             for token in section.content:
-                if isinstance(token, tokens.CanHaveInlineElements):
+                if isinstance(token, tokens.CanHaveInlineElements) \
+                        and not isinstance(token, tokens.Footnote):
                     if footnote.reference and \
                             footnote.reference in token.content:
                         section.content.append(footnote)
