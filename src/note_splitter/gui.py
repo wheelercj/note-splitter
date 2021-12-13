@@ -38,7 +38,7 @@
 """
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from typing import Tuple, List, Optional, Type
+from typing import Tuple, List, Optional
 import inspect
 from textwrap import dedent
 from note_splitter import settings, note, tokens
