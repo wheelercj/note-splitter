@@ -76,10 +76,15 @@ def split_files(window: sg.Window,
         all_new_notes.extend(new_notes)
         gui.show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
-        if settings.create_index_file and new_notes:
-            index_path = create_index_file_(source_note, new_notes)
-            print(f'Created index file at {index_path}')
-            all_new_notes.append(note.Note(index_path))
+        if new_notes:
+            if settings.create_index_file:
+                index_note: note.Note = create_index_file_(source_note, new_notes)
+                print(f'Created index file at {index_note.path}')
+                all_new_notes.append(index_note)
+                if settings.backlink:
+                    append_backlinks(index_note, new_notes)
+            elif settings.backlink:
+                append_backlinks(source_note, new_notes)
 
     return all_new_notes
 
@@ -156,7 +161,7 @@ def save_new_notes(split_contents: List[str],
 
 
 def create_index_file_(source_note: note.Note,
-                       new_notes: List[note.Note]) -> str:
+                       new_notes: List[note.Note]) -> note.Note:
     """Creates an index file for the new notes in the same folder.
     
     Parameters
@@ -168,17 +173,35 @@ def create_index_file_(source_note: note.Note,
 
     Returns
     -------
-    index_file_path : str
-        The absolute path to the newly created index file.
+    note.Note
+        The newly created index Note.
     """
     index_name = note.validate_file_name(f'index - {source_note.title}.md', 35)
-    index_file_path = os.path.join(new_notes[0].folder_path, index_name)
+    folder_path = new_notes[0].folder_path
+    index_file_path = os.path.join(folder_path, index_name)
     index_file_path = note.ensure_file_path_uniqueness(index_file_path)
     with open(index_file_path, 'x', encoding='utf8') as file:
         file.write(f'# index of {source_note.title}\n\n')
         for n in new_notes:
             file.write(f'* [{n.title}]({n.path})\n')
-    return index_file_path
+        file.write(f'\n[Source: {source_note.title}]({source_note.path})')
+    return note.Note(index_file_path, folder_path, index_name)
+
+
+def append_backlinks(root_note: note.Note, notes: List[note.Note]) -> None:
+    """Appends backlinks to the root note in each of the given notes.
+
+    Parameters
+    ----------
+    root_note : str
+        The note that the backlinks will link to.
+    notes : List[note.Note]
+        The notes to append backlinks to.
+    """
+    for note_ in notes:
+        with open(note_.path, 'a', encoding='utf8') as file:
+            file.write('\n\n[Backlink: ' \
+                       f'{root_note.title}]({root_note.path})\n')
 
 
 def handle_main_menu_event(
