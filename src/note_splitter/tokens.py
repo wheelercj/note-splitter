@@ -59,6 +59,42 @@ class Block(Token):
         """Returns the original content of the token's raw text."""
         return ''.join([str(token) for token in self.content])
 
+    def __len__(self):
+        """Returns the length of the token's content."""
+        return len(self.content)
+
+    def __bool__(self):
+        """Returns whether the token's content is empty."""
+        return bool(self.content)
+
+    def __getitem__(self, index: int) -> Token:
+        """Returns the token at the given index."""
+        return self.content[index]
+
+    def __setitem__(self, index: int, token: Token) -> None:
+        """Sets the token at the given index to the given token."""
+        self.content[index] = token
+
+    def __delitem__(self, index: int) -> None:
+        """Deletes the token at the given index."""
+        del self.content[index]
+
+    def __iter__(self):
+        """Returns an iterator for the token's content."""
+        return iter(self.content)
+
+    def __contains__(self, item: Token) -> bool:
+        """Returns whether the token's content contains an item."""
+        return item in self.content
+
+    def insert(self, index: int, token: Token) -> None:
+        """Inserts the given token at the given index."""
+        self.content.insert(index, token)
+
+    def append(self, token: Token) -> None:
+        """Appends the given token to the section."""
+        self.content.append(token)
+
 
 class CanHaveInlineElements(Token):
     """The ABC for tokens that can have inline elements.

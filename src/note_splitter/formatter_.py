@@ -42,10 +42,10 @@ class Formatter:
         """
         split_contents: List[str] = []
         for section in sections:
-            if not section.content:
+            if not section:
                 continue
             section_title = None
-            if isinstance(section.content[0], tokens.Header):
+            if isinstance(section[0], tokens.Header):
                 section_title = self.normalize_headers(section)
             if settings.copy_global_tags:
                 self.insert_global_tags(global_tags, section)
@@ -71,16 +71,15 @@ class Formatter:
         str
             The title of the section.
         """
-        first_token = section.content[0]
-        if first_token.level <= 1:
-            return first_token.body
-        difference = first_token.level - 1
-        for i, token in enumerate(section.content):
+        if section[0].level <= 1:
+            return section[0].body
+        difference = section[0].level - 1
+        for i, token in enumerate(section):
             if isinstance(token, tokens.Header):
-                section.content[i].level -= difference
-                section.content[i].content = \
-                    section.content[i].content[difference:]
-        return first_token.body
+                section[i].level -= difference
+                section[i].content = \
+                    section[i].content[difference:]
+        return section[0].body
 
 
     def insert_global_tags(self,
@@ -96,14 +95,14 @@ class Formatter:
             The section to insert the global tags into.
         """
         i = 0
-        while i < len(section.content) \
-                and not isinstance(section.content[i], tokens.Header):
+        while i < len(section) \
+                and not isinstance(section[i], tokens.Header):
             i += 1
         i += 1
-        if i < len(section.content):
-            section.content.insert(i, tokens.Text(' '.join(global_tags)))
+        if i < len(section):
+            section.insert(i, tokens.Text(' '.join(global_tags)))
         else:
-            section.content.insert(0, tokens.Text(' '.join(global_tags)))
+            section.insert(0, tokens.Text(' '.join(global_tags)))
 
 
     def get_section_title(self, section) -> str:
@@ -118,10 +117,10 @@ class Formatter:
         section : tokens.Section
             The section to get the title of.
         """
-        for token in section.content:
+        for token in section:
             if isinstance(token, tokens.Header):
                 return token.body
-        title = section.content[0].content.strip()
+        title = section[0].content.strip()
         if title:
             return title
         return str(uuid.uuid4())
@@ -150,7 +149,7 @@ class Formatter:
         frontmatter_string = yaml.dump(frontmatter)
         frontmatter_string = '---\n' + frontmatter_string + '---\n'
         frontmatter_string = frontmatter_string.replace('\n\n', '\n')
-        section.content.insert(0, tokens.Text(frontmatter_string))
+        section.insert(0, tokens.Text(frontmatter_string))
 
 
     def append_footnotes(self,
@@ -169,9 +168,9 @@ class Formatter:
         if not footnotes:
             return
         for footnote in footnotes:
-            for token in section.content:
+            for token in section:
                 if isinstance(token, tokens.CanHaveInlineElements) \
                         and not isinstance(token, tokens.Footnote):
                     if footnote.reference and \
                             footnote.reference in token.content:
-                        section.content.append(footnote)
+                        section.append(footnote)
