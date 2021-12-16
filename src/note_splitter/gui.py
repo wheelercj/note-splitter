@@ -303,6 +303,8 @@ def create_split_attr_dropdown() -> sg.Combo:
         obj = settings.split_type()
         attr_names: List[str] = sorted(list(obj.__dict__.keys()))
         attr_names.insert(0, None)
+        if issubclass(settings.split_type, tokens.Block):
+            attr_names.remove('content')
     return sg.Combo(values=attr_names,
                     default_value='level' if 'level' in attr_names else None,
                     key='-SPLIT ATTR-',
@@ -327,6 +329,8 @@ def update_split_attrs(values: dict, window: sg.Window) -> None:
     else:
         attr_names = sorted(list(settings.split_type().__dict__.keys()))
         attr_names.insert(0, None)
+        if issubclass(settings.split_type, tokens.Block):
+            attr_names.remove('content')
         if 'level' in attr_names:
             default_attr = 'level'
         else:
