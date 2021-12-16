@@ -25,7 +25,7 @@ Here are some tips for how to use Note Splitter:
 
 ### Split Types
 
-| type name                | descriptions                                                                     | parent types                             |
+| type name                | description                                                                     | parent types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
 | block                    | any text element that spans multiple lines                                       | token                                    |
 | blockquote               | a quote                                                                          | can have inline elements                 |
@@ -66,17 +66,17 @@ The "parse blocks" checkbox must be checked to split by elements of text that sp
 ### File Name Formats
 The file name format setting can use these variables:
 
-`%uuid4` - A universally unique identifier
-`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
-`%Y` - The current year (as a four-digit number)
-`%M` - The current month (as a number)
-`%D` - The current day
-`%h` - The current hour
-`%m` - The current minute
-`%s` - The current second
-`%id` - The same as entering `%Y%M%D%h%m%s`
+`%uuid4` - A universally unique identifier  
+`%title` - The title of the file (the body of the first header, or of the first line if there is no header)  
+`%Y` - The current year (as a four-digit number)  
+`%M` - The current month (as a number)  
+`%D` - The current day  
+`%h` - The current hour  
+`%m` - The current minute  
+`%s` - The current second  
+`%id` - The same as entering `%Y%M%D%h%m%s`  
 
-You can use other characters with these variables. For example, to get file names like `2021-12-16 9:30`, you can set the file name format to `%Y-%M-%D %h:%m`.
+You can use other characters with these variables. For example, to get file names like `2021-12-16 9.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
 
 If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
 
