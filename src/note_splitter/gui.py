@@ -425,7 +425,10 @@ def create_note_listbox_layout(notes: Optional[List[note.Note]],
         note_titles = []
     else:
         note_titles = [n.title for n in notes]
-    return [[sg.Listbox(note_titles, key=key, size=(80, 6))]]
+    return [[sg.Listbox(note_titles,
+                        key=key,
+                        size=(80,6),
+                        select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE)]]
 
 
 def request_confirmation(event: str,
