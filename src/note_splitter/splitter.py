@@ -138,12 +138,14 @@ class Splitter:
         """
         if not isinstance(token, split_type):
             return False
-        for key, value in split_attrs.items():
-            if isinstance(value, str) and value.isnumeric():
-                value = int(value)
-            if is_splitting and key == 'level':
-                if token.level > value:
+        if split_attrs and list(split_attrs)[0] \
+                and list(split_attrs.values())[0]:
+            for key, value in split_attrs.items():
+                if isinstance(value, str) and value.isnumeric():
+                    value = int(value)
+                if is_splitting and key == 'level':
+                    if token.level > value:
+                        return False
+                elif key is not None and getattr(token, key) != value:
                     return False
-            elif key is not None and getattr(token, key) != value:
-                return False
         return True
