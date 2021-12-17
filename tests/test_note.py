@@ -264,7 +264,10 @@ def test_get_title_from_line_after_fake_title():
 
 
 def test_validate_file_name_with_valid_name():
-    assert note.validate_file_name('valid_name.txt') == 'valid_name.txt'
+    name = 'valid_name.txt'
+    assert name == note.validate_file_name(name)
 
 
-# TODO: test validate_file_name more.
+def test_validate_file_name_with_invalid_character():
+    name = 'inv@lid_name.txt'
+    assert 'invlid_name.txt' == note.validate_file_name(name)
