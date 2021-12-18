@@ -270,4 +270,4 @@ def test_validate_file_name_with_valid_name():
 
 def test_validate_file_name_with_invalid_character():
     name = 'inv@lid_name.txt'
-    assert 'invlid_name.txt' == note.validate_file_name(name)
+    assert 'inv-lid_name.txt' == note.validate_file_name(name)
