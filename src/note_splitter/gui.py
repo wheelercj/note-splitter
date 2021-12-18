@@ -458,6 +458,7 @@ def request_confirmation(event: str,
                     or key_prefix == '-DELETE'):
             answer = sg.popup_yes_no('Are you sure you want to ' \
                                      f'{description} {note_count} notes?',
+                                     title='Confirm',
                                      keep_on_top=True)
             if answer != 'Yes':
                 return False
