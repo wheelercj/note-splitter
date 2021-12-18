@@ -379,12 +379,12 @@ def run_split_summary_window(notes: List[note.Note],
         if event in (sg.WIN_CLOSED, 'OK'):
             window.close()
             return
-        handle_note_listbox_event(event,
-                                  values,
-                                  window,
-                                  notes,
-                                  listbox_key,
-                                  all_notes)
+        notes = handle_note_listbox_event(event,
+                                          values,
+                                          window,
+                                          notes,
+                                          listbox_key,
+                                          all_notes)
 
 
 def create_note_listbox_layout_with_buttons(
@@ -471,7 +471,7 @@ def handle_note_listbox_event(event: str,
                               window: sg.Window,
                               listbox_notes: List[note.Note],
                               listbox_key: str,
-                              all_notes: List[note.Note]) -> None:
+                              all_notes: List[note.Note]) -> List[note.Note]:
     """Handles an event from a listbox of notes.
 
     Parameters
@@ -488,6 +488,11 @@ def handle_note_listbox_event(event: str,
         The key of the listbox.
     all_notes : List[note.Note]
         All of the user's notes.
+
+    Returns
+    -------
+    List[note.Note]
+        The notes displayed in the listbox.
     """
     listbox_notes_dict = {n.title: n for n in listbox_notes}
     selected_titles = values[listbox_key]
@@ -512,3 +517,4 @@ def handle_note_listbox_event(event: str,
                 note_.delete()
                 del listbox_notes_dict[note_.title]
     window[listbox_key].update(values=listbox_notes_dict.keys())
+    return list(listbox_notes_dict.values())
