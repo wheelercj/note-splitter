@@ -72,7 +72,7 @@ def split_files(window: sg.Window,
         new_file_names: List[str] = note.create_file_names(source_note.ext,
                                                            split_contents)
         gui.show_progress(i, len(notes), 4, 5)
-        new_notes = save_new_notes(split_contents, new_file_names)
+        new_notes = save_new_notes(split_contents, new_file_names, window)
         all_new_notes.extend(new_notes)
         gui.show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
@@ -127,7 +127,8 @@ def split_text(content: str,
 
 
 def save_new_notes(split_contents: List[str],
-                   new_file_names: List[str]) -> List[note.Note]:
+                   new_file_names: List[str],
+                   window: sg.Window) -> List[note.Note]:
     """Creates new files and saves strings into them.
     
     The lists for the contents and names of the new files are parallel.
@@ -138,6 +139,8 @@ def save_new_notes(split_contents: List[str],
         A list of strings to each be saved into a new file.
     new_file_names : List[str]
         A list of names of files to be created.
+    window : sg.Window
+        The main menu window.
 
     Returns
     -------
@@ -146,9 +149,12 @@ def save_new_notes(split_contents: List[str],
     """
     new_notes = []
     for new_file_name, split_content in zip(new_file_names, split_contents):
-        if not settings.destination_folder_path:
+        if not settings.destination_folder_path \
+                or not os.path.exists(settings.destination_folder_path):
             settings.destination_folder_path = \
                 note.require_folder_path('destination')
+            window['-DESTINATION FOLDER-'].update(
+                settings.destination_folder_path)
         if settings.destination_folder_path != settings.source_folder_path:
             split_content = note.make_file_paths_absolute(split_content)
         new_file_path = os.path.join(settings.destination_folder_path,
