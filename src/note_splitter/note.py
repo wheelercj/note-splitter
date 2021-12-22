@@ -413,9 +413,9 @@ def validate_file_name(file_name: str, max_length: int = 30) -> str:
 def ensure_file_path_uniqueness(file_path: str) -> str:
     """Makes sure a file's path is unique.
 
-    If a file with the same name already exists, a ``(1)`` is appended 
+    If a file with the same name already exists, a ``.1`` is appended 
     to the file name unless that is already there, in which case it is 
-    changed to ``(2)``, etc. This function assumes the file name does 
+    changed to ``.2``, etc. This function assumes the file name does 
     not have any invalid characters.
 
     Parameters
@@ -431,11 +431,11 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
     while os.path.exists(file_path):
         folder_path, file_name_and_ext = os.path.split(file_path)
         file_name, file_ext = os.path.splitext(file_name_and_ext)
-        match = re.match(r'.+\((\d+)\)$', file_name)
+        match = re.match(r'.+\.(\d+)$', file_name)
         if not match:
-            file_name += '(1)'
+            file_name += '.1'
         else:
-            file_name = file_name[:match.start(1)] + f'{int(match[1]) + 1})'    
+            file_name = file_name[:match.start(1)] + f'{int(match[1]) + 1}'    
         file_name_and_ext = file_name + file_ext
         file_path = os.path.join(folder_path, file_name_and_ext)
     return file_path

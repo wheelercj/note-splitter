@@ -82,7 +82,7 @@ If multiple files are made when the file name format has at least one of `%s`, `
 
 If the file name format contains any of `#%{&}\\<>*?/$!\'":@+|=` or backticks, those characters will get replaced by minuses in the file names because some operating systems do not support those characters. For the same reason, a file name cannot start or end with any of ` .-_`.
 
-All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a number in parentheses will be appended to each new file name to make them unique.
+All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
 
 ## Contributing
 If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), etc. are welcome! Code and documentation contributions are currently not being accepted, but will be in the near future.
