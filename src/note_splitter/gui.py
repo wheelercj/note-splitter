@@ -49,8 +49,8 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
     tabgroup_layout = [
         [sg.Tab('Home', create_home_tab_layout()),
          sg.Tab('Settings', create_settings_tab_layout()),
-         sg.Tab('About', create_about_tab_layout()),
-         sg.Tab('Patterns', create_patterns_tab_layout())]]
+         sg.Tab('Patterns', create_patterns_tab_layout()),
+         sg.Tab('About', create_about_tab_layout())]]
     layout = [
         [sg.Text('Note Splitter',
                  size=(38, 1),
