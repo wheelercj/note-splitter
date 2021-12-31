@@ -166,8 +166,6 @@ class Formatter:
         section : tokens.Section
             The section to append the footnotes to.
         """
-        if not footnotes:
-            return
         for footnote in footnotes:
             if footnote not in section:
                 for token in section:
