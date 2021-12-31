@@ -169,10 +169,11 @@ class Formatter:
         if not footnotes:
             return
         for footnote in footnotes:
-            for token in section:
-                if isinstance(token, tokens.CanHaveInlineElements) \
-                        and not isinstance(token, tokens.Footnote) \
-                        and footnote.reference \
-                        and footnote.reference in token.content:
-                    section.append(footnote)
-                    break
+            if footnote not in section:
+                for token in section:
+                    if isinstance(token, tokens.CanHaveInlineElements) \
+                            and not isinstance(token, tokens.Footnote) \
+                            and footnote.reference \
+                            and footnote.reference in token.content:
+                        section.append(footnote)
+                        break
