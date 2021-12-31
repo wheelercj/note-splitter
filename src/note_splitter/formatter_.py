@@ -97,8 +97,7 @@ class Formatter:
             The section to insert the global tags into.
         """
         i = 0
-        while i < len(section) \
-                and not isinstance(section[i], tokens.Header):
+        while i < len(section) and not isinstance(section[i], tokens.Header):
             i += 1
         i += 1
         if i < len(section):
