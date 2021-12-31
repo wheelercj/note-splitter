@@ -3,7 +3,7 @@
 The settings are stored in a dictionary named ``settings`` with the 
 following keys. Some of these settings may be hidden from the user.
 
-backlink : bool
+create_backlinks : bool
     Whether or not to append a backlink to the source file in each new 
     file.
 blockquote_pattern : str
@@ -104,7 +104,7 @@ from note_splitter import tokens, patterns
 
 
 __DEFAULT_SETTINGS = {
-    'backlink': False,
+    'create_backlinks': False,
     'blockquote_pattern': patterns.blockquote.pattern,
     'code_fence_pattern': patterns.code_fence.pattern,
     'copy_frontmatter': False,

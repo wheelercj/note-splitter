@@ -85,9 +85,9 @@ def split_files(window: sg.Window,
                                                            new_notes)
                 print(f'Created index file at {index_note.path}')
                 all_new_notes.append(index_note)
-                if settings['backlink']:
+                if settings['create_backlinks']:
                     append_backlinks(index_note, new_notes)
-            elif settings['backlink']:
+            elif settings['create_backlinks']:
                 append_backlinks(source_note, new_notes)
 
     return all_new_notes
@@ -302,8 +302,8 @@ def handle_main_menu_event(
         settings['copy_frontmatter'] = values['copy_frontmatter']
     elif event == 'copy_global_tags':
         settings['copy_global_tags'] = values['copy_global_tags']
-    elif event == 'backlink':
-        settings['backlink'] = values['backlink']
+    elif event == 'create_backlinks':
+        settings['create_backlinks'] = values['create_backlinks']
     else:
         print('Unhandled event:', event)
 

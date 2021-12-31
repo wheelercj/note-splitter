@@ -154,9 +154,9 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
                      key='copy_global_tags',
                      default=settings['copy_global_tags'],
                      enable_events=True)],
-        [sg.Checkbox('backlink',
-                     key='backlink',
-                     default=settings['backlink'],
+        [sg.Checkbox('create backlinks',
+                     key='create_backlinks',
+                     default=settings['create_backlinks'],
                      enable_events=True)]]
         # [sg.Text('Change the theme of Note Splitter to your liking.')],
         # [sg.Listbox(values = sg.theme_list(), 
