@@ -12,7 +12,8 @@ from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
 from send2trash import send2trash  # https://github.com/arsenetar/send2trash
 import PySimpleGUI as sg
-from note_splitter import settings, patterns
+from note_splitter import patterns
+from note_splitter.settings import settings
 
 
 class Note:
@@ -171,7 +172,7 @@ def get_chosen_notes(window: sg.Window,
     for note in all_notes:
         with open(note.path, 'r', encoding='utf8') as file:
             contents = file.read()
-        if settings.split_keyword in contents:
+        if settings['split_keyword'] in contents:
             chosen_notes.append(note)
     
     return chosen_notes
@@ -213,7 +214,7 @@ def request_folder_path(folder_description: str) -> Optional[str]:
     folder_path = sg.PopupGetFolder(message, keep_on_top=True)
     if not folder_path:
         return None
-    settings.source_folder_path = folder_path
+    settings['source_folder_path'] = folder_path
     return folder_path
 
 
@@ -227,23 +228,23 @@ def get_all_notes(window: sg.Window) -> List[Note]:
     """
     notes: List[Note] = []
     try:
-        folder_list = os.listdir(settings.source_folder_path)
+        folder_list = os.listdir(settings['source_folder_path'])
     except FileNotFoundError:
         source_folder_path = request_folder_path('source')
         if not source_folder_path:
             return []
         else:
-            settings.source_folder_path = source_folder_path
-            window['-SOURCE FOLDER-'].update(settings.source_folder_path)
+            settings['source_folder_path'] = source_folder_path
+            window['-SOURCE FOLDER-'].update(settings['source_folder_path'])
             folder_list = os.listdir(source_folder_path)
     
     for file_name in folder_list:
-        file_path = os.path.join(settings.source_folder_path, file_name)
+        file_path = os.path.join(settings['source_folder_path'], file_name)
         if os.path.isfile(file_path):
             _, file_ext = os.path.splitext(file_name)
-            if file_ext in settings.note_types:
+            if file_ext in settings['note_types']:
                 notes.append(Note(file_path,
-                                  settings.source_folder_path,
+                                  settings['source_folder_path'],
                                   file_name))
 
     return notes
@@ -267,10 +268,10 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
     file_names = []
     now = datetime.now()
     for file_contents in files_contents:
-        file_name_format = copy(settings.file_name_format)
+        file_name_format = copy(settings['file_name_format'])
         if r'%id' in file_name_format:
             file_name_format = file_name_format.replace(r'%id',
-                                                       settings.file_id_format)
+                                                       settings['file_id_format'])
         new_file_name = __create_file_name(file_ext,
                                            file_name_format,
                                            file_contents,
@@ -330,7 +331,7 @@ def create_file_id(file_contents: str, dt: datetime = None) -> str:
     """
     if dt is None:
         dt = datetime.now()
-    file_id = copy(settings.file_id_format)
+    file_id = copy(settings['file_id_format'])
     variables = __get_variables(file_contents, dt)
     for name, value in variables:
         file_id = file_id.replace(name, value)
@@ -470,7 +471,7 @@ def move_files(paths_of_files_to_move: List[str],
         path = os.path.normpath(path)
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
-        if file_ext in settings.note_types:
+        if file_ext in settings['note_types']:
             _make_file_paths_absolute(note_path=path)
         new_path = os.path.join(destination_path, file_name_with_ext)
         new_path = os.path.normpath(new_path)

@@ -2,7 +2,8 @@
 
 from typing import List, Callable
 from textwrap import dedent
-from note_splitter import settings, tokens
+from note_splitter import tokens
+from note_splitter.settings import settings, load_settings
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
@@ -51,20 +52,21 @@ def __manual_test() -> None:
         [^1]: this is a footnote
         ''')
 
+    load_settings()
     tokenize: Callable = Lexer()
     tokens_: List[tokens.Token] = tokenize(sample_markdown)
     __print_lexer_output(tokens_)
 
-    settings.parse_blocks = True
-    ast = AST(tokens_, settings.parse_blocks)
+    settings['parse_blocks'] = True
+    ast = AST(tokens_, settings['parse_blocks'])
     __print_parser_output(ast)
 
-    settings.split_type = tokens.Header
-    settings.split_attrs = dict()
+    settings['split_type'] = tokens.Header
+    settings['split_attrs'] = dict()
     split: Callable = Splitter()
     sections: List[tokens.Section] = split(ast.content,
-                                           settings.split_type,
-                                           settings.split_attrs)
+                                           settings['split_type'],
+                                           settings['split_attrs'])
     __print_splitter_output(sections)
 
     format_: Callable = Formatter()

@@ -1,6 +1,6 @@
 from datetime import datetime
 from note_splitter import note
-from note_splitter import settings
+from note_splitter.settings import settings, load_settings
 
 
 ####################
@@ -8,8 +8,11 @@ from note_splitter import settings
 ####################
 
 
+load_settings()
+
+
 def test_create_14_digit_id():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_id = note.create_file_id('', datetime.now())
     assert len(file_id) == 14
     for char in file_id:
@@ -17,7 +20,7 @@ def test_create_14_digit_id():
 
 
 def test_create_12_digit_id():
-    settings.file_id_format = r'%Y%M%D%h%m'
+    settings['file_id_format'] = r'%Y%M%D%h%m'
     file_id = note.create_file_id('# sample title', datetime.now())
     assert len(file_id) == 12
     for char in file_id:
@@ -25,7 +28,7 @@ def test_create_12_digit_id():
 
 
 def test_create_uuid():
-    settings.file_id_format = r'%uuid4'
+    settings['file_id_format'] = r'%uuid4'
     file_id = note.create_file_id('## hey', datetime.now())
     assert len(file_id) == 36
     for char in file_id:
@@ -33,19 +36,19 @@ def test_create_uuid():
 
 
 def test_create_id_from_header():
-    settings.file_id_format = r'%title'
+    settings['file_id_format'] = r'%title'
     file_id = note.create_file_id('# this is a title', datetime.now())
     assert file_id == 'this is a title'
 
 
 def test_create_id_from_header_2():
-    settings.file_id_format = r'%title'
+    settings['file_id_format'] = r'%title'
     file_id = note.create_file_id('##   a title  ', datetime.now())
     assert file_id == 'a title'
 
 
 def test_create_id_from_lower_header():
-    settings.file_id_format = r'%title'
+    settings['file_id_format'] = r'%title'
     file_id = note.create_file_id('here is a line of text' \
                                   '\n### title on second line',
                                   datetime.now())
@@ -53,13 +56,13 @@ def test_create_id_from_lower_header():
 
 
 def test_create_id_from_line():
-    settings.file_id_format = r'%title'
+    settings['file_id_format'] = r'%title'
     file_id = note.create_file_id('line of text\nanother line', datetime.now())
     assert file_id == 'line of text'
 
 
 def test_create_id_from_custom_format():
-    settings.file_id_format = r'%Y-%M-%D_%h:%m:%s'
+    settings['file_id_format'] = r'%Y-%M-%D_%h:%m:%s'
     file_id = note.create_file_id('', datetime.now())
     assert len(file_id) == 19
     for char in file_id:
@@ -67,7 +70,7 @@ def test_create_id_from_custom_format():
 
 
 def test_create_id_from_duplicate_variables():
-    settings.file_id_format = r'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s'
+    settings['file_id_format'] = r'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s'
     file_id = note.create_file_id('', datetime.now())
     assert len(file_id) == 42
     for char in file_id:
@@ -75,7 +78,7 @@ def test_create_id_from_duplicate_variables():
 
 
 def test_create_id_with_description():
-    settings.file_id_format = r'new %h:%m:%s'
+    settings['file_id_format'] = r'new %h:%m:%s'
     file_id = note.create_file_id('# my title\n\n words', datetime.now())
     assert file_id.startswith('new ')
     assert len(file_id) == 12
@@ -84,7 +87,7 @@ def test_create_id_with_description():
 
 
 def test_create_id_with_time_and_uuid():
-    settings.file_id_format = r'%Y%M%D %uuid4'
+    settings['file_id_format'] = r'%Y%M%D %uuid4'
     file_id = note.create_file_id('# my title\n\n words', datetime.now())
     assert len(file_id) == 45
     for char in file_id[:8]:
@@ -92,7 +95,7 @@ def test_create_id_with_time_and_uuid():
 
 
 def test_create_id_with_time_and_title():
-    settings.file_id_format = r'%Y%M%D %title'
+    settings['file_id_format'] = r'%Y%M%D %title'
     file_id = note.create_file_id('# my title\n\n words', datetime.now())
     assert len(file_id) == 17
     assert file_id.endswith('my title')
@@ -106,7 +109,7 @@ def test_create_id_with_time_and_title():
 
 
 def test_create_14_digit_file_name():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.md', r'%id', '', datetime.now())
     assert file_name.endswith('.md')
     assert len(file_name) == 17
@@ -115,7 +118,7 @@ def test_create_14_digit_file_name():
 
 
 def test_create_12_digit_text_file_name():
-    settings.file_id_format = r'%Y%M%D%h%m'
+    settings['file_id_format'] = r'%Y%M%D%h%m'
     file_name = note.__create_file_name('.txt', r'%id', '', datetime.now())
     assert len(file_name) == 16
     assert file_name.endswith('.txt')
@@ -124,13 +127,13 @@ def test_create_12_digit_text_file_name():
 
 
 def test_create_file_name_with_no_variables():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.md', r'new file', '', datetime.now())
     assert file_name == 'new file.md'
 
 
 def test_create_file_name_with_custom_format():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.md',
                                         r'new_file %h:%m:%s',
                                         '',
@@ -141,7 +144,7 @@ def test_create_file_name_with_custom_format():
 
 
 def test_create_file_name_with_duplicate_variables():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.markdown',
                                         r'%id %id',
                                         '',
@@ -152,7 +155,7 @@ def test_create_file_name_with_duplicate_variables():
 
 
 def test_create_file_name_from_title():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.md',
                                         r'%title',
                                         '    my title        ',
@@ -161,7 +164,7 @@ def test_create_file_name_from_title():
 
 
 def test_create_file_name_from_header():
-    settings.file_id_format = r'%Y%M%D%h%m%s'
+    settings['file_id_format'] = r'%Y%M%D%h%m%s'
     file_name = note.__create_file_name('.md',
                                         r'%title',
                                         'first line\n# second line',
@@ -175,7 +178,7 @@ def test_create_file_name_from_header():
 
 
 def test_create_file_names_with_no_variables():
-    settings.file_name_format = r''
+    settings['file_name_format'] = r''
     file_names = note.create_file_names('.md', ['new file contents'] * 3)
     assert len(file_names) == 3
     for file_name in file_names:
@@ -183,7 +186,7 @@ def test_create_file_names_with_no_variables():
 
 
 def test_create_file_names_with_14_digit_id():
-    settings.file_name_format = r'%Y%M%D%h%m%s'
+    settings['file_name_format'] = r'%Y%M%D%h%m%s'
     file_names = note.create_file_names('.md', ['new file contents'] * 3)
     for file_name in file_names:
         assert len(file_name) == 17
@@ -194,7 +197,7 @@ def test_create_file_names_with_14_digit_id():
 
 
 def test_create_file_names_from_headers():
-    settings.file_name_format = '%title'
+    settings['file_name_format'] = '%title'
     file_names = note.create_file_names('.markdown', ['# file one',
                                                       '# file two',
                                                       '# file three'])
@@ -204,7 +207,7 @@ def test_create_file_names_from_headers():
 
 
 def test_create_file_names_from_titles():
-    settings.file_name_format = '%title'
+    settings['file_name_format'] = '%title'
     file_names = note.create_file_names('.txt', ['#   file   one',
                                                  'file two ',
                                                  'file three\n## here'])
@@ -214,7 +217,7 @@ def test_create_file_names_from_titles():
 
 
 def test_create_file_names_with_uuids():
-    settings.file_name_format = r'%uuid4'
+    settings['file_name_format'] = r'%uuid4'
     file_names = note.create_file_names('.txt', ['#   file   one',
                                                  'file two ',
                                                  'file three\n## here'])

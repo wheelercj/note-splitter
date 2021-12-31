@@ -6,7 +6,9 @@ from tkinter import filedialog
 from typing import List, Tuple, Callable
 import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from note_splitter import settings, tokens, note, gui
+from note_splitter import tokens, note, gui
+from note_splitter.settings import settings, load_settings, save_settings, \
+    get_token_type
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
 from note_splitter.splitter import Splitter
@@ -15,7 +17,7 @@ from note_splitter.formatter_ import Formatter
 
 def run_main_menu() -> None:
     """Displays the main menu."""
-    settings.load()
+    load_settings()
     sg.theme('TanBlue')
     window = gui.create_main_menu_window()
     listbox_notes: List[note.Note] = []
@@ -23,7 +25,7 @@ def run_main_menu() -> None:
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Close'):
-            settings.save()
+            save_settings()
             window.close()
             return
         listbox_notes, all_notes = handle_main_menu_event(event,
@@ -77,13 +79,14 @@ def split_files(window: sg.Window,
         gui.show_progress(i, len(notes), 5, 5)
         print(f'Created {len(new_notes)} new files.')
         if new_notes:
-            if settings.create_index_file:
-                index_note: note.Note = create_index_file_(source_note, new_notes)
+            if settings['create_index_file']:
+                index_note: note.Note = create_index_file_(source_note,
+                                                           new_notes)
                 print(f'Created index file at {index_note.path}')
                 all_new_notes.append(index_note)
-                if settings.backlink:
+                if settings['backlink']:
                     append_backlinks(index_note, new_notes)
-            elif settings.backlink:
+            elif settings['backlink']:
                 append_backlinks(source_note, new_notes)
 
     return all_new_notes
@@ -115,10 +118,10 @@ def split_text(content: str,
         A list of strings that are the sections of the original string.
     """
     tokens_: List[tokens.Token] = tokenize(content)
-    ast = AST(tokens_, settings.parse_blocks)
+    ast = AST(tokens_, settings['parse_blocks'])
     sections: List[tokens.Section] = split(ast.content,
-                                           settings.split_type,
-                                           settings.split_attrs)
+                                           settings['split_type'],
+                                           settings['split_attrs'])
     split_contents: List[str] = format_(sections,
                                         ast.global_tags,
                                         ast.frontmatter,
@@ -149,15 +152,16 @@ def save_new_notes(split_contents: List[str],
     """
     new_notes = []
     for new_file_name, split_content in zip(new_file_names, split_contents):
-        if not settings.destination_folder_path \
-                or not os.path.exists(settings.destination_folder_path):
-            settings.destination_folder_path = \
+        if not settings['destination_folder_path'] \
+                or not os.path.exists(settings['destination_folder_path']):
+            settings['destination_folder_path'] = \
                 note.require_folder_path('destination')
             window['-DESTINATION FOLDER-'].update(
-                settings.destination_folder_path)
-        if settings.destination_folder_path != settings.source_folder_path:
+                settings['destination_folder_path'])
+        if settings['destination_folder_path'] != \
+                settings['source_folder_path']:
             split_content = note.make_file_paths_absolute(split_content)
-        new_file_path = os.path.join(settings.destination_folder_path,
+        new_file_path = os.path.join(settings['destination_folder_path'],
                                      new_file_name)
         new_file_path = note.ensure_file_path_uniqueness(new_file_path)
         with open(new_file_path, 'x', encoding='utf8') as file:
@@ -270,30 +274,30 @@ def handle_main_menu_event(
             titles = [n.title for n in listbox_notes]
             window['-NOTES TO SPLIT-'].update(values=titles)
     elif event == 'parseBlocks':
-        settings.parse_blocks = values['parseBlocks']
+        settings['parse_blocks'] = values['parseBlocks']
         gui.update_split_type_and_attrs(values, window)
     elif event == '-SPLIT TYPE-':
-        settings.split_type = settings.get_token_type(values['-SPLIT TYPE-'])
+        settings['split_type'] = get_token_type(values['-SPLIT TYPE-'])
         gui.update_split_attrs(values, window)
     elif event in ('-SPLIT ATTR-', '-SPLIT ATTR VALUE-'):
-        settings.split_attrs = { values['-SPLIT ATTR-']:
-                                 values['-SPLIT ATTR VALUE-'] }
+        settings['split_attrs'] = { values['-SPLIT ATTR-']:
+                                    values['-SPLIT ATTR VALUE-'] }
     elif event == '-SPLIT KEYWORD-':
-        settings.split_keyword = values['-SPLIT KEYWORD-']
+        settings['split_keyword'] = values['-SPLIT KEYWORD-']
     elif event == '-SOURCE FOLDER-':
-        settings.source_folder_path = values['-SOURCE FOLDER-']
+        settings['source_folder_path'] = values['-SOURCE FOLDER-']
     elif event == '-DESTINATION FOLDER-':
-        settings.destination_folder_path = values['-DESTINATION FOLDER-']
+        settings['destination_folder_path'] = values['-DESTINATION FOLDER-']
     elif event == '-FILE NAME FORMAT-':
-        settings.file_name_format = values['-FILE NAME FORMAT-']
+        settings['file_name_format'] = values['-FILE NAME FORMAT-']
     elif event == 'indexFile':
-        settings.create_index_file = values['indexFile']
+        settings['create_index_file'] = values['indexFile']
     elif event == 'copy_frontmatter':
-        settings.copy_frontmatter = values['copy_frontmatter']
+        settings['copy_frontmatter'] = values['copy_frontmatter']
     elif event == 'copy_global_tags':
-        settings.copy_global_tags = values['copy_global_tags']
+        settings['copy_global_tags'] = values['copy_global_tags']
     elif event == 'backlink':
-        settings.backlink = values['backlink']
+        settings['backlink'] = values['backlink']
     else:
         print('Unhandled event:', event)
 

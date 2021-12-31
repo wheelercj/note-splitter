@@ -9,7 +9,8 @@ strings.
 import uuid
 from typing import List, Optional
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-from note_splitter import tokens, settings
+from note_splitter import tokens
+from note_splitter.settings import settings
 
 
 class Formatter:
@@ -47,9 +48,9 @@ class Formatter:
             section_title = None
             if isinstance(section[0], tokens.Header):
                 section_title = self.normalize_headers(section)
-            if settings.copy_global_tags:
+            if settings['copy_global_tags']:
                 self.insert_global_tags(global_tags, section)
-            if settings.copy_frontmatter:
+            if settings['copy_frontmatter']:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)

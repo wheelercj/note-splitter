@@ -1,29 +1,9 @@
-"""The user's application settings.
+"""The user's application settings and related functions.
 
-Some of these settings may be hidden from the user.
+The settings are stored in a dictionary named ``settings`` with the 
+following keys. Some of these settings may be hidden from the user.
 
-The settings for the formats of file names and IDs can use the following
-variables:
-
- * ``%uuid4`` - A universally unique identifier.
- * ``%title`` - The title of the file (the body of its first header, or 
-   the first line of the file if there is no header).
- * ``%Y`` - The current year.
- * ``%M`` - The current month.
- * ``%D`` - The current day.
- * ``%h`` - The current hour.
- * ``%m`` - The current minute.
- * ``%s`` - The current second.
-
-Additionally, the file name format setting can use the ``%id`` variable,
-which gets replaced with the ID of the file as described by the file ID 
-format setting.
-
-Every time file_id_format is changed, file_id_regex must be updated.
-
-Attributes
-----------
-backlink: bool
+backlink : bool
     Whether or not to append a backlink to the source file in each new 
     file.
 copy_frontmatter : bool
@@ -64,201 +44,85 @@ split_keyword : str
 split_type : Type
     The type to split by. This can be any token type, even an abstract 
     one.
+
+The settings for the formats of file names and IDs can use the following
+variables:
+
+ * ``%uuid4`` - A universally unique identifier.
+ * ``%title`` - The title of the file (the body of its first header, or 
+   the first line of the file if there is no header).
+ * ``%Y`` - The current year.
+ * ``%M`` - The current month.
+ * ``%D`` - The current day.
+ * ``%h`` - The current hour.
+ * ``%m`` - The current minute.
+ * ``%s`` - The current second.
+
+Additionally, the file name format setting can use the ``%id`` variable 
+which gets replaced with the ID of the file as described by the file ID 
+format setting.
+
+Every time file_id_format is changed, file_id_regex must be updated.
 """
-# This module follows the Global Object Pattern. You can see more 
-# details about this design pattern here: 
-# https://python-patterns.guide/python/module-globals/#id1
 
 
-from typing import List, Type, Callable
-import sqlite3
+from typing import List, Type, Callable, Any
 import json 
 from note_splitter import tokens
 
 
-backlink: bool = True
-copy_frontmatter: bool = True
-copy_global_tags: bool = True
-parse_blocks: bool = True
-create_index_file: bool = True
-destination_folder_path: str = ''
-file_id_format: str = r'%Y%M%D%h%m%s'
-file_id_regex: str = r'\d{14}'
-file_name_format: str = r'%id'
-note_types: List[str] = [".md", ".markdown", ".txt"]
-replace_split_contents: bool = False
-source_folder_path: str = ''
-split_attrs: dict = {'level': 2}
-split_keyword: str = '#split'
-split_type: Type = tokens.Header
+__DEFAULT_SETTINGS = {
+    'backlink': False,
+    'copy_frontmatter': False,
+    'copy_global_tags': False,
+    'parse_blocks': True,
+    'create_index_file': True,
+    'destination_folder_path': '',
+    'file_id_format': r'%Y%M%D%h%m%s',
+    'file_id_regex': r'\d{14}',
+    'file_name_format': r'%id',
+    'note_types': ['.md', '.markdown', '.txt'],
+    'replace_split_contents': False,
+    'source_folder_path': '',
+    'split_attrs': {'level': 2},
+    'split_keyword': '#split',
+    'split_type': tokens.Header
+}
 
 
-def initialize():
-    """Initialize the settings with default values"""
-    connection = sqlite3.connect('store-transactions.db') 
-    cur = connection.cursor()
-    cur.execute('''
-        CREATE TABLE settings
-            (split_keyword TEXT,
-            source_folder_path TEXT,
-            destination_folder_path TEXT,
-            note_types TEXT,
-            split_type TEXT,
-            split_attrs TEXT,
-            file_name_format TEXT,
-            file_id_format TEXT,
-            file_id_regex TEXT,
-            parse_blocks INTEGER,
-            copy_frontmatter INTEGER,
-            copy_global_tags INTEGER,
-            backlink INTEGER,
-            create_index_file INTEGER,
-            replace_split_contents INTEGER)''')
-    cur.execute("""
-        INSERT INTO settings
-            (split_keyword,
-            source_folder_path,
-            destination_folder_path,
-            note_types,
-            split_type,
-            split_attrs,
-            file_name_format,
-            file_id_format,
-            file_id_regex,
-            parse_blocks,
-            copy_frontmatter,
-            copy_global_tags,
-            backlink,
-            create_index_file,
-            replace_split_contents)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-        (split_keyword,
-        source_folder_path,
-        destination_folder_path,
-        ','.join(note_types),
-        get_token_type_name(split_type),
-        json.dumps(split_attrs),
-        file_name_format,
-        file_id_format,
-        file_id_regex,
-        int(parse_blocks),
-        int(copy_frontmatter),
-        int(copy_global_tags),
-        int(backlink),
-        int(create_index_file),
-        int(replace_split_contents)))
-
-    connection.commit()
-    connection.close()
+settings = {}
 
 
-def load() -> None:
-    """Fetch the current user settings from the database"""
-    connection = sqlite3.connect('store-transactions.db')
-    cur = connection.cursor()
-    try:
-        cur.execute('SELECT * from settings')
-    except sqlite3.OperationalError:
-        initialize()
-    else:
-        result = cur.fetchall()
+def save_settings() -> None:
+    """Save the settings to a JSON file."""
+    temp: Type = settings['split_type']
+    settings['split_type'] = get_token_type_name(settings['split_type'])
+    with open('settings.json', 'w') as file:
+        json.dump(settings, file, indent=4)
+    settings['split_type'] = temp
 
-        global split_keyword
-        global source_folder_path
-        global destination_folder_path
-        global note_types
-        global split_type
-        global split_attrs
-        global file_name_format
-        global file_id_format
-        global file_id_regex
-        global parse_blocks
-        global copy_frontmatter
-        global copy_global_tags
-        global backlink
-        global create_index_file
-        global replace_split_contents
 
-        split_keyword = str(result[0][0])
-        source_folder_path = str(result[0][1])
-        destination_folder_path = str(result[0][2])
-        note_types = result[0][3].split(',')
-        split_type = get_token_type(result[0][4])
-        split_attrs = json.loads(result[0][5])
-        file_name_format = str(result[0][6])
-        file_id_format = str(result[0][7])
-        file_id_regex = str(result[0][8])
-        parse_blocks = bool(result[0][9])
-        copy_frontmatter = bool(result[0][10])
-        copy_global_tags = bool(result[0][11])
-        backlink = bool(result[0][12])
-        create_index_file = bool(result[0][13])
-        replace_split_contents = bool(result[0][14])
+def load_settings() -> None:
+    """Attempt to load the settings from a JSON file.
     
-    if 'null' in split_attrs:
-        split_attrs = {None: ''}
-
-    connection.commit()
-    connection.close()
-
-
-def drop_table() -> None:
-    """Delete the user settings database."""
-    connection = sqlite3.connect('store-transactions.db') 
-    cur = connection.cursor()
+    If the file does not exist or cannot be decoded, the default 
+    settings are used.
+    """
     try:
-        cur.execute('DROP TABLE settings')
-    except sqlite3.OperationalError:
-        pass
+        with open('settings.json', 'r') as file:
+            settings.update(json.load(file))
+    except (FileNotFoundError, json.JSONDecodeError):
+        settings.update(__DEFAULT_SETTINGS)
     else:
-        connection.commit()
-        connection.close()
+        if 'null' in settings['split_attrs']:
+            settings['split_attrs'] = { None: '' }
+        settings['split_type'] = get_token_type(settings['split_type'])
 
 
-def save() -> None:
-    """Saves the user's settings to the database."""
-    connection = sqlite3.connect('store-transactions.db') 
-    cur = connection.cursor()
-    cur.execute("""
-        UPDATE settings
-        SET split_keyword = ?,
-            source_folder_path = ?,
-            destination_folder_path = ?,
-            note_types = ?,
-            split_type = ?,
-            split_attrs = ?,
-            file_name_format = ?,
-            file_id_format = ?,
-            file_id_regex = ?,
-            parse_blocks = ?,
-            copy_frontmatter = ?,
-            copy_global_tags = ?,
-            backlink = ?,
-            create_index_file = ?,
-            replace_split_contents = ?""",
-        (split_keyword,
-        source_folder_path,
-        destination_folder_path,
-        ','.join(note_types),
-        get_token_type_name(split_type),
-        json.dumps(split_attrs),
-        file_name_format,
-        file_id_format,
-        file_id_regex,
-        int(parse_blocks),
-        int(copy_frontmatter),
-        int(copy_global_tags),
-        int(backlink),
-        int(create_index_file),
-        int(replace_split_contents)))
-    connection.commit()
-    connection.close()
-
-
-def reset() -> None:
-    """Reset current settings to default"""
-    drop_table()
-    initialize()
+def reset_settings() -> None:
+    """Reset the settings to their defaults."""
+    settings.clear()
+    settings.update(__DEFAULT_SETTINGS)
 
 
 def get_token_type_names(
