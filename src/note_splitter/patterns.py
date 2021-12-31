@@ -56,10 +56,6 @@ unordered_list_item : re.Pattern
     pluses. This pattern can also match some horizontal rules and to 
     dos.
 """
-# This module follows the Global Object Pattern. You can see more 
-# details about this design pattern here: 
-# https://python-patterns.guide/python/module-globals/#id1
-
 
 import re
 

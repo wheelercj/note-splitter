@@ -6,19 +6,23 @@ following keys. Some of these settings may be hidden from the user.
 backlink : bool
     Whether or not to append a backlink to the source file in each new 
     file.
+blockquote_pattern : str
+    The uncompiled regex pattern for blockquotes.
+code_fence_pattern : str
+    The uncompiled regex pattern for code fences.
 copy_frontmatter : bool
     Whether or not to copy frontmatter from the source file to each new 
     file.
 copy_global_tags : bool
     Whether or not to copy global tags from the source file to each new 
     file.
-parse_blocks : bool
-    Whether or not to create ``Block`` tokens while parsing.
 create_index_file : bool
     Whether or not to create an index file.
 destination_folder_path : str
     The absolute path to the user's folder where new files will be 
     saved.
+empty_line_pattern : str
+    The uncompiled regex pattern for empty lines.
 file_id_format : str
     The format of the file IDs.
 file_id_regex : str
@@ -26,9 +30,27 @@ file_id_regex : str
     the files.
 file_name_format : str
     The format of the new file names.
+file_path_in_link_pattern : str
+    The uncompiled regex pattern for file paths in links.
+finished_task_pattern : str
+    The uncompiled regex pattern for finished tasks.
+footnote_pattern : str
+    The uncompiled regex pattern for footnotes.
+frontmatter_fence_pattern : str
+    The uncompiled regex pattern for frontmatter fences.
+header_pattern : str
+    The uncompiled regex pattern for headers.
+horizontal_rule_pattern : str
+    The uncompiled regex pattern for horizontal rules.
+math_fence_pattern : str
+    The uncompiled regex pattern for math fences.
 note_types : List[str]
     The file extensions of the files that may be chosen to be split.Each
     must start with a period.
+ordered_list_item_pattern : str
+    The uncompiled regex pattern for ordered list items.
+parse_blocks : bool
+    Whether or not to create ``Block`` tokens while parsing.
 replace_split_contents : bool
     Whether or not to replace the parts of the source file that was 
     split out with links to the new files.
@@ -44,6 +66,16 @@ split_keyword : str
 split_type : Type
     The type to split by. This can be any token type, even an abstract 
     one.
+table_divider_pattern : str
+    The uncompiled regex pattern for table dividers.
+table_row_pattern : str
+    The uncompiled regex pattern for table rows.
+tag_pattern : str
+    The uncompiled regex pattern for tags.
+task_pattern : str
+    The uncompiled regex pattern for tasks.
+unordered_list_item_pattern : str
+    The uncompiled regex pattern for unordered list items.
 
 The settings for the formats of file names and IDs can use the following
 variables:
@@ -66,27 +98,43 @@ Every time file_id_format is changed, file_id_regex must be updated.
 """
 
 
-from typing import List, Type, Callable, Any
+from typing import List, Type, Callable
 import json 
-from note_splitter import tokens
+from note_splitter import tokens, patterns
 
 
 __DEFAULT_SETTINGS = {
     'backlink': False,
+    'blockquote_pattern': patterns.blockquote.pattern,
+    'code_fence_pattern': patterns.code_fence.pattern,
     'copy_frontmatter': False,
     'copy_global_tags': False,
-    'parse_blocks': True,
     'create_index_file': True,
     'destination_folder_path': '',
+    'empty_line_pattern': patterns.empty_line.pattern,
     'file_id_format': r'%Y%M%D%h%m%s',
     'file_id_regex': r'\d{14}',
     'file_name_format': r'%id',
+    'file_path_in_link_pattern': patterns.file_path_in_link.pattern,
+    'finished_task_pattern': patterns.finished_task.pattern,
+    'footnote_pattern': patterns.footnote.pattern,
+    'frontmatter_fence_pattern': patterns.frontmatter_fence.pattern,
+    'header_pattern': patterns.header.pattern,
+    'horizontal_rule_pattern': patterns.horizontal_rule.pattern,
+    'math_fence_pattern': patterns.math_fence.pattern,
     'note_types': ['.md', '.markdown', '.txt'],
+    'ordered_list_item_pattern': patterns.ordered_list_item.pattern,
+    'parse_blocks': True,
     'replace_split_contents': False,
     'source_folder_path': '',
     'split_attrs': {'level': 2},
     'split_keyword': '#split',
-    'split_type': tokens.Header
+    'split_type': tokens.Header,
+    'table_divider_pattern': patterns.table_divider.pattern,
+    'table_row_pattern': patterns.table_row.pattern,
+    'tag_pattern': patterns.tag.pattern,
+    'task_pattern': patterns.task.pattern,
+    'unordered_list_item_pattern': patterns.unordered_list_item.pattern,
 }
 
 
@@ -117,6 +165,14 @@ def load_settings() -> None:
         if 'null' in settings['split_attrs']:
             settings['split_attrs'] = { None: '' }
         settings['split_type'] = get_token_type(settings['split_type'])
+        add_new_settings()
+
+
+def add_new_settings() -> None:
+    """Add any new settings to the settings file."""
+    for key, value in __DEFAULT_SETTINGS.items():
+        if key not in settings:
+            settings[key] = value
 
 
 def reset_settings() -> None:
@@ -155,12 +211,12 @@ def get_token_type_name(token_type: Type) -> str:
     token_type : Type
         The token type to get the name of.
     """
-    token_name = ''
+    token_name = []
     for i, letter in enumerate(token_type.__name__):
         if i and letter.isupper():
-            token_name += ' '
-        token_name += letter
-    return token_name.lower()
+            token_name.append(' ')
+        token_name.append(letter)
+    return ''.join(token_name).lower()
 
 
 def get_token_type(chosen_name: str) -> Type:

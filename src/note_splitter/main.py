@@ -2,11 +2,12 @@
 
 
 import os
+import re
 from tkinter import filedialog
 from typing import List, Tuple, Callable
 import webbrowser
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from note_splitter import tokens, note, gui
+from note_splitter import tokens, note, gui, patterns
 from note_splitter.settings import settings, load_settings, save_settings, \
     get_token_type
 from note_splitter.lexer import Lexer
@@ -215,20 +216,20 @@ def append_backlinks(root_note: note.Note, notes: List[note.Note]) -> None:
 
 
 def handle_main_menu_event(
-        event,
-        values,
-        window,
+        event: str,
+        values: dict,
+        window: sg.Window,
         listbox_notes: List[note.Note],
-        all_notes: List[note.Note]) -> List[note.Note]:
+        all_notes: List[note.Note]) -> Tuple[List[note.Note], List[note.Note]]:
     """Handles the main menu's events.
     
     Parameters
     ----------
-    event : tkinter.Event
+    event : str
         The event that occurred.
     values : dict
         The values of the widgets in the main menu.
-    window : tkinter.Tk
+    window : sg.Window
         The main menu window.
     listbox_notes : List[note.Note]
         The notes displayed in the listbox. This list may be empty.
@@ -245,6 +246,11 @@ def handle_main_menu_event(
     if event.startswith('URL '):
         url = event.split(' ')[1]
         webbrowser.open(url)
+    elif event.startswith('change_') and event.endswith('_pattern'):
+        setting_name = event[7:]
+        settings[setting_name] = values[event]
+        patterns.__dict__[setting_name[:-8]] = \
+            re.compile(settings[setting_name])
     elif event == 'Open File':
         all_notes: List[note.Note] = note.get_all_notes(window)
         file_paths: Tuple[str] = filedialog.askopenfilenames()

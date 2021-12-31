@@ -9,9 +9,8 @@ correct type.
 """
 
 
-import re
 from typing import List, Type
-from note_splitter import tokens
+from note_splitter import tokens, patterns, settings
 
 
 class Lexer:
@@ -42,24 +41,28 @@ class Lexer:
         """
         all_token_types = tokens.get_all_token_types(tokens)
         for type_ in all_token_types:
-            if hasattr(type_, 'pattern'):
-                if self.__matches(line, type_.pattern):
-                    self.__tokens.append(type_(line))
-                    return
+            if type_.HAS_PATTERN and self.__matches(line, type_):
+                self.__tokens.append(type_(line))
+                return
         self.__tokens.append(tokens.Text(line))
 
 
-    def __matches(self, line: str, pattern: re.Pattern) -> bool:
-        """Determines if the line matches a pattern.
+    def __matches(self,
+                  line: str,
+                  type_: Type[tokens.Token]) -> bool:
+        """Determines if the line matches the given type's pattern.
         
         Parameters
         ----------
         line : str
             The line of text to check.
-        pattern : re.Pattern
-            The pattern to check the line against.
+        type_ : Type[tokens.Token]
+            The token type to check the pattern of.
         """
-        return bool(pattern.match(line))
+        type_name = settings.get_token_type_name(type_).replace(' ', '_')
+        if patterns.__dict__[type_name].match(line):
+            return True
+        return False
 
 
     def __check_token_types(self) -> None:

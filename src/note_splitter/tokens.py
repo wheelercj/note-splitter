@@ -5,7 +5,6 @@ https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
 
 
-import re
 from abc import ABC, abstractmethod
 from typing import List, Union, Type, Any
 from types import ModuleType
@@ -36,6 +35,8 @@ class Token(ABC):
     of text. Otherwise, the ``content`` attribute is the list of 
     subtokens.
     """
+    HAS_PATTERN = False
+    
     @abstractmethod
     def __init__(self):
         pass
@@ -176,7 +177,7 @@ class EmptyLine(Token):
     content : str
         The content of the line of text.
     """
-    pattern: re.Pattern = patterns.empty_line
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -198,7 +199,7 @@ class Header(CanHaveInlineElements):
         The header level. A header level of 1 is the largest possible 
         header.
     """
-    pattern: re.Pattern = patterns.header
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         """Parses a line of text and creates a header token."""
@@ -218,7 +219,7 @@ class HorizontalRule(Token):
     content : str
         The content of the line of text.
     """
-    pattern: re.Pattern = patterns.horizontal_rule
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -236,7 +237,7 @@ class Blockquote(CanHaveInlineElements):
     level : int
         The number of spaces of indentation.
     """
-    pattern: re.Pattern = patterns.blockquote
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -268,7 +269,7 @@ class Footnote(CanHaveInlineElements):
         The footnote's reference that may appear in other parts of the
         document.
     """
-    pattern: re.Pattern = patterns.footnote
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -292,7 +293,7 @@ class Task(TextListItem, CanHaveInlineElements):
     is_done : bool
         Whether the to do item is done.
     """
-    pattern: re.Pattern = patterns.task
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -313,7 +314,7 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
     level : int
         The number of spaces of indentation.
     """
-    pattern: re.Pattern = patterns.unordered_list_item
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -332,7 +333,7 @@ class OrderedListItem(TextListItem, CanHaveInlineElements):
     level : int
         The number of spaces of indentation.
     """
-    pattern: re.Pattern = patterns.ordered_list_item
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -372,7 +373,7 @@ class TableRow(TablePart):
     content : str
         The content of the line of text.
     """
-    pattern: re.Pattern = patterns.table_row
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -389,7 +390,7 @@ class TableDivider(TablePart):
     content : str
         The content of the line of text.
     """
-    pattern: re.Pattern = patterns.table_divider
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -422,7 +423,7 @@ class CodeFence(Fence):
         empty string if there are no non-whitespace characters after the
         triple backticks/tildes.
     """
-    pattern: re.Pattern = patterns.code_fence
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line
@@ -471,7 +472,7 @@ class MathFence(Fence):
     content : str
         The content of the line of text.
     """
-    pattern: re.Pattern = patterns.math_fence
+    HAS_PATTERN = True
 
     def __init__(self, line: str = ''):
         self.content: str = line

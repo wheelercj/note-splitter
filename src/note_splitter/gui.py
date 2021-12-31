@@ -49,15 +49,14 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
     tabgroup_layout = [
         [sg.Tab('Home', create_home_tab_layout()),
          sg.Tab('Settings', create_settings_tab_layout()),
-         sg.Tab('About', create_about_tab_layout())]]
+         sg.Tab('About', create_about_tab_layout()),
+         sg.Tab('Patterns', create_patterns_tab_layout())]]
     layout = [
         [sg.Text('Note Splitter',
                  size=(38, 1),
                  justification='center',
                  font=("Helvetica", 16),
-                 relief=sg.RELIEF_RIDGE,
-                 k='-TEXT HEADING-',
-                 enable_events=True)],
+                 relief=sg.RELIEF_RIDGE)],
         [sg.TabGroup(tabgroup_layout,
                      key='-TAB GROUP-',
                      expand_x=True,
@@ -185,6 +184,31 @@ def create_about_tab_layout() -> List[List[sg.Element]]:
         [sg.Text('•', font=('Arial', 16)),
          create_hyperlink('see the software license',
                           'https://github.com/wheelercj/note-splitter/blob/master/LICENSE')]]
+
+
+def create_patterns_tab_layout() -> List[List[sg.Element]]:
+    """Creates the patterns tab's layout."""
+    elements = []
+    for name, value in settings.items():
+        if name.endswith('_pattern'):
+            elements.append(create_pattern_input_field(name, value))
+    return elements
+
+
+def create_pattern_input_field(name: str, value: str) -> sg.Element:
+    """Creates a pattern input field.
+    
+    The key of the input field is ``change_`` followed by the 
+    name of the pattern.
+    """
+    return [sg.Text(name[:-8].replace('_', ' '),
+                    size=(15, 1),
+                    auto_size_text=False,
+                    justification='right'),
+            sg.InputText(value,
+                         key=f'change_{name}',
+                         size=(60, 1),
+                         enable_events=True)]
 
 
 def create_hyperlink(text: str,
