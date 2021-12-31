@@ -14,8 +14,6 @@ class AST:
     ----------
     frontmatter : Optional[object]
         The file's optional YAML frontmatter as a Python object.
-    global_tags : List[str]
-        All of the file's tags above any header of level 2 or greater.
     content : List[tokens.Token]
         All the tokens below any frontmatter.
     footnotes : List[tokens.Footnote]
@@ -43,7 +41,6 @@ class AST:
         self.__tokens = tokens_  # This attribute empties into self.content.
 
         self.frontmatter: Optional[object] = self.__get_frontmatter()
-        self.global_tags: List[str] = self.__get_global_tags()
         self.footnotes: List[tokens.Footnote] = self.__get_footnotes()
         self.content: List[tokens.Token] = []
         if parse_blocks:
@@ -220,23 +217,6 @@ class AST:
         """
         text: str = '\n'.join([t.content for t in tokens_])
         return yaml.load(text, Loader=yaml.FullLoader)
-
-
-    def __get_global_tags(self) -> List[str]:
-        """Finds all the global tags within the token list.
-        
-        Assumes the token types have been checked but that they have not
-        yet combined into blocks. Global tags are tags that are above 
-        all headers of level 2 or greater.
-        """
-        global_tags: List[str] = []
-        for token in self.__tokens:
-            if isinstance(token, tokens.Header) and token.level >= 2:
-                return global_tags
-            elif isinstance(token, tokens.CanHaveInlineElements):
-                global_tags.extend(self.__get_tags(token))
-        global_tags = list(set(global_tags))  # Remove duplicates.
-        return global_tags
 
 
     def __get_footnotes(self) -> List[tokens.Footnote]:

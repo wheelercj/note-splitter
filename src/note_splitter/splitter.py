@@ -1,8 +1,8 @@
 """For splitting an AST's tokens into Sections tokens."""
 
 
-from typing import List, Type
-from note_splitter import tokens
+from typing import List, Tuple, Type
+from note_splitter import tokens, patterns
 
 
 class Splitter:
@@ -12,7 +12,8 @@ class Splitter:
             self,
             tokens_: List[tokens.Token],
             split_type: Type,
-            split_attrs: dict) -> List[tokens.Section]:
+            split_attrs: dict) \
+            -> Tuple[List[tokens.Section], List[str]]:
         """Splits a tokens list into Sections.
 
         Parameters
@@ -25,15 +26,24 @@ class Splitter:
             The attributes of the token to split by. If one of the
             attributes is named ``level``, lesser levels will take
             precedence in section creation.
+
+        Returns
+        -------
+        sections : List[tokens.Section]
+            A list of the sections created by splitting. These are like 
+            smaller ASTs.
+        global_tags : List[str]
+            A list of the tags that are not in any of the sections.
         """
         self.__tokens = tokens_
-        return self.__get_sections(split_type, split_attrs)
+        sections, global_tags = self.__get_sections(split_type, split_attrs)
+        return sections, global_tags
 
 
     def __get_sections(
             self,
             split_type: Type,
-            split_attrs: dict) -> List[tokens.Section]:
+            split_attrs: dict) -> Tuple[List[tokens.Section], List[str]]:
         """Groups the tokens into section tokens.
         
         Parameters
@@ -44,10 +54,19 @@ class Splitter:
             The attributes of the token to split by. If one of the
             attributes is named ``level``, lesser levels will take
             precedence in section creation.
+
+        Returns
+        -------
+        sections : List[tokens.Section]
+            A list of the sections created by splitting. These are like
+            smaller ASTs.
+        global_tags : List[str]
+            A list of the tags that are not in any of the sections.
         """
         # Depth-first search for tokens of the chosen split type.
         # Irrelevant tokens are deleted as the loop iterates.
         sections: List[tokens.Section] = []
+        global_tags: List[str] = []
         while self.__tokens:
             token = self.__tokens[0]
             if self.__should_split(
@@ -59,12 +78,20 @@ class Splitter:
                 sections.append(new_section)
             elif isinstance(token.content, list):
                 split = Splitter()
-                sections.extend(split(token.content, split_type, split_attrs))
+                new_sections, new_global_tags = split(
+                    token.content,
+                    split_type,
+                    split_attrs)
+                sections.extend(new_sections)
+                global_tags.extend(new_global_tags)
                 self.__tokens.pop(0)
             else:
+                if isinstance(token, tokens.CanHaveInlineElements):
+                    tags = patterns.tag.findall(token.content)
+                    global_tags.extend(tags)
                 self.__tokens.pop(0)
 
-        return sections
+        return sections, global_tags
 
 
     def __get_section(

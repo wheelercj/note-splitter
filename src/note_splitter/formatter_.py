@@ -41,6 +41,7 @@ class Formatter:
             The footnotes to add to each section with the respective 
             footnote reference.
         """
+        global_tags = list(set(global_tags))  # Remove duplicates.
         split_contents: List[str] = []
         for section in sections:
             if not section:
@@ -48,7 +49,7 @@ class Formatter:
             section_title = None
             if isinstance(section[0], tokens.Header):
                 section_title = self.normalize_headers(section)
-            if settings['copy_global_tags']:
+            if settings['copy_global_tags'] and global_tags:
                 self.insert_global_tags(global_tags, section)
             if settings['copy_frontmatter']:
                 if not section_title:

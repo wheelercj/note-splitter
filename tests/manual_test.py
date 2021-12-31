@@ -29,7 +29,7 @@ def __manual_test() -> None:
         2. list
 
         ## second header
-        #third-tag <- not a global tag
+        #third-tag
         ```python
         print('this code is inside a code block')
         while True:
@@ -64,14 +64,14 @@ def __manual_test() -> None:
     settings['split_type'] = tokens.Header
     settings['split_attrs'] = dict()
     split: Callable = Splitter()
-    sections: List[tokens.Section] = split(ast.content,
-                                           settings['split_type'],
-                                           settings['split_attrs'])
-    __print_splitter_output(sections)
+    sections, global_tags = split(ast.content,
+                                  settings['split_type'],
+                                  settings['split_attrs'])
+    __print_splitter_output(sections, global_tags)
 
     format_: Callable = Formatter()
     split_contents: List[str] = format_(sections,
-                                        ast.global_tags,
+                                        global_tags,
                                         ast.frontmatter,
                                         ast.footnotes)
     __print_formatter_output(split_contents)
@@ -147,8 +147,6 @@ def __print_parser_output(ast: AST) -> None:
     print('\n**Parser output:**\n')
     if ast.frontmatter:
         print(f'frontmatter: {ast.frontmatter}\n')
-    if ast.global_tags:
-        print(f'global tags: {ast.global_tags}\n')
     if ast.footnotes:
         print('footnotes:')
         for footnote in ast.footnotes:
@@ -158,16 +156,20 @@ def __print_parser_output(ast: AST) -> None:
     input('**Press enter to continue**')
 
 
-def __print_splitter_output(sections: List[tokens.Section]) -> None:
+def __print_splitter_output(sections: List[tokens.Section],
+                            global_tags: List[str]) -> None:
     """Displays the splitter's output.
     
     Parameters
     ----------
     sections : List[tokens.Section]
         The list of sections to print.
+    global_tags : List[str]
+        The list of global tags to print.
     """
     print('\n**Splitter output:**\n')
     __print_tokens(sections)
+    print(f'\nglobal tags: {global_tags}\n')
     input('**Press enter to continue**')
 
 

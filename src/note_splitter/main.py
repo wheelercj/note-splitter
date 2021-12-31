@@ -120,11 +120,11 @@ def split_text(content: str,
     """
     tokens_: List[tokens.Token] = tokenize(content)
     ast = AST(tokens_, settings['parse_blocks'])
-    sections: List[tokens.Section] = split(ast.content,
-                                           settings['split_type'],
-                                           settings['split_attrs'])
+    sections, global_tags = split(ast.content,
+                                  settings['split_type'],
+                                  settings['split_attrs'])
     split_contents: List[str] = format_(sections,
-                                        ast.global_tags,
+                                        global_tags,
                                         ast.frontmatter,
                                         ast.footnotes)
     return split_contents
