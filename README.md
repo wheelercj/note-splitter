@@ -85,6 +85,6 @@ If the file name format contains any of `#%{&}\\<>*?/$!\'":@+|=` or backticks, t
 All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
 
 ## Contributing
-If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), etc. are welcome! Code and documentation contributions are currently not being accepted, but will be in the near future.
+If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), pull requests, etc. are welcome!
 
 [Developer documentation](https://note-splitter.readthedocs.io/)
