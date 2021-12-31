@@ -10,6 +10,9 @@ blockquote_pattern : str
     The uncompiled regex pattern for blockquotes.
 code_fence_pattern : str
     The uncompiled regex pattern for code fences.
+copy_footnotes : bool
+    Whether or not to copy footnotes to each new file that has the 
+    relevant footnote references.
 copy_frontmatter : bool
     Whether or not to copy frontmatter from the source file to each new 
     file.
@@ -107,6 +110,7 @@ __DEFAULT_SETTINGS = {
     'create_backlinks': False,
     'blockquote_pattern': patterns.blockquote.pattern,
     'code_fence_pattern': patterns.code_fence.pattern,
+    'copy_footnotes': False,
     'copy_frontmatter': False,
     'copy_global_tags': False,
     'create_index_file': True,

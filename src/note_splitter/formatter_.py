@@ -54,7 +54,8 @@ class Formatter:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
-            self.append_footnotes(footnotes, section)
+            if settings['copy_footnotes']:
+                self.append_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
 
@@ -156,7 +157,7 @@ class Formatter:
     def append_footnotes(self,
                          footnotes: Optional[List[tokens.Footnote]],
                          section: tokens.Section) -> None:
-        """Appends the footnotes to a section.
+        """Appends relevant footnotes to a section.
         
         Parameters
         ----------
