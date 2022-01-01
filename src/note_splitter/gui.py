@@ -69,12 +69,10 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
     """Creates the home tab's layout."""
     frame_layout = [
         [sg.T('Choose which files to split: ')],
-        [sg.Button('Open File'),
+        [sg.Button('open file browser'),
          sg.T(' or '),
-         sg.Button('find'),
-         sg.T(' by ')],
-        [sg.Text('keyword:'),
-         sg.InputText(settings['split_keyword'],
+         sg.Button('find by keyword')],
+        [sg.InputText(settings['split_keyword'],
                       key='-SPLIT KEYWORD-',
                       enable_events=True,
                       tooltip='Choose a keyword to search for to find which ' \

@@ -249,14 +249,14 @@ def handle_main_menu_event(
         settings[setting_name] = values[event]
         patterns.__dict__[setting_name[:-8]] = \
             re.compile(settings[setting_name])
-    elif event == 'Open File':
+    elif event == 'open file browser':
         all_notes: List[note.Note] = note.get_all_notes(window)
         file_paths: Tuple[str] = filedialog.askopenfilenames()
         listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
         settings['using_split_keyword'] = False
-    elif event == 'find':
+    elif event == 'find by keyword':
         settings['using_split_keyword'] = True
         all_notes = note.get_all_notes(window)
         listbox_notes: List[note.Note] = note.get_chosen_notes(window,
