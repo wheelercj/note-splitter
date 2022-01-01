@@ -120,9 +120,7 @@ def split_text(content: str,
     """
     tokens_: List[tokens.Token] = tokenize(content)
     ast = AST(tokens_, settings['parse_blocks'])
-    sections, global_tags = split(ast.content,
-                                  settings['split_type'],
-                                  settings['split_attrs'])
+    sections, global_tags = split(ast.content)
     split_contents: List[str] = format_(sections,
                                         global_tags,
                                         ast.frontmatter,
@@ -257,7 +255,9 @@ def handle_main_menu_event(
         listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
         titles: List[str] = [n.title for n in listbox_notes]
         window['-NOTES TO SPLIT-'].update(values=titles)
+        settings['using_split_keyword'] = False
     elif event == 'find':
+        settings['using_split_keyword'] = True
         all_notes = note.get_all_notes(window)
         listbox_notes: List[note.Note] = note.get_chosen_notes(window,
                                                                all_notes)
@@ -298,6 +298,8 @@ def handle_main_menu_event(
         settings['file_name_format'] = values['-FILE NAME FORMAT-']
     elif event == 'indexFile':
         settings['create_index_file'] = values['indexFile']
+    elif event == 'remove_split_keyword':
+        settings['remove_split_keyword'] = values['remove_split_keyword']
     elif event == 'move_footnotes':
         settings['move_footnotes'] = values['move_footnotes']
     elif event == 'copy_frontmatter':

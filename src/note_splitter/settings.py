@@ -55,6 +55,9 @@ ordered_list_item_pattern : str
     The uncompiled regex pattern for ordered list items.
 parse_blocks : bool
     Whether or not to create ``Block`` tokens while parsing.
+remove_split_keyword : bool
+    Whether or not to remove the split keyword from the source file and 
+    new file(s).
 replace_split_contents : bool
     Whether or not to replace the parts of the source file that was 
     split out with links to the new files.
@@ -80,6 +83,8 @@ task_pattern : str
     The uncompiled regex pattern for tasks.
 unordered_list_item_pattern : str
     The uncompiled regex pattern for unordered list items.
+using_split_keyword : bool
+    Whether or not the split keyword was used to find file(s) to split.
 
 The settings for the formats of file names and IDs can use the following
 variables:
@@ -130,6 +135,7 @@ __DEFAULT_SETTINGS = {
     'note_types': ['.md', '.markdown', '.txt'],
     'ordered_list_item_pattern': patterns.ordered_list_item.pattern,
     'parse_blocks': True,
+    'remove_split_keyword': True,
     'replace_split_contents': False,
     'source_folder_path': '',
     'split_attrs': {'level': 2},
@@ -140,6 +146,7 @@ __DEFAULT_SETTINGS = {
     'tag_pattern': patterns.tag.pattern,
     'task_pattern': patterns.task.pattern,
     'unordered_list_item_pattern': patterns.unordered_list_item.pattern,
+    'using_split_keyword': True,
 }
 
 

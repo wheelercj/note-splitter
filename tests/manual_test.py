@@ -64,9 +64,7 @@ def __manual_test() -> None:
     settings['split_type'] = tokens.Header
     settings['split_attrs'] = dict()
     split: Callable = Splitter()
-    sections, global_tags = split(ast.content,
-                                  settings['split_type'],
-                                  settings['split_attrs'])
+    sections, global_tags = split(ast.content)
     __print_splitter_output(sections, global_tags)
 
     format_: Callable = Formatter()
