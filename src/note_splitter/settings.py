@@ -10,9 +10,6 @@ blockquote_pattern : str
     The uncompiled regex pattern for blockquotes.
 code_fence_pattern : str
     The uncompiled regex pattern for code fences.
-copy_footnotes : bool
-    Whether or not to copy footnotes to each new file that has the 
-    relevant footnote references.
 copy_frontmatter : bool
     Whether or not to copy frontmatter from the source file to each new 
     file.
@@ -47,6 +44,10 @@ horizontal_rule_pattern : str
     The uncompiled regex pattern for horizontal rules.
 math_fence_pattern : str
     The uncompiled regex pattern for math fences.
+move_footnotes : bool
+    Whether or not to copy footnotes into each new file that has the 
+    relevant footnote references, and remove them from the ones that 
+    don't have the relevant references.
 note_types : List[str]
     The file extensions of the files that may be chosen to be split.Each
     must start with a period.
@@ -110,7 +111,6 @@ __DEFAULT_SETTINGS = {
     'create_backlinks': False,
     'blockquote_pattern': patterns.blockquote.pattern,
     'code_fence_pattern': patterns.code_fence.pattern,
-    'copy_footnotes': False,
     'copy_frontmatter': False,
     'copy_global_tags': False,
     'create_index_file': True,
@@ -126,6 +126,7 @@ __DEFAULT_SETTINGS = {
     'header_pattern': patterns.header.pattern,
     'horizontal_rule_pattern': patterns.horizontal_rule.pattern,
     'math_fence_pattern': patterns.math_fence.pattern,
+    'move_footnotes': False,
     'note_types': ['.md', '.markdown', '.txt'],
     'ordered_list_item_pattern': patterns.ordered_list_item.pattern,
     'parse_blocks': True,

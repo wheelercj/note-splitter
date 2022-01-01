@@ -55,8 +55,8 @@ class Formatter:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
-            if settings['copy_footnotes']:
-                self.append_footnotes(footnotes, section)
+            if settings['move_footnotes']:
+                self.move_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
 
@@ -154,25 +154,48 @@ class Formatter:
         section.insert(0, tokens.Text(frontmatter_string))
 
 
-    def append_footnotes(self,
-                         footnotes: Optional[List[tokens.Footnote]],
-                         section: tokens.Section) -> None:
-        """Appends relevant footnotes to a section.
+    def move_footnotes(self,
+                       footnotes: Optional[List[tokens.Footnote]],
+                       section: tokens.Section) -> None:
+        """Moves footnotes to sections with the relevant references.
         
         Parameters
         ----------
         footnotes : Optional[List[tokens.Footnote]]
             The footnotes to add to the section if it contains 
-            references to them.
+            references to them, or to remove from the section if it does
+            not contain references to them.
         section : tokens.Section
-            The section to append the footnotes to.
+            The section to append/remove the footnotes to/from.
         """
         for footnote in footnotes:
-            if footnote not in section:
-                for token in section:
-                    if isinstance(token, tokens.CanHaveInlineElements) \
-                            and not isinstance(token, tokens.Footnote) \
-                            and footnote.reference \
-                            and footnote.reference in token.content:
-                        section.append(footnote)
-                        break
+            if footnote_referenced_in_section(footnote, section):
+                if footnote not in section:
+                    section.append(footnote)
+            elif footnote in section:
+                section.remove(footnote)
+
+
+def footnote_referenced_in_section(footnote: tokens.Footnote,
+                                   section: tokens.Section) -> bool:
+    """Checks if a footnote is referenced in a section.
+    
+    Parameters
+    ----------
+    footnote : tokens.Footnote
+        The footnote to search for a reference to.
+    section : tokens.Section
+        The section to search in.
+    
+    Returns
+    -------
+    bool
+        Whether the footnote is referenced in the section.
+    """
+    for token in section:
+        if isinstance(token, tokens.CanHaveInlineElements) \
+                and not isinstance(token, tokens.Footnote) \
+                and footnote.reference \
+                and footnote.reference in token.content:
+            return True
+    return False

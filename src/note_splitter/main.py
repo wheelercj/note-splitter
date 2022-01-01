@@ -298,8 +298,8 @@ def handle_main_menu_event(
         settings['file_name_format'] = values['-FILE NAME FORMAT-']
     elif event == 'indexFile':
         settings['create_index_file'] = values['indexFile']
-    elif event == 'copy_footnotes':
-        settings['copy_footnotes'] = values['copy_footnotes']
+    elif event == 'move_footnotes':
+        settings['move_footnotes'] = values['move_footnotes']
     elif event == 'copy_frontmatter':
         settings['copy_frontmatter'] = values['copy_frontmatter']
     elif event == 'copy_global_tags':

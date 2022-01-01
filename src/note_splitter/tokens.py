@@ -98,6 +98,10 @@ class Block(Token):
         """Appends the given token to the section."""
         self.content.append(token)
 
+    def remove(self, token: Token) -> None:
+        """Removes the given token from the section."""
+        self.content.remove(token)
+
 
 class CanHaveInlineElements(Token):
     """The ABC for tokens that can have inline elements.
