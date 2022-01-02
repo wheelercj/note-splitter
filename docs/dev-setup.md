@@ -44,6 +44,7 @@ Here are descriptions of what each of Note Splitter's folders are for:
 ├── src                 # Source code for Note Splitter and any other relevant packages.
 │   └── note_splitter   # Source code for Note Splitter.
 └── tests               # Automated tests.
+    └── assets          # Files used in automated and manual tests.
 ```
 
 ## automated testing
