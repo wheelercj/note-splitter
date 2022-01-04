@@ -207,13 +207,18 @@ def create_pattern_input_field(name: str, value: str) -> sg.Element:
     The key of the input field is ``change_`` followed by the 
     name of the pattern.
     """
-    return [sg.Text(name[:-8].replace('_', ' '),
-                    size=(15, 1),
+    pattern_name = name[:-8].replace('_', ' ')
+    if value.startswith('^'):
+        pattern_name += ' (full-line)'
+    else:
+        pattern_name += ' (inline)'
+    return [sg.Text(pattern_name,
+                    size=(20, 1),
                     auto_size_text=False,
                     justification='right'),
             sg.InputText(value,
                          key=f'change_{name}',
-                         size=(60, 1),
+                         size=(55, 1),
                          enable_events=True)]
 
 
