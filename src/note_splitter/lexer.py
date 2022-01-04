@@ -25,26 +25,29 @@ class Lexer:
             The raw text to convert to a list of tokens.
         """
         self.__tokens: List[tokens.Token] = []
+        all_token_types = tokens.get_all_token_types(tokens)
         for line in text.split('\n'):
-            self.__append_token(line)
+            self.__tokens.append(self.__create_token(line, all_token_types))
         self.__check_token_types()
         return self.__tokens
 
 
-    def __append_token(self, line: str) -> None:
-        """Parses the text and appends the next token.
+    def __create_token(self,
+                       line: str,
+                       all_token_types: List[Type]) -> tokens.Token:
+        """Lexes the text, creates a token, and returns it.
         
         Parameters
         ----------
         line : str
             The line of text to parse.
+        all_token_types : List[Type]
+            A list of all token types.
         """
-        all_token_types = tokens.get_all_token_types(tokens)
         for type_ in all_token_types:
             if type_.HAS_PATTERN and self.__matches(line, type_):
-                self.__tokens.append(type_(line))
-                return
-        self.__tokens.append(tokens.Text(line))
+                return type_(line)
+        return tokens.Text(line)
 
 
     def __matches(self,
