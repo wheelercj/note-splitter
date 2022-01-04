@@ -479,7 +479,7 @@ def move_files(paths_of_files_to_move: List[str],
         os.rename(path, new_path)
 
 
-def make_file_paths_absolute(note_content: str) -> str:
+def make_file_paths_absolute(note_content: str, note_path: str) -> str:
     """Makes all file paths in a note's file links absolute.
     
     Assumes that all the file paths that should be made absolute are 
@@ -489,13 +489,15 @@ def make_file_paths_absolute(note_content: str) -> str:
     ----------
     note_content : str
         The note's content.
+    note_path : str
+        The absolute path to the note.
 
     Returns
     -------
     note_content : str
         The note's content with all file paths made absolute.
     """
-    note_folder_path = os.path.dirname(note_content)
+    note_folder_path = os.path.dirname(note_path)
     file_paths: List[Tuple[str, str]] = \
         get_file_paths(note_content, note_folder_path)
     for original_path, formatted_path in file_paths:
@@ -516,7 +518,7 @@ def _make_file_paths_absolute(note_path: str) -> None:
     """
     with open(note_path, 'r', encoding='utf8') as file:
         content = file.read()
-    content = make_file_paths_absolute(content)
+    content = make_file_paths_absolute(content, note_path)
     with open(note_path, 'w', encoding='utf8') as file:
         file.write(content)
 
@@ -552,6 +554,8 @@ def get_file_paths(note_content: str,
                    note_folder_path: str) -> List[Tuple[str, str]]:
     """Gets the original and formatted file paths in links in a note.
 
+    Only paths to files that exist are returned.
+
     Parameters
     ----------
     note_content : str
@@ -566,9 +570,9 @@ def get_file_paths(note_content: str,
         normalized, absolute version. All the paths are valid. (Broken 
         file links and links to websites are ignored.)
     """
-    noted_file_paths: List[Tuple[str]] = \
+    noted_file_path_groups: List[Tuple[str]] = \
         patterns.file_path_in_link.findall(note_content)
-    noted_file_paths: List[str] = [t[0] for t in noted_file_paths]
+    noted_file_paths: List[str] = [t[0] for t in noted_file_path_groups]
     file_paths: List[Tuple[str, str]] = []
     for file_path in noted_file_paths:
         if os.path.isabs(file_path):
