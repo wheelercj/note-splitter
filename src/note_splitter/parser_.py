@@ -47,7 +47,6 @@ class AST:
             self.__parse_blocks()
         else:
             self.content = self.__tokens
-        del self.__tokens  # This should be empty if blocks were created.
 
 
     def __str__(self) -> str:
