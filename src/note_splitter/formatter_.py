@@ -105,12 +105,12 @@ class Formatter:
             section.insert(0, tokens.Text(' '.join(global_tags)))
 
 
-    def get_section_title(self, section) -> str:
+    def get_section_title(self, section: tokens.Section) -> str:
         """Gets the title of a section.
         
-        The title is the body of the first header, or the first token's
-        content if there is no header, or a random string if the section
-        is empty.
+        The title is the body of the first header, or the first Text 
+        token's content if there is no header, or a random string if the
+        section is empty.
 
         Parameters
         ----------
@@ -120,9 +120,9 @@ class Formatter:
         for token in section:
             if isinstance(token, tokens.Header):
                 return token.body
-        title = section[0].content.strip()
-        if title:
-            return title
+        for token in section:
+            if isinstance(token, tokens.Text):
+                return token.content.strip()
         return str(uuid.uuid4())
 
 
