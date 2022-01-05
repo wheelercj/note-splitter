@@ -41,7 +41,6 @@ class Formatter:
             The footnotes to add to each section with the respective 
             footnote reference.
         """
-        global_tags = list(set(global_tags))  # Remove duplicates.
         split_contents: List[str] = []
         for section in sections:
             if not section:
@@ -80,8 +79,7 @@ class Formatter:
         for i, token in enumerate(section):
             if isinstance(token, tokens.Header):
                 section[i].level -= difference
-                section[i].content = \
-                    section[i].content[difference:]
+                section[i].content = section[i].content[difference:]
         return section[0].body
 
 
