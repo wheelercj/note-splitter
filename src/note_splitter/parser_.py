@@ -225,16 +225,3 @@ class AST:
             if isinstance(token, tokens.Footnote):
                 footnotes.append(token)
         return footnotes
-
-
-    def __get_tags(self, token: tokens.Token) -> List[str]:
-        """Gets the tags in one token.
-        
-        Assumes the token's content attribute is a string.
-
-        Parameters
-        ----------
-        token : tokens.Token
-            The token to get the tags from.
-        """
-        return patterns.tag.findall(token.content)
