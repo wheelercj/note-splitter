@@ -118,12 +118,12 @@ class AST:
                 self.__tokens.pop(0)
 
 
-    def __get_text_list(self, list_level: int) -> tokens.TextList:
+    def __get_text_list(self, indentation_level: int) -> tokens.TextList:
         """Creates a token that is a combination of related tokens.
         
         Parameters
         ----------
-        list_level : int
+        indentation_level : int
             The indentation level (in spaces) of the first item in the 
             list.
         """
@@ -133,10 +133,10 @@ class AST:
         while self.__tokens:
             token = self.__tokens[0]
             if isinstance(token, tokens.TextListItem):
-                if token.level > list_level:
+                if token.level > indentation_level:
                     new_block = self.__get_text_list(token.level)
                     block_tokens.append(new_block)
-                elif token.level < list_level:
+                elif token.level < indentation_level:
                     return tokens.TextList(block_tokens)
                 else:
                     block_tokens.append(token)
@@ -155,8 +155,7 @@ class AST:
         
         This is for tokens that have only one purpose: to be part of a 
         block of related tokens. For example, Table tokens are made of 
-        TableRow and TableDivider tokens, and those two will never be 
-        used for anything else.
+        TablePart tokens which will never be used for anything else.
 
         Parameters
         ----------

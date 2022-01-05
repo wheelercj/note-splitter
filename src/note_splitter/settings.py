@@ -155,11 +155,11 @@ settings = {}
 
 def save_settings() -> None:
     """Save the settings to a JSON file."""
-    temp: Type = settings['split_type']
+    split_type: Type = settings['split_type']
     settings['split_type'] = get_token_type_name(settings['split_type'])
     with open('settings.json', 'w') as file:
         json.dump(settings, file, indent=4)
-    settings['split_type'] = temp
+    settings['split_type'] = split_type
 
 
 def load_settings() -> None:
