@@ -224,10 +224,13 @@ def get_token_type_name(token_type: Type) -> str:
         The token type to get the name of.
     """
     token_name = []
-    for i, letter in enumerate(token_type.__name__):
-        if i and letter.isupper():
-            token_name.append(' ')
-        token_name.append(letter)
+    try:
+        for i, letter in enumerate(token_type.__name__):
+            if i and letter.isupper():
+                token_name.append(' ')
+            token_name.append(letter)
+    except AttributeError:
+        raise TypeError(f'{token_type} is not a Type.')
     return ''.join(token_name).lower()
 
 
