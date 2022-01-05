@@ -130,7 +130,7 @@ class Formatter:
                             frontmatter: Optional[object],
                             section_title: str,
                             section: tokens.Section) -> None:
-        """Prepends the frontmatter to a section.
+        """Prepends the frontmatter to a section as a Text object.
         
         Parameters
         ----------
