@@ -130,8 +130,10 @@ class Splitter:
         """
         if not isinstance(token, settings['split_type']):
             return False
-        if settings['split_attrs'] and list(settings['split_attrs'])[0] \
-                and list(settings['split_attrs'].values())[0]:
+        if settings['split_attrs'] \
+                and list(settings['split_attrs'])[0] \
+                and (list(settings['split_attrs'].values())[0] \
+                or list(settings['split_attrs'].values())[0] == 0):
             for key, value in settings['split_attrs'].items():
                 if isinstance(value, str) and value.isnumeric():
                     value = int(value)
