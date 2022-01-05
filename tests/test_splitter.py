@@ -43,6 +43,21 @@ def test___should_split_equal_level():
     assert s._Splitter__should_split(tokens.Header('## header'))
 
 
+def test___should_split_with_unindented_ordered_list_item():
+    settings['split_type'] = tokens.OrderedListItem
+    settings['split_attrs'] = {'level': 0}
+    s = Splitter()
+    assert s._Splitter__should_split(tokens.OrderedListItem('1. first item'))
+
+
+def test___should_split_with_indented_ordered_list_item():
+    settings['split_type'] = tokens.OrderedListItem
+    settings['split_attrs'] = {'level': 0}
+    s = Splitter()
+    assert not s._Splitter__should_split(
+        tokens.OrderedListItem('    2. second item'))
+
+
 def test___should_split_wrong_value():
     settings['split_type'] = tokens.Text
     settings['split_attrs'] = {'content': 'bye'}
