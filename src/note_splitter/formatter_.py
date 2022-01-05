@@ -99,7 +99,7 @@ class Formatter:
         while i < len(section) and not isinstance(section[i], tokens.Header):
             i += 1
         i += 1
-        if i < len(section):
+        if i <= len(section):
             section.insert(i, tokens.Text(' '.join(global_tags)))
         else:
             section.insert(0, tokens.Text(' '.join(global_tags)))
