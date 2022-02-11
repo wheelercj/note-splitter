@@ -15,20 +15,21 @@ from note_splitter.settings import settings
 
 class Formatter:
     """Creates a Callable that prepares sections for output.
-    
-    The callable normalizes header levels, adds frontmatter and global 
+
+    The callable normalizes header levels, adds frontmatter and global
     tags to each section, and then converts the section tokens to
     strings.
     """
 
     def __call__(
-            self,
-            sections: List[tokens.Section],
-            global_tags: List[str],
-            frontmatter: Optional[object] = None,
-            footnotes: Optional[List[tokens.Footnote]] = None) -> List[str]:
+        self,
+        sections: List[tokens.Section],
+        global_tags: List[str],
+        frontmatter: Optional[object] = None,
+        footnotes: Optional[List[tokens.Footnote]] = None,
+    ) -> List[str]:
         """Formats sections for output.
-        
+
         Parameters
         ----------
         sections : List[tokens.Section]
@@ -38,7 +39,7 @@ class Formatter:
         frontmatter : Optional[object]
             The frontmatter to add to each section.
         footnotes : Optional[List[tokens.Footnote]]
-            The footnotes to add to each section with the respective 
+            The footnotes to add to each section with the respective
             footnote reference.
         """
         split_contents: List[str] = []
@@ -48,21 +49,20 @@ class Formatter:
             section_title = None
             if isinstance(section[0], tokens.Header):
                 section_title = self.normalize_headers(section)
-            if settings['copy_global_tags'] and global_tags:
+            if settings["copy_global_tags"] and global_tags:
                 self.insert_global_tags(global_tags, section)
-            if settings['copy_frontmatter']:
+            if settings["copy_frontmatter"]:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
-            if settings['move_footnotes']:
+            if settings["move_footnotes"]:
                 self.move_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
 
-
     def normalize_headers(self, section: tokens.Section) -> str:
         """Normalizes the markdown header levels in a section.
-        
+
         Parameters
         ----------
         section : tokens.Section
@@ -82,12 +82,11 @@ class Formatter:
                 section[i].content = section[i].content[difference:]
         return section[0].body
 
-
-    def insert_global_tags(self,
-                           global_tags: List[str], 
-                           section: tokens.Section) -> None:
+    def insert_global_tags(
+        self, global_tags: List[str], section: tokens.Section
+    ) -> None:
         """Inserts the global tags into a section.
-        
+
         Parameters
         ----------
         global_tags : List[str]
@@ -100,15 +99,14 @@ class Formatter:
             i += 1
         i += 1
         if i <= len(section):
-            section.insert(i, tokens.Text(' '.join(global_tags)))
+            section.insert(i, tokens.Text(" ".join(global_tags)))
         else:
-            section.insert(0, tokens.Text(' '.join(global_tags)))
-
+            section.insert(0, tokens.Text(" ".join(global_tags)))
 
     def get_section_title(self, section: tokens.Section) -> str:
         """Gets the title of a section.
-        
-        The title is the body of the first header, or the first Text 
+
+        The title is the body of the first header, or the first Text
         token's content if there is no header, or a random string if the
         section is empty.
 
@@ -125,13 +123,11 @@ class Formatter:
                 return token.content.strip()
         return str(uuid.uuid4())
 
-
-    def prepend_frontmatter(self,
-                            frontmatter: Optional[object],
-                            section_title: str,
-                            section: tokens.Section) -> None:
+    def prepend_frontmatter(
+        self, frontmatter: Optional[object], section_title: str, section: tokens.Section
+    ) -> None:
         """Prepends the frontmatter to a section as a Text object.
-        
+
         Parameters
         ----------
         frontmatter : Optional[object]
@@ -144,23 +140,22 @@ class Formatter:
         if not frontmatter:
             return
         if isinstance(frontmatter, dict):
-            if 'title' in frontmatter:
-                frontmatter['title'] = section_title
+            if "title" in frontmatter:
+                frontmatter["title"] = section_title
         frontmatter_string = yaml.dump(frontmatter)
-        frontmatter_string = '---\n' + frontmatter_string + '---\n'
-        frontmatter_string = frontmatter_string.replace('\n\n', '\n')
+        frontmatter_string = "---\n" + frontmatter_string + "---\n"
+        frontmatter_string = frontmatter_string.replace("\n\n", "\n")
         section.insert(0, tokens.Text(frontmatter_string))
 
-
-    def move_footnotes(self,
-                       footnotes: Optional[List[tokens.Footnote]],
-                       section: tokens.Section) -> None:
+    def move_footnotes(
+        self, footnotes: Optional[List[tokens.Footnote]], section: tokens.Section
+    ) -> None:
         """Moves footnotes to sections with the relevant references.
-        
+
         Parameters
         ----------
         footnotes : Optional[List[tokens.Footnote]]
-            The footnotes to add to the section if it contains 
+            The footnotes to add to the section if it contains
             references to them, or to remove from the section if it does
             not contain references to them.
         section : tokens.Section
@@ -174,26 +169,29 @@ class Formatter:
                 section.remove(footnote)
 
 
-def footnote_referenced_in_section(footnote: tokens.Footnote,
-                                   section: tokens.Section) -> bool:
+def footnote_referenced_in_section(
+    footnote: tokens.Footnote, section: tokens.Section
+) -> bool:
     """Checks if a footnote is referenced in a section.
-    
+
     Parameters
     ----------
     footnote : tokens.Footnote
         The footnote to search for a reference to.
     section : tokens.Section
         The section to search in.
-    
+
     Returns
     -------
     bool
         Whether the footnote is referenced in the section.
     """
     for token in section:
-        if isinstance(token, tokens.CanHaveInlineElements) \
-                and not isinstance(token, tokens.Footnote) \
-                and footnote.reference \
-                and footnote.reference in token.content:
+        if (
+            isinstance(token, tokens.CanHaveInlineElements)
+            and not isinstance(token, tokens.Footnote)
+            and footnote.reference
+            and footnote.reference in token.content
+        ):
             return True
     return False

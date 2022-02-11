@@ -18,7 +18,7 @@ class Lexer:
 
     def __call__(self, text: str) -> List[tokens.Token]:
         """Converts raw text to a list of tokens.
-        
+
         Parameters
         ----------
         text : str
@@ -26,17 +26,14 @@ class Lexer:
         """
         self.__tokens: List[tokens.Token] = []
         all_token_types = tokens.get_all_token_types(tokens)
-        for line in text.split('\n'):
+        for line in text.split("\n"):
             self.__tokens.append(self.__create_token(line, all_token_types))
         self.__check_token_types()
         return self.__tokens
 
-
-    def __create_token(self,
-                       line: str,
-                       all_token_types: List[Type]) -> tokens.Token:
+    def __create_token(self, line: str, all_token_types: List[Type]) -> tokens.Token:
         """Lexes the text, creates a token, and returns it.
-        
+
         Parameters
         ----------
         line : str
@@ -49,12 +46,9 @@ class Lexer:
                 return type_(line)
         return tokens.Text(line)
 
-
-    def __matches(self,
-                  line: str,
-                  type_: Type[tokens.Token]) -> bool:
+    def __matches(self, line: str, type_: Type[tokens.Token]) -> bool:
         """Determines if the line matches the given type's pattern.
-        
+
         Parameters
         ----------
         line : str
@@ -62,11 +56,10 @@ class Lexer:
         type_ : Type[tokens.Token]
             The token type to check the pattern of.
         """
-        type_name = settings.get_token_type_name(type_).replace(' ', '_')
+        type_name = settings.get_token_type_name(type_).replace(" ", "_")
         if patterns.__dict__[type_name].match(line):
             return True
         return False
-
 
     def __check_token_types(self) -> None:
         """Changes the type of some tokens based on their context."""
@@ -77,15 +70,13 @@ class Lexer:
         for to_type, wrapper_type in types:
             self.__change_inner_token_types(to_type, wrapper_type)
 
-
     def __change_inner_token_types(
-            self,
-            to_type: Type[tokens.Token],
-            wrapper_type: Type[tokens.Token]) -> None:
+        self, to_type: Type[tokens.Token], wrapper_type: Type[tokens.Token]
+    ) -> None:
         """Changes the types of all tokens between tokens of a chosen type.
-        
-        Changes are made to this class' token list. This function 
-        assumes the tokens to change have a ``content`` attribute 
+
+        Changes are made to this class' token list. This function
+        assumes the tokens to change have a ``content`` attribute
         that is of type ``str``.
 
         Parameters

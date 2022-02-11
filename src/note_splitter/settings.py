@@ -108,45 +108,45 @@ Every time file_id_format is changed, file_id_regex must be updated.
 
 
 from typing import List, Type, Callable
-import json 
+import json
 from note_splitter import tokens, patterns
 
 
 __DEFAULT_SETTINGS = {
-    'create_backlinks': False,
-    'blockquote_pattern': patterns.blockquote.pattern,
-    'code_fence_pattern': patterns.code_fence.pattern,
-    'copy_frontmatter': False,
-    'copy_global_tags': False,
-    'create_index_file': True,
-    'destination_folder_path': '',
-    'empty_line_pattern': patterns.empty_line.pattern,
-    'file_id_format': r'%Y%M%D%h%m%s',
-    'file_id_regex': r'\d{14}',
-    'file_name_format': r'%id',
-    'file_path_in_link_pattern': patterns.file_path_in_link.pattern,
-    'finished_task_pattern': patterns.finished_task.pattern,
-    'footnote_pattern': patterns.footnote.pattern,
-    'frontmatter_fence_pattern': patterns.frontmatter_fence.pattern,
-    'header_pattern': patterns.header.pattern,
-    'horizontal_rule_pattern': patterns.horizontal_rule.pattern,
-    'math_fence_pattern': patterns.math_fence.pattern,
-    'move_footnotes': False,
-    'note_types': ['.md', '.markdown', '.txt'],
-    'ordered_list_item_pattern': patterns.ordered_list_item.pattern,
-    'parse_blocks': True,
-    'remove_split_keyword': True,
-    'replace_split_contents': False,
-    'source_folder_path': '',
-    'split_attrs': {'level': 2},
-    'split_keyword': '#split',
-    'split_type': tokens.Header,
-    'table_divider_pattern': patterns.table_divider.pattern,
-    'table_row_pattern': patterns.table_row.pattern,
-    'tag_pattern': patterns.tag.pattern,
-    'task_pattern': patterns.task.pattern,
-    'unordered_list_item_pattern': patterns.unordered_list_item.pattern,
-    'using_split_keyword': True,
+    "create_backlinks": False,
+    "blockquote_pattern": patterns.blockquote.pattern,
+    "code_fence_pattern": patterns.code_fence.pattern,
+    "copy_frontmatter": False,
+    "copy_global_tags": False,
+    "create_index_file": True,
+    "destination_folder_path": "",
+    "empty_line_pattern": patterns.empty_line.pattern,
+    "file_id_format": r"%Y%M%D%h%m%s",
+    "file_id_regex": r"\d{14}",
+    "file_name_format": r"%id",
+    "file_path_in_link_pattern": patterns.file_path_in_link.pattern,
+    "finished_task_pattern": patterns.finished_task.pattern,
+    "footnote_pattern": patterns.footnote.pattern,
+    "frontmatter_fence_pattern": patterns.frontmatter_fence.pattern,
+    "header_pattern": patterns.header.pattern,
+    "horizontal_rule_pattern": patterns.horizontal_rule.pattern,
+    "math_fence_pattern": patterns.math_fence.pattern,
+    "move_footnotes": False,
+    "note_types": [".md", ".markdown", ".txt"],
+    "ordered_list_item_pattern": patterns.ordered_list_item.pattern,
+    "parse_blocks": True,
+    "remove_split_keyword": True,
+    "replace_split_contents": False,
+    "source_folder_path": "",
+    "split_attrs": {"level": 2},
+    "split_keyword": "#split",
+    "split_type": tokens.Header,
+    "table_divider_pattern": patterns.table_divider.pattern,
+    "table_row_pattern": patterns.table_row.pattern,
+    "tag_pattern": patterns.tag.pattern,
+    "task_pattern": patterns.task.pattern,
+    "unordered_list_item_pattern": patterns.unordered_list_item.pattern,
+    "using_split_keyword": True,
 }
 
 
@@ -155,28 +155,28 @@ settings = {}
 
 def save_settings() -> None:
     """Save the settings to a JSON file."""
-    split_type: Type = settings['split_type']
-    settings['split_type'] = get_token_type_name(settings['split_type'])
-    with open('settings.json', 'w') as file:
+    split_type: Type = settings["split_type"]
+    settings["split_type"] = get_token_type_name(settings["split_type"])
+    with open("settings.json", "w") as file:
         json.dump(settings, file, indent=4)
-    settings['split_type'] = split_type
+    settings["split_type"] = split_type
 
 
 def load_settings() -> None:
     """Attempt to load the settings from a JSON file.
-    
-    If the file does not exist or cannot be decoded, the default 
+
+    If the file does not exist or cannot be decoded, the default
     settings are used.
     """
     try:
-        with open('settings.json', 'r') as file:
+        with open("settings.json", "r") as file:
             settings.update(json.load(file))
     except (FileNotFoundError, json.JSONDecodeError):
         settings.update(__DEFAULT_SETTINGS)
     else:
-        if 'null' in settings['split_attrs']:
-            settings['split_attrs'] = { None: '' }
-        settings['split_type'] = get_token_type(settings['split_type'])
+        if "null" in settings["split_attrs"]:
+            settings["split_attrs"] = {None: ""}
+        settings["split_type"] = get_token_type(settings["split_type"])
         add_new_settings()
 
 
@@ -194,16 +194,16 @@ def reset_settings() -> None:
 
 
 def get_token_type_names(
-        filter_predicate: Callable[[Type], bool] = None,
-        all_token_types: List[Type] = None) -> List[str]:
+    filter_predicate: Callable[[Type], bool] = None, all_token_types: List[Type] = None
+) -> List[str]:
     """Get all token types' output-formatted names.
-    
+
     Parameters
     ----------
     predicate : Callable, optional
         A function that filters the token types.
     all_token_types : List, optional
-        A list of all token types. If not provided, the list of all 
+        A list of all token types. If not provided, the list of all
         token types will be fetched.
     """
     if not all_token_types:
@@ -217,7 +217,7 @@ def get_token_type_names(
 
 def get_token_type_name(token_type: Type) -> str:
     """Get the token type's output-formatted name.
-    
+
     Parameters
     ----------
     token_type : Type
@@ -227,16 +227,16 @@ def get_token_type_name(token_type: Type) -> str:
     try:
         for i, letter in enumerate(token_type.__name__):
             if i and letter.isupper():
-                token_name.append(' ')
+                token_name.append(" ")
             token_name.append(letter)
     except AttributeError:
-        raise TypeError(f'{token_type} is not a Type.')
-    return ''.join(token_name).lower()
+        raise TypeError(f"{token_type} is not a Type.")
+    return "".join(token_name).lower()
 
 
 def get_token_type(chosen_name: str) -> Type:
     """Get a token type by name.
-    
+
     Parameters
     ----------
     chosen_name : str

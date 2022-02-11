@@ -8,10 +8,10 @@ from note_splitter import tokens
 
 
 def test__get_indentation_level():
-    assert 4 == tokens._get_indentation_level('    ')
-    assert 8 == tokens._get_indentation_level('        ')
-    assert 12 == tokens._get_indentation_level('            ')
-    assert 16 == tokens._get_indentation_level('                ')
+    assert 4 == tokens._get_indentation_level("    ")
+    assert 8 == tokens._get_indentation_level("        ")
+    assert 12 == tokens._get_indentation_level("            ")
+    assert 16 == tokens._get_indentation_level("                ")
 
 
 #####################
