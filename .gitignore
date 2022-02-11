@@ -1,5 +1,5 @@
 token-hierarchy.rst
-store-transactions.db
+settings.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

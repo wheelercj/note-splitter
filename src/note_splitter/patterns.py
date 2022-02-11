@@ -56,30 +56,30 @@ unordered_list_item : re.Pattern
     pluses. This pattern can also match some horizontal rules and to 
     dos.
 """
-# This module follows the Global Object Pattern. You can see more 
-# details about this design pattern here: 
-# https://python-patterns.guide/python/module-globals/#id1
-
 
 import re
 
 
 # full-line elements
-blockquote = re.compile(r'^(?:>\s*)+.+$')
-code_fence = re.compile(r'^\s{0,3}(?:`{3,}|~{3,}).*')
-empty_line = re.compile(r'^\s*$')
-finished_task = re.compile(r'^\s*[*+-] \[[xX]\] .+')
-footnote = re.compile(r'^\[\^[^^\s\n][^^\n]*(?<!\s)\]: [^\n]+')
-frontmatter_fence = re.compile(r'^(?:---|\*\*\*)$')
-header = re.compile(r'^#+ .+')
-horizontal_rule = re.compile(r'^\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$')
-math_fence = re.compile(r'^\s*\$\$\s*$')
-ordered_list_item = re.compile(r'^\s*\d+[.)]\s.*')
-table_divider = re.compile(r'^\|?(?: *[-:]{3,} *\|?)+$')
-table_row = re.compile(r'^\|.+\|$')
-task = re.compile(r'^\s*[*+-] \[[x\s]\] .+')
-unordered_list_item = re.compile(r'^\s*[*+-]\s.*')
+blockquote = re.compile(r"^(?:>\s*)+.+$")
+code_fence = re.compile(r"^\s{0,3}(?:`{3,}|~{3,}).*")
+empty_line = re.compile(r"^\s*$")
+finished_task = re.compile(r"^\s*[*+-] \[[xX]\] .+")
+footnote = re.compile(r"^\[\^[^^\s\n][^^\n]*(?<!\s)\]: [^\n]+")
+frontmatter_fence = re.compile(r"^(?:---|\*\*\*)$")
+header = re.compile(r"^#+ .+")
+horizontal_rule = re.compile(r"^\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$")
+math_fence = re.compile(r"^\s*\$\$\s*$")
+ordered_list_item = re.compile(r"^\s*\d+[.)]\s.*")
+table_divider = re.compile(r"^\|?(?: *[-:]{3,} *\|?)+$")
+table_row = re.compile(r"^\|.+\|$")
+task = re.compile(r"^\s*[*+-] \[[x\s]\] .+")
+unordered_list_item = re.compile(r"^\s*[*+-]\s.*")
 
 # inline elements
-file_path_in_link = re.compile(r'(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:|obsidian:)(?P<path>.*?(?P<basename>[^(/|\\)]*?(?P<ext>\.[^.\\/]+)))(?=\)(?!`))')
-tag = re.compile(r'(?<!\S)(?:(?:#+[\w\d_-]*[\w\d_-]#?)|(?:(?<=.)#+[\w\d_-]*[\w\d_-]#?))')
+file_path_in_link = re.compile(
+    r"(?<=]\()(?!https?://|www\d?\.|mailto:|zotero:|obsidian:)(?P<path>.*?(?P<basename>[^(/|\\)]*?(?P<ext>\.[^.\\/]+)))(?=\)(?!`))"
+)
+tag = re.compile(
+    r"(?<!\S)(?:(?:#+[\w\d_-]*[\w\d_-]#?)|(?:(?<=.)#+[\w\d_-]*[\w\d_-]#?))"
+)

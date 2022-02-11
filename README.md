@@ -21,6 +21,7 @@ Here are some tips for how to use Note Splitter:
 
 * If you want to split some of the files that were found but not all of them, you can select the ones you want to split by clicking on them.
 * On the settings tab, the source folder and the destination folder settings can be the same if you want the new notes Note Splitter creates to appear in the same folder as where their source notes are.
+* The settings on all tabs save whenever the application closes.
 * See the sections below for more tips.
 
 ### Split Types
@@ -84,7 +85,10 @@ If the file name format contains any of `#%{&}\\<>*?/$!\'":@+|=` or backticks, t
 
 All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
 
+### Patterns
+Although you hopefully will never need to, you can also customize the regular expressions Note Splitter uses in the Patterns tab. Note Splitter uses Python regex, which is more or less identical to ECMAScript (JavaScript) regex. [Here](https://wheelercj.github.io/notes/pages/20210506235005.html) are some resources for learning and using regex.
+
 ## Contributing
-If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), etc. are welcome! Code and documentation contributions are currently not being accepted, but will be in the near future.
+If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), pull requests, etc. are welcome!
 
 [Developer documentation](https://note-splitter.readthedocs.io/)

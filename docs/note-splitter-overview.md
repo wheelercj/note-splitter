@@ -31,7 +31,7 @@ Here's an example that shows the result of tokenization with each token's type o
    OrderedListItem | 2. list
          EmptyLine |
             Header | ## second header
-              Text | #third-tag <- not a global tag
+              Text | #third-tag
          CodeFence | ```python
               Code | print('this code is inside a code block')
               Code | while True:
@@ -58,7 +58,7 @@ Continuing from the previous example, here is the result of parsing:
                    | 2. list
          EmptyLine | 
             Header | ## second header
-              Text | #third-tag <- not a global tag
+              Text | #third-tag
          CodeBlock | ```python
                    | print('this code is inside a code block')
                    | while True:
@@ -87,7 +87,7 @@ Continuing from the previous example, here's the result of splitting where the u
                    | 2. list
                    |
            Section | ## second header
-                   | #third-tag <- not a global tag
+                   | #third-tag
                    | ```python
                    | print('this code is inside a code block')
                    | while True:
