@@ -297,6 +297,8 @@ interrupted#word
 [](file://C:\Users\chris\Documents\Essay.pdf)
 [](C:/Users/chris/Documents/Essay.html)
 [](C:\Users\chris\Documents\Advice.jpeg)
+[unix-style absolute file path](/home/myname/Documents/file.txt)
+[unix-style relative file path](Documents/file.txt)
 [account info](..\Other\account info.jpg)
 ![C:\Users\chris\Documents\Zettelkasten\assets\Screenshot_2020-05-27 2.png](C:\Users\chris\Documents\Zettelkasten\assets\Screenshot_2020-05-27 2.png)
 ![4d628bdda08ec00570422b0d030fd918.mp4](4d628bdda08ec00570422b0d030fd918.mp4)
