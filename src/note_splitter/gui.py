@@ -241,7 +241,7 @@ def create_about_tab_layout() -> List[List[sg.Element]]:
             sg.Text("•", font=("Arial", 16)),
             create_hyperlink(
                 "instructions",
-                "https://github.com/wheelercj/note-splitter/blob/master/README.md",
+                "https://github.com/wheelercj/note-splitter/blob/main/README.md",
             ),
         ],
         [
@@ -269,7 +269,7 @@ def create_about_tab_layout() -> List[List[sg.Element]]:
             sg.Text("•", font=("Arial", 16)),
             create_hyperlink(
                 "see the software license",
-                "https://github.com/wheelercj/note-splitter/blob/master/LICENSE",
+                "https://github.com/wheelercj/note-splitter/blob/main/LICENSE",
             ),
         ],
     ]
