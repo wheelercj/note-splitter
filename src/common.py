@@ -24,7 +24,7 @@ def get_file_paths():
 
 # Return a list of paths of all zettels in the
 # zettelkasten folders chosen in settings.
-def get_zettel_paths(settings=settings):
+def get_zettel_paths(settings=settings):  # TODO: change name to get_all_zettel_paths
     zettel_paths = []
     zettelkasten_paths = settings['zk_paths']
     for path in zettelkasten_paths:
@@ -41,7 +41,7 @@ def get_zettel_paths(settings=settings):
 
 # Return a list of paths of all assets in the
 # assets folders chosen in settings.
-def get_asset_paths(settings=settings):
+def get_asset_paths(settings=settings):  # TODO: change name to get_all_asset_paths
     asset_paths = []
     asset_dir_paths = settings['ad_paths']
 

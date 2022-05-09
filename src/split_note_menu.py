@@ -1,5 +1,5 @@
 # Internal imports
-from split_zettels import *
+from split_note import *
 from zettel_listbox import *
 from common import get_zettel_links
 
@@ -29,13 +29,13 @@ def split_zettels_menu():
 
 def create_split_menu(zettel_links):
     layout = [[sg.Combo(['#', '##', '###', '####', '#####', '######'], key='-header_level-', default_value='####', size=(8, 20), pad=(5, 15), readonly=True), sg.Text('Header level to split by')],
-              [sg.Text('Zettels with the tag "#split":')],
+              [sg.Text('notes with the tag "#split":')],
               [sg.Listbox(zettel_links, size=(80, 6), key='-zettels_to_split-')],
               [sg.Button('Split all', key='-split_all-'), sg.Button('Split selected', key='-split_selected-')],
               [sg.HorizontalSeparator(pad=(0, 8))],
               [sg.Cancel()]]
 
-    return sg.Window('Split zettels', layout)
+    return sg.Window('Split notes', layout)
 
 
 def handle_split_menu_event(event, values, window, zettels_to_split, zettel_links):
@@ -94,7 +94,7 @@ def create_results_menu(new_zettels, zettels_sans_h, header_level):
     layout += [[sg.HorizontalSeparator(pad=(0, 8))],
                [sg.Button('Close', key='-close-')]]
 
-    return sg.Window('Split zettels', layout)
+    return sg.Window('Split notes', layout)
 
 
 def handle_results_menu_event(event, values, window, new_zettels, zettels_sans_h):

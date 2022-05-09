@@ -7,6 +7,13 @@ from zettels import Zettels
 import os
 
 
+class Link:
+    def __init__(self, original, formatted, name):
+        self.original = original    # Tuple of (zettel path, original asset path). The original asset path is the asset path as it appears in the zettel.
+        self.formatted = formatted  # The asset path in a modified form that is easier for the program to use.
+        self.name = name            # The name of the asset (the last part of the asset path).
+
+
 class Links:
     def __init__(self):
         # These lists are parallel, except for self.broken.
@@ -14,6 +21,17 @@ class Links:
         self.formatted = []  # The asset paths in a modified form that is easier for the program to use.
         self.names = []      # The names of the assets (the last part of the asset paths).
         self.broken = []     # Same as self.originals, but only the tuples with the broken asset paths.
+        self.i = 0           # For iteration.
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.i >= len(self.originals):
+            raise StopIteration
+        current = Link(self.originals[self.i], self.formatted[self.i], self.names[self.i])
+        self.i += 1
+        return current
 
     # Parameter zettel_path must be an abs path.
     def append(self, asset_path, asset_name, zettel_path):
