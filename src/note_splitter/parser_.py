@@ -1,10 +1,15 @@
 """For converting a list of tokens to an abstract syntax tree (AST)."""
 
 
+from note_splitter import patterns
+from note_splitter import tokens
+from typing import Callable
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import Union
 import re
-from typing import List, Optional, Callable, Type, Union
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-from note_splitter import tokens, patterns
 
 
 class AST:

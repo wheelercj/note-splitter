@@ -1,23 +1,26 @@
 """This module runs the entire application."""
 
 
-import os
-import re
-from tkinter import filedialog
-from typing import List, Tuple, Callable
-import webbrowser
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-from note_splitter import tokens, note, gui, patterns
-from note_splitter.settings import (
-    settings,
-    load_settings,
-    save_settings,
-    get_token_type,
-)
+from note_splitter import gui
+from note_splitter import note
+from note_splitter import patterns
+from note_splitter import tokens
+from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
+from note_splitter.settings import get_token_type
+from note_splitter.settings import load_settings
+from note_splitter.settings import save_settings
+from note_splitter.settings import settings
 from note_splitter.splitter import Splitter
-from note_splitter.formatter_ import Formatter
+from tkinter import filedialog
+from typing import Callable
+from typing import List
+from typing import Tuple
+import os
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
+import re
+import webbrowser
 
 
 def run_main_menu() -> None:

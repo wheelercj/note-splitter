@@ -1,9 +1,11 @@
 """For splitting an AST's tokens into Sections tokens."""
 
 
-from typing import List, Tuple
-from note_splitter import tokens, patterns
+from note_splitter import patterns
+from note_splitter import tokens
 from note_splitter.settings import settings
+from typing import List
+from typing import Tuple
 
 
 class Splitter:

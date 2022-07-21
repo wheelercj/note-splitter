@@ -1,5 +1,6 @@
+from note_splitter import settings
+from note_splitter import tokens
 import pytest
-from note_splitter import settings, tokens
 
 
 ##########################

@@ -1,7 +1,8 @@
-import os
 from datetime import datetime
 from note_splitter import note
-from note_splitter.settings import settings, load_settings
+from note_splitter.settings import load_settings
+from note_splitter.settings import settings
+import os
 
 
 ####################

@@ -107,9 +107,12 @@ Every time file_id_format is changed, file_id_regex must be updated.
 """
 
 
-from typing import List, Type, Callable
+from note_splitter import patterns
+from note_splitter import tokens
+from typing import Callable
+from typing import List
+from typing import Type
 import json
-from note_splitter import tokens, patterns
 
 
 __DEFAULT_SETTINGS = {

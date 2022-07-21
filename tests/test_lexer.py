@@ -1,4 +1,5 @@
-from note_splitter import tokens, lexer
+from note_splitter import lexer
+from note_splitter import tokens
 
 
 def test_tokenize():

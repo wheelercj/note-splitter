@@ -1,7 +1,8 @@
-import pytest
-from textwrap import dedent
-from note_splitter import formatter_, tokens
+from note_splitter import formatter_
+from note_splitter import tokens
 from note_splitter.settings import settings
+from textwrap import dedent
+import pytest
 
 
 ##############

@@ -1,6 +1,6 @@
 from note_splitter import tokens
-from note_splitter.splitter import Splitter
 from note_splitter.settings import settings
+from note_splitter.splitter import Splitter
 
 
 ##################

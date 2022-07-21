@@ -5,12 +5,16 @@ https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
 
 
-from abc import ABC, abstractmethod
-from typing import List, Union, Type, Any
-from types import ModuleType
-import inspect
+from abc import ABC
+from abc import abstractmethod
 from functools import lru_cache
 from note_splitter import patterns
+from types import ModuleType
+from typing import Any
+from typing import List
+from typing import Type
+from typing import Union
+import inspect
 
 
 def _get_indentation_level(line: str) -> int:

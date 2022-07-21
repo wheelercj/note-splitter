@@ -1,13 +1,15 @@
 """Run this file to see the main steps this program goes through."""
 
-from typing import List, Callable
-from textwrap import dedent
 from note_splitter import tokens
-from note_splitter.settings import settings, load_settings
+from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
+from note_splitter.settings import load_settings
+from note_splitter.settings import settings
 from note_splitter.splitter import Splitter
-from note_splitter.formatter_ import Formatter
+from textwrap import dedent
+from typing import Callable
+from typing import List
 
 
 def __manual_test() -> None:
