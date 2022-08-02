@@ -1,5 +1,13 @@
 """This module runs the entire application."""
+import os
+import re
+import webbrowser
+from tkinter import filedialog
+from typing import Callable
+from typing import List
+from typing import Tuple
 
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
 from note_splitter import gui
 from note_splitter import note
@@ -13,14 +21,6 @@ from note_splitter.settings import load_settings
 from note_splitter.settings import save_settings
 from note_splitter.settings import settings
 from note_splitter.splitter import Splitter
-from tkinter import filedialog
-from typing import Callable
-from typing import List
-from typing import Tuple
-import os
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-import re
-import webbrowser
 
 
 def run_main_menu() -> None:

@@ -19,7 +19,7 @@ custom documentation
 --------------------
 We can also add our own manually written documentation files. Read The Docs supports both markdown (`MyST's version <https://myst-parser.readthedocs.io/en/latest/>`_) and `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ (rst) files. Just put the files in the docs folder and add the file's name to the list in docs/index.rst. `Here's <http://rst.ninjs.org/#>`_ a reStructuredText renderer for previewing rst files.
 
-| Internal links are easy to add.  
+| Internal links are easy to add.
 
 Markdown example:
 
@@ -30,7 +30,7 @@ Markdown example:
 reStructuredText example:
 
 .. code-block:: rst
-  
+
   `file title here <file-name.html>`_
 
 Note that while a link to a local file in a markdown file can use the ``.rst`` and ``.md`` extensions, a link to a local file in an rst file must use the ``.html`` extension.

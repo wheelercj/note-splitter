@@ -1,32 +1,32 @@
 """The user's application settings and related functions.
 
-The settings are stored in a dictionary named ``settings`` with the 
+The settings are stored in a dictionary named ``settings`` with the
 following keys. Some of these settings may be hidden from the user.
 
 create_backlinks : bool
-    Whether or not to append a backlink to the source file in each new 
+    Whether or not to append a backlink to the source file in each new
     file.
 blockquote_pattern : str
     The uncompiled regex pattern for blockquotes.
 code_fence_pattern : str
     The uncompiled regex pattern for code fences.
 copy_frontmatter : bool
-    Whether or not to copy frontmatter from the source file to each new 
+    Whether or not to copy frontmatter from the source file to each new
     file.
 copy_global_tags : bool
-    Whether or not to copy global tags from the source file to each new 
+    Whether or not to copy global tags from the source file to each new
     file.
 create_index_file : bool
     Whether or not to create an index file.
 destination_folder_path : str
-    The absolute path to the user's folder where new files will be 
+    The absolute path to the user's folder where new files will be
     saved.
 empty_line_pattern : str
     The uncompiled regex pattern for empty lines.
 file_id_format : str
     The format of the file IDs.
 file_id_regex : str
-    The uncompiled regular expression to use to extract file IDs from 
+    The uncompiled regular expression to use to extract file IDs from
     the files.
 file_name_format : str
     The format of the new file names.
@@ -45,33 +45,33 @@ horizontal_rule_pattern : str
 math_fence_pattern : str
     The uncompiled regex pattern for math fences.
 move_footnotes : bool
-    Whether or not to copy footnotes into each new file that has the 
-    relevant footnote references, and remove them from the ones that 
+    Whether or not to copy footnotes into each new file that has the
+    relevant footnote references, and remove them from the ones that
     don't have the relevant references.
 note_types : List[str]
-    The file extensions of the files that may be chosen to be split.Each
+    The file extensions of the files that may be chosen to be split. Each
     must start with a period.
 ordered_list_item_pattern : str
     The uncompiled regex pattern for ordered list items.
 parse_blocks : bool
     Whether or not to create ``Block`` tokens while parsing.
 remove_split_keyword : bool
-    Whether or not to remove the split keyword from the source file and 
+    Whether or not to remove the split keyword from the source file and
     new file(s).
 replace_split_contents : bool
-    Whether or not to replace the parts of the source file that was 
+    Whether or not to replace the parts of the source file that was
     split out with links to the new files.
 source_folder_path : str
-    The absolute path to the user's folder containing the files to be 
+    The absolute path to the user's folder containing the files to be
     split.
 split_attrs : dict
-    The attributes to split by. If the chosen split type has an 
+    The attributes to split by. If the chosen split type has an
     attribute, it can be used to narrow down what to split by.
 split_keyword : str
-    The tag/keyword the program searches for to know which file(s) to 
+    The tag/keyword the program searches for to know which file(s) to
     split.
 split_type : Type
-    The type to split by. This can be any token type, even an abstract 
+    The type to split by. This can be any token type, even an abstract
     one.
 table_divider_pattern : str
     The uncompiled regex pattern for table dividers.
@@ -90,7 +90,7 @@ The settings for the formats of file names and IDs can use the following
 variables:
 
  * ``%uuid4`` - A universally unique identifier.
- * ``%title`` - The title of the file (the body of its first header, or 
+ * ``%title`` - The title of the file (the body of its first header, or
    the first line of the file if there is no header).
  * ``%Y`` - The current year.
  * ``%M`` - The current month.
@@ -99,20 +99,19 @@ variables:
  * ``%m`` - The current minute.
  * ``%s`` - The current second.
 
-Additionally, the file name format setting can use the ``%id`` variable 
-which gets replaced with the ID of the file as described by the file ID 
+Additionally, the file name format setting can use the ``%id`` variable
+which gets replaced with the ID of the file as described by the file ID
 format setting.
 
 Every time file_id_format is changed, file_id_regex must be updated.
 """
-
-
-from note_splitter import patterns
-from note_splitter import tokens
+import json
 from typing import Callable
 from typing import List
 from typing import Type
-import json
+
+from note_splitter import patterns
+from note_splitter import tokens
 
 
 __DEFAULT_SETTINGS = {

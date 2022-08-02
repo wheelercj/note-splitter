@@ -1,7 +1,7 @@
 .. note splitter documentation master file, created by
    sphinx-quickstart on Wed Sep 29 12:39:18 2021.
    You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+   contain the root ``toctree`` directive.
 
 Welcome to Note Splitter's documentation!
 =========================================
@@ -11,7 +11,7 @@ Note Splitter is an application that can split notes in plaintext files (such as
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+
    dev-setup
    note-splitter-overview
    token-hierarchy

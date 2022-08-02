@@ -1,6 +1,7 @@
+import pytest
+
 from note_splitter import settings
 from note_splitter import tokens
-import pytest
 
 
 ##########################
@@ -20,8 +21,9 @@ def test_get_token_type_names_with_invalid_token_type_name():
 
 
 def test_get_token_type_with_blockquote():
-    predicate = lambda token_type: not issubclass(token_type, tokens.Blockquote)
-    assert tokens.Blockquote not in settings.get_token_type_names(predicate)
+    assert tokens.Blockquote not in settings.get_token_type_names(
+        lambda token_type: not issubclass(token_type, tokens.Blockquote)
+    )
 
 
 #########################

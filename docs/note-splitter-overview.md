@@ -2,7 +2,7 @@
 
 Here is a broad overview for developers of how Note Splitter's core splitting algorithm works.
 
-The main steps the program goes through are:  
+The main steps the program goes through are:
 1. tokenization
 2. parsing
 3. splitting
@@ -15,7 +15,7 @@ Some features of plain text files can only be correctly understood by looking at
 
 ```python
 print('this is code inside a code block, and . . .')
-# this is a Python comment, not a markdown header.  
+# this is a Python comment, not a markdown header.
 ```
 
 Here's an example that shows the result of tokenization with each token's type on the left, and its plain text on the right:
@@ -52,11 +52,11 @@ Continuing from the previous example, here is the result of parsing:
               Text | #first-tag #second-tag
           TextList | * bullet point 1
                    | * bullet point 2
-         EmptyLine | 
+         EmptyLine |
               Text | here is text
           TextList | 1. ordered
                    | 2. list
-         EmptyLine | 
+         EmptyLine |
             Header | ## second header
               Text | #third-tag
          CodeBlock | ```python

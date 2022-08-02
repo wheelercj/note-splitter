@@ -1,20 +1,19 @@
 """The class definitions for all the tokens.
 
-See the hierarchy of all the token types here:  
+See the hierarchy of all the token types here:
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 """
-
-
+import inspect
 from abc import ABC
 from abc import abstractmethod
 from functools import lru_cache
-from note_splitter import patterns
 from types import ModuleType
 from typing import Any
 from typing import List
 from typing import Type
 from typing import Union
-import inspect
+
+from note_splitter import patterns
 
 
 def _get_indentation_level(line: str) -> int:
@@ -362,7 +361,7 @@ class TextList(Block):
 
     Attributes
     ----------
-    content : List[Union[TextListItem, 'TextList']]
+    content : List[Union[TextListItem, "TextList"]]
         The tokens that make up the list. Lists may have sublists.
     level : int
         The number of spaces of indentation of the first item in the

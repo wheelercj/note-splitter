@@ -1,3 +1,11 @@
+import re
+from textwrap import dedent
+from typing import Callable
+from typing import List
+from typing import Tuple
+
+import pytest
+
 from note_splitter import formatter_
 from note_splitter import lexer
 from note_splitter import main
@@ -5,12 +13,6 @@ from note_splitter import patterns
 from note_splitter import splitter
 from note_splitter import tokens
 from note_splitter.settings import settings
-from textwrap import dedent
-from typing import Callable
-from typing import List
-from typing import Tuple
-import pytest
-import re
 
 
 @pytest.fixture
@@ -287,7 +289,7 @@ def test_split_text_with_custom_pattern(callables: Tuple[Callable]):
             """\
         3.third item
             1. third subitem
-            
+
         """
         ),
     ]

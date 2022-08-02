@@ -1,7 +1,8 @@
+import datetime
+from textwrap import dedent
+
 from note_splitter import parser_
 from note_splitter import tokens
-from textwrap import dedent
-import datetime
 
 
 #########

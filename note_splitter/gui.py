@@ -1,17 +1,17 @@
 """Various functions for building the graphical user interface."""
+import inspect
+from textwrap import dedent
+from typing import List
+from typing import Optional
+from typing import Tuple
 
+import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
 from note_splitter import note
 from note_splitter import tokens
 from note_splitter.settings import get_token_type_name
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import settings
-from textwrap import dedent
-from typing import List
-from typing import Optional
-from typing import Tuple
-import inspect
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
 
 def show_progress(
@@ -100,7 +100,8 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
             [sg.Text("Choose what to split by: ")],
             [
                 sg.Text(
-                    "type                                            attribute         value"
+                    "type                                            "
+                    "attribute         value"
                 )
             ],
             [

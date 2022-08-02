@@ -4,11 +4,12 @@ The Formatter class' callable normalizes header levels, adds frontmatter
 and global tags to each section, and then converts the section tokens to
 strings.
 """
-
-
 import uuid
-from typing import List, Optional
+from typing import List
+from typing import Optional
+
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
+
 from note_splitter import tokens
 from note_splitter.settings import settings
 

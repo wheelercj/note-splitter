@@ -1,16 +1,18 @@
 """For splitting raw text into a list of tokens.
 
-The lexer categorizes lines of text first without looking at their 
-context. For example, a markdown codeblock will become two code fence 
-tokens surrounding one or more tokens of any type, possibly "incorrect" 
-types such as header. Then the lexer makes a quick pass over the token 
-list while looking at each token's context to ensure they have the 
+The lexer categorizes lines of text first without looking at their
+context. For example, a markdown codeblock will become two code fence
+tokens surrounding one or more tokens of any type, possibly "incorrect"
+types such as header. Then the lexer makes a quick pass over the token
+list while looking at each token's context to ensure they have the
 correct type.
 """
+from typing import List
+from typing import Type
 
-
-from typing import List, Type
-from note_splitter import tokens, patterns, settings
+from note_splitter import patterns
+from note_splitter import settings
+from note_splitter import tokens
 
 
 class Lexer:

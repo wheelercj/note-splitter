@@ -1,22 +1,22 @@
 """Manages info about the user's files."""
-
-
-from copy import copy
-from datetime import datetime
-from datetime import timedelta
-from note_splitter import patterns
-from note_splitter.settings import settings
-from send2trash import send2trash  # https://github.com/arsenetar/send2trash
-from typing import List
-from typing import Optional
-from typing import Tuple
 import os
 import platform
-import PySimpleGUI as sg
 import re
 import subprocess
 import uuid
 import webbrowser
+from copy import copy
+from datetime import datetime
+from datetime import timedelta
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+import PySimpleGUI as sg
+from send2trash import send2trash  # https://github.com/arsenetar/send2trash
+
+from note_splitter import patterns
+from note_splitter.settings import settings
 
 
 class Note:
