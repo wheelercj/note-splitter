@@ -24,7 +24,7 @@ If you use launch.json files to keep track of how to run programs, below is an e
             "name": "Python: main.py (Integrated Terminal)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/note_splitter/main.py",
+            "program": "${workspaceFolder}/note_splitter/main.py",
             "console": "integratedTerminal"
         }
     ]
@@ -41,8 +41,7 @@ Here are descriptions of what each of Note Splitter's folders are for:
 │   └── workflows       # GitHub Actions configuration files for automated testing.
 ├── docs                # Files for documentation (.md and .rst) and for configuration.
 │   └── images          # Images used in the documentation and/or the README.
-├── src                 # Source code for Note Splitter and any other relevant packages.
-│   └── note_splitter   # Source code for Note Splitter.
+├── note_splitter       # Source code for Note Splitter.
 └── tests               # Automated tests.
     └── assets          # Files used in automated and manual tests.
 ```

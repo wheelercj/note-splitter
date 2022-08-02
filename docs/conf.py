@@ -10,9 +10,14 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+import inspect
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../src/note_splitter'))
+from typing import List
+
+from note_splitter import tokens
+
+sys.path.insert(0, os.path.abspath("../note_splitter"))
 
 
 # -- Project information -----------------------------------------------------
@@ -74,10 +79,6 @@ Run this each time you add a new token or change their relationships.
 More indentation in the hierarchy means that the token is a child of the
 previous token with less indentation.
 """
-
-import inspect
-from typing import List
-from note_splitter import tokens
 
 
 def save_token_hierarchy():
