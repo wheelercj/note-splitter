@@ -61,7 +61,7 @@ class Block(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: List[Any]
 
     def __str__(self):
         """Returns the original content of the token's raw text."""
@@ -118,7 +118,7 @@ class CanHaveInlineElements(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: str
 
 
 class TextListItem(Token):
@@ -129,7 +129,8 @@ class TextListItem(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: Union[str, List[Any]]
+        self.level: int
 
 
 class TablePart(Token):
@@ -140,7 +141,7 @@ class TablePart(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: str
 
 
 class Fence(Token):
@@ -151,7 +152,7 @@ class Fence(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: str
 
 
 class Fenced(Token):
@@ -162,7 +163,7 @@ class Fenced(Token):
 
     @abstractmethod
     def __init__(self):
-        pass
+        self.content: str
 
 
 class Text(CanHaveInlineElements):
@@ -219,8 +220,8 @@ class Header(CanHaveInlineElements):
     def __init__(self, line: str = ""):
         """Parses a line of text and creates a header token."""
         self.content: str = line
-        self.body = line.lstrip("#")
-        self.level = len(line) - len(self.body)
+        self.body: str = line.lstrip("#")
+        self.level: int = len(line) - len(self.body)
         self.body = self.body.lstrip()
 
 
@@ -266,8 +267,8 @@ class BlockquoteBlock(Block):
         The consecutive blockquote tokens.
     """
 
-    def __init__(self, tokens_: List[Blockquote] = None):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
 
 
 class Footnote(CanHaveInlineElements):
@@ -289,7 +290,7 @@ class Footnote(CanHaveInlineElements):
         if line:
             self.reference: str = line.split(":")[0]
         else:
-            self.reference: str = ""
+            self.reference = ""
 
 
 class Task(TextListItem, CanHaveInlineElements):
@@ -302,7 +303,7 @@ class Task(TextListItem, CanHaveInlineElements):
     level : int
         The number of spaces of indentation.
     is_done : bool
-        Whether the to do item is done.
+        Whether the task is done (whether the box is checked).
     """
 
     HAS_PATTERN = True
@@ -310,7 +311,7 @@ class Task(TextListItem, CanHaveInlineElements):
     def __init__(self, line: str = ""):
         self.content: str = line
         self.level: int = _get_indentation_level(line)
-        self.is_done = patterns.finished_task.match(line) is not None
+        self.is_done: bool = patterns.finished_task.match(line) is not None
 
 
 class UnorderedListItem(TextListItem, CanHaveInlineElements):
@@ -368,12 +369,12 @@ class TextList(Block):
         list.
     """
 
-    def __init__(self, tokens_: List[Union[TextListItem, "TextList"]] = None):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
         if tokens_:
             self.level: int = tokens_[0].level
         else:
-            self.level: int = 0
+            self.level = 0
 
 
 class TableRow(TablePart):
@@ -416,8 +417,8 @@ class Table(Block):
         The table's row token(s) and possibly divider token(s).
     """
 
-    def __init__(self, tokens_: List[Union[TableRow, TableDivider]] = None):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
 
 
 class CodeFence(Fence):
@@ -467,12 +468,12 @@ class CodeBlock(Block):
         characters are removed.
     """
 
-    def __init__(self, tokens_: List[Union[CodeFence, Code]] = None):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
         if tokens_:
             self.language: str = tokens_[0].language
         else:
-            self.language: str = ""
+            self.language = ""
 
 
 class MathFence(Fence):
@@ -515,8 +516,8 @@ class MathBlock(Block):
         The mathblock's math fence tokens surrounding math token(s).
     """
 
-    def __init__(self, tokens_: List[Union[MathFence, Math]] = None):
-        self.content: list = tokens_
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
 
 
 class Section(Block):
@@ -533,11 +534,8 @@ class Section(Block):
         split type.
     """
 
-    def __init__(self, tokens_: List[Token] = None):
-        if tokens_:
-            self.content: list = tokens_
-        else:
-            self.content: list = []
+    def __init__(self, tokens_: List[Any] = None):
+        self.content: List[Any] = tokens_ or []
 
 
 def __is_token_type(obj: Any) -> bool:

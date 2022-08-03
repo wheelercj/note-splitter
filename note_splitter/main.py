@@ -1,11 +1,19 @@
 """This module runs the entire application."""
 import os
 import re
+import sys
 import webbrowser
 from tkinter import filedialog
 from typing import Callable
 from typing import List
 from typing import Tuple
+from typing import Union
+
+if sys.version_info < (3, 8):
+    from typing_extensions import Literal
+else:
+    from typing import Literal
+
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
@@ -63,8 +71,7 @@ def split_files(window: sg.Window, notes: List[note.Note] = None) -> List[note.N
     split: Callable = Splitter()
     format_: Callable = Formatter()
 
-    if not notes:
-        notes: List[note.Note] = note.get_chosen_notes(window)
+    notes = notes or note.get_chosen_notes(window)
     all_new_notes: List[note.Note] = []
     for i, source_note in enumerate(notes):
         gui.show_progress(i, len(notes), 1, 5)
@@ -157,10 +164,10 @@ def save_new_notes(
                 "destination"
             )
             window["-DESTINATION FOLDER-"].update(settings["destination_folder_path"])
-        if settings["destination_folder_path"] != settings["source_folder_path"]:
-            split_content = note.make_file_paths_absolute(split_content)
         new_file_path = os.path.join(settings["destination_folder_path"], new_file_name)
         new_file_path = note.ensure_file_path_uniqueness(new_file_path)
+        if settings["destination_folder_path"] != settings["source_folder_path"]:
+            split_content = note.make_file_paths_absolute(split_content, new_file_path)
         with open(new_file_path, "x", encoding="utf8") as file:
             file.write(split_content)
         new_notes.append(note.Note(new_file_path))
@@ -246,17 +253,19 @@ def handle_main_menu_event(
         settings[setting_name] = values[event]
         patterns.__dict__[setting_name[:-8]] = re.compile(settings[setting_name])
     elif event == "open file browser":
-        all_notes: List[note.Note] = note.get_all_notes(window)
-        file_paths: Tuple[str] = filedialog.askopenfilenames()
-        listbox_notes: List[note.Note] = [note.Note(f) for f in file_paths]
+        all_notes = note.get_all_notes(window)
+        file_paths: Union[Literal[""], Tuple[str, ...]] = filedialog.askopenfilenames()
+        if not file_paths:
+            return listbox_notes, all_notes
+        listbox_notes = [note.Note(f) for f in file_paths]
         titles: List[str] = [n.title for n in listbox_notes]
         window["-NOTES TO SPLIT-"].update(values=titles)
         settings["using_split_keyword"] = False
     elif event == "find by keyword":
         settings["using_split_keyword"] = True
         all_notes = note.get_all_notes(window)
-        listbox_notes: List[note.Note] = note.get_chosen_notes(window, all_notes)
-        titles: List[str] = [n.title for n in listbox_notes]
+        listbox_notes = note.get_chosen_notes(window, all_notes)
+        titles = [n.title for n in listbox_notes]
         window["-NOTES TO SPLIT-"].update(values=titles)
     elif event == "Split all":
         new_notes: List[note.Note] = split_files(window, listbox_notes)
@@ -270,7 +279,7 @@ def handle_main_menu_event(
         if not notes_to_split:
             sg.popup("No notes selected.", keep_on_top=True)
         else:
-            new_notes: List[note.Note] = split_files(window, notes_to_split)
+            new_notes = split_files(window, notes_to_split)
             gui.run_split_summary_window(new_notes, all_notes)
             listbox_notes = [
                 n for n in listbox_notes if n.title not in values["-NOTES TO SPLIT-"]

@@ -4,6 +4,7 @@ from textwrap import dedent
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
@@ -367,9 +368,7 @@ def update_split_type_and_attrs(values: dict, window: sg.Window) -> None:
         type_names.remove("section")
         default_value = get_token_type_name(settings["split_type"])
     else:
-        type_names: List[str] = get_token_type_names(
-            lambda t: not issubclass(t, tokens.Block)
-        )
+        type_names = get_token_type_names(lambda t: not issubclass(t, tokens.Block))
         current_type_name = get_token_type_name(settings["split_type"])
         if current_type_name in type_names:
             default_value = current_type_name
@@ -383,10 +382,10 @@ def update_split_type_and_attrs(values: dict, window: sg.Window) -> None:
 def create_split_attr_dropdown() -> sg.Combo:
     """Creates a dropdown element listing token attributes and None."""
     if inspect.isabstract(settings["split_type"]):
-        attr_names = [None]
+        attr_names: List[Union[str, None]] = [None]
     else:
         obj = settings["split_type"]()
-        attr_names: List[str] = sorted(list(obj.__dict__.keys()))
+        attr_names = sorted(list(obj.__dict__.keys()))
         attr_names.insert(0, None)
         if issubclass(settings["split_type"], tokens.Block):
             attr_names.remove("content")
@@ -410,7 +409,7 @@ def update_split_attrs(values: dict, window: sg.Window) -> None:
         The window to update.
     """
     if inspect.isabstract(settings["split_type"]):
-        attr_names: List[str] = []
+        attr_names: List[Union[str, None]] = []
         default_attr = None
         settings["split_attr"] = {}
     else:
@@ -591,7 +590,7 @@ def handle_note_listbox_event(
     if not selected_titles:
         selected_titles = [str(key) for key in listbox_notes_dict.keys()]
     if not request_confirmation(event, len(selected_titles)):
-        return
+        return []
     for title in selected_titles:
         note_: note.Note = listbox_notes_dict[title]
         if event.startswith("-OPEN"):

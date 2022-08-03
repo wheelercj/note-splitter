@@ -22,6 +22,7 @@ repos:
     rev: 'v0.971'
     hooks:
     -   id: mypy
+        additional_dependencies: ['types-pyyaml']
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
     hooks:

@@ -64,33 +64,23 @@ class Lexer:
         return False
 
     def __check_token_types(self) -> None:
-        """Changes the type of some tokens based on their context."""
-        types = [
-            (tokens.Code, tokens.CodeFence),
-            (tokens.Math, tokens.MathFence),
-        ]
-        for to_type, wrapper_type in types:
-            self.__change_inner_token_types(to_type, wrapper_type)
-
-    def __change_inner_token_types(
-        self, to_type: Type[tokens.Token], wrapper_type: Type[tokens.Token]
-    ) -> None:
-        """Changes the types of all tokens between tokens of a chosen type.
+        """Changes the type of some tokens based on their context.
 
         Changes are made to this class' token list. This function
         assumes the tokens to change have a ``content`` attribute
         that is of type ``str``.
-
-        Parameters
-        ----------
-        to_type : Type[tokens.Token]
-            The type to change the inner tokens to.
-        wrapper_type : Type[tokens.Token]
-            The type of the first and last token.
         """
-        in_wrapper = False
-        for i, token_ in enumerate(self.__tokens):
-            if isinstance(token_, wrapper_type):
-                in_wrapper = not in_wrapper
-            elif in_wrapper:
-                self.__tokens[i] = to_type(token_.content)
+        type_tuples = [
+            (tokens.Code, tokens.CodeFence),
+            (tokens.Math, tokens.MathFence),
+        ]
+        for fenced_type, fence_type in type_tuples:
+            between_fences = False
+            for i, token_ in enumerate(self.__tokens):
+                if isinstance(token_, fence_type):
+                    between_fences = not between_fences
+                elif between_fences:
+                    assert not isinstance(token_, tokens.Token) and isinstance(
+                        token_.content, str
+                    )
+                    self.__tokens[i] = fenced_type(token_.content)

@@ -56,7 +56,7 @@ class Formatter:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
-            if settings["move_footnotes"]:
+            if settings["move_footnotes"] and footnotes:
                 self.move_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
@@ -74,13 +74,15 @@ class Formatter:
         str
             The title of the section.
         """
+        assert isinstance(section[0], tokens.Header)
         if section[0].level <= 1:
             return section[0].body
         difference = section[0].level - 1
         for i, token in enumerate(section):
             if isinstance(token, tokens.Header):
-                section[i].level -= difference
-                section[i].content = section[i].content[difference:]
+                token.level -= difference
+                token.content = token.content[difference:]
+                section[i] = token
         return section[0].body
 
     def insert_global_tags(
@@ -149,13 +151,13 @@ class Formatter:
         section.insert(0, tokens.Text(frontmatter_string))
 
     def move_footnotes(
-        self, footnotes: Optional[List[tokens.Footnote]], section: tokens.Section
+        self, footnotes: List[tokens.Footnote], section: tokens.Section
     ) -> None:
         """Moves footnotes to sections with the relevant references.
 
         Parameters
         ----------
-        footnotes : Optional[List[tokens.Footnote]]
+        footnotes : List[tokens.Footnote]
             The footnotes to add to the section if it contains
             references to them, or to remove from the section if it does
             not contain references to them.

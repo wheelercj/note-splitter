@@ -106,7 +106,9 @@ format setting.
 Every time file_id_format is changed, file_id_regex must be updated.
 """
 import json
+from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Type
 
@@ -152,13 +154,13 @@ __DEFAULT_SETTINGS = {
 }
 
 
-settings = {}
+settings: Dict[str, Any] = {}
 
 
 def save_settings() -> None:
     """Save the settings to a JSON file."""
     split_type: Type = settings["split_type"]
-    settings["split_type"] = get_token_type_name(settings["split_type"])
+    settings["split_type"] = get_token_type_name(split_type)
     with open("settings.json", "w") as file:
         json.dump(settings, file, indent=4)
     settings["split_type"] = split_type
@@ -209,8 +211,9 @@ def get_token_type_names(
         token types will be fetched.
     """
     if not all_token_types:
-        all_token_types: List[Type] = tokens.get_all_token_types(tokens)
+        all_token_types = tokens.get_all_token_types(tokens)
     token_names = []
+    assert all_token_types is not None
     for token_type in all_token_types:
         if not filter_predicate or filter_predicate(token_type):
             token_names.append(get_token_type_name(token_type))

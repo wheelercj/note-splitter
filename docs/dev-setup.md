@@ -5,9 +5,10 @@ Here are some notes that might help with setting up your development environment
 We're using Python 3.7.9, but newer versions should work too.
 
 ## dependencies
-You will need to use a few commands to get started:
-* `python -m pip install -e .` to locally install Note Splitter and its dependencies listed in requirements.txt.
-* `python -m pip install -r .\requirements_dev.txt` to install the dependencies for development.
+After cloning the repo, you will need to use a few commands to get started:
+* I highly recommend creating a virtual environment first.
+* `pip install -e .` to locally install Note Splitter and its dependencies listed in requirements.txt.
+* `pip install -r .\requirements_dev.txt` to install the dependencies for development.
 * `pre-commit install` to set up [pre-commit](https://pre-commit.com/) git hook scripts
 
 **when the dependencies change**
@@ -49,10 +50,10 @@ Here are descriptions of what each of Note Splitter's folders are for:
 
 ## automated testing
 To locally run the automated tests for Note Splitter, there are a few commands you can use:
-* `pre-commit run --all-files` to run all the pre-commit git hook scripts without committing
-* `pre-commit run hook-id-here --all-files` to run one pre-commit git hook script without committing
 * `pytest` to run the tests in your current environment
-* `tox` to run the tests in multiple virtual environments
+* `tox` if you want to run the tests in multiple virtual environments (this also runs in GitHub Actions after each push)
+* `pre-commit run --all-files` if you want to run all the pre-commit git hook scripts without committing, but please discard removal of trailing whitespace to sample_markdown.md
+* `pre-commit run hook-id-here --file note_splitter/file-name-here.py` if you want to run one pre-commit git hook script on one file without committing
 
 If you're looking for how to locally build the documentation, see [how to maintain this documentation](how-to-doc.rst).
 

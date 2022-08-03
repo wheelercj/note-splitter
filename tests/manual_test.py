@@ -1,5 +1,6 @@
 """Run this file to see the main steps this program goes through."""
 from textwrap import dedent
+from typing import Any
 from typing import Callable
 from typing import List
 
@@ -77,7 +78,7 @@ def __manual_test() -> None:
     __print_formatter_output(split_contents)
 
 
-def __print_tokens(tokens_: List[tokens.Token]) -> None:
+def __print_tokens(tokens_: List[Any]) -> None:
     """Prints tokens' types and contents.
 
     Parameters
@@ -116,7 +117,7 @@ def __format_tokens(tokens_: List[tokens.Token]) -> str:
     """
     block = []
     for token in tokens_:
-        if isinstance(token.content, list):
+        if not isinstance(token, tokens.Token) and isinstance(token.content, list):
             block.append(__format_tokens(token.content))
         else:
             block.append(str(token))

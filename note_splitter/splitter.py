@@ -62,7 +62,9 @@ class Splitter:
             if self.__should_split(token, is_splitting=False):
                 new_section = self.__get_section()
                 sections.append(new_section)
-            elif isinstance(token.content, list):
+            elif not isinstance(token, tokens.Token) and isinstance(
+                token.content, list
+            ):
                 split = Splitter()
                 new_sections, new_global_tags = split(token.content)
                 sections.extend(new_sections)

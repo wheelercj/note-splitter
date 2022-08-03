@@ -67,7 +67,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path: List[str] = []
 
 
 # -- Custom automatic documentation ------------------------------------------
@@ -102,7 +102,6 @@ def create_token_hierarchy() -> str:
     class_tree = inspect.getclasstree(all_token_types)
     __create_token_subhierarchy(token_hierarchy, class_tree)
     token_hierarchy.append("")
-
     return "\n".join(token_hierarchy)
 
 
@@ -120,8 +119,10 @@ def __create_token_subhierarchy(
             class_name = c[0].__name__
             if class_name not in ("object", "ABC", "module"):
                 abstract = " (abstract)" if inspect.isabstract(c[0]) else ""
-                line = f"{indentation[4:]}* "
-                f":py:class:`note_splitter.tokens.{class_name}`{abstract}"
+                line = (
+                    f"{indentation[4:]}* "
+                    f":py:class:`note_splitter.tokens.{class_name}`{abstract}"
+                )
                 token_hierarchy.append(line)
 
 

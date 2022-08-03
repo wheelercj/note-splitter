@@ -1,9 +1,9 @@
 """For converting a list of tokens to an abstract syntax tree (AST)."""
 import re
+from typing import Any
 from typing import Callable
 from typing import List
 from typing import Optional
-from typing import Type
 from typing import Union
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
@@ -70,7 +70,7 @@ class AST:
             YAML frontmatter loaded as a Python object. If there is no
             frontmatter, None will be returned.
         """
-        frontmatter_tokens: List[tokens.Token] = []
+        frontmatter_tokens: List[tokens.Text] = []
         in_frontmatter = False
         while self.__tokens:
             token = self.__tokens[0]
@@ -87,9 +87,11 @@ class AST:
                     in_frontmatter = True
             elif in_frontmatter:
                 self.__tokens.pop(0)
+                assert isinstance(token, tokens.Text)
                 frontmatter_tokens.append(token)
             else:
                 return None
+        return None
 
     def __parse_blocks(self) -> None:
         """Groups together all tokens that should be grouped together.
@@ -127,14 +129,16 @@ class AST:
             The indentation level (in spaces) of the first item in the
             list.
         """
-        block_tokens: List[tokens.TextListItem] = []
-        block_tokens.append(self.__tokens.pop(0))
+        block_tokens: List[Union[tokens.TextList, tokens.TextListItem]] = []
+        first_token = self.__tokens.pop(0)
+        assert isinstance(first_token, tokens.TextListItem)
+        block_tokens.append(first_token)
 
         while self.__tokens:
             token = self.__tokens[0]
             if isinstance(token, tokens.TextListItem):
                 if token.level > indentation_level:
-                    new_block = self.__get_text_list(token.level)
+                    new_block: tokens.TextList = self.__get_text_list(token.level)
                     block_tokens.append(new_block)
                 elif token.level < indentation_level:
                     return tokens.TextList(block_tokens)
@@ -147,7 +151,9 @@ class AST:
         return tokens.TextList(block_tokens)
 
     def __get_block_of_unique_tokens(
-        self, block_constructor: Callable, sub_token_type: Type[tokens.Token]
+        self,
+        block_constructor: Callable,
+        sub_token_type: Any,
     ) -> tokens.Token:
         """Creates a token that is a block of specialized tokens.
 
@@ -159,10 +165,10 @@ class AST:
         ----------
         block_constructor : Callable
             The constructor for the block of related tokens.
-        sub_token_type : Type[tokens.Token]
+        sub_token_type : Union[tokens.Blockquote, tokens.TablePart]
             The type of the tokens within the block.
         """
-        block_tokens: List[sub_token_type] = []
+        block_tokens: List[Any] = []
         block_tokens.append(self.__tokens.pop(0))
         while self.__tokens:
             token = self.__tokens[0]
@@ -176,11 +182,13 @@ class AST:
     def __get_fenced_block(self) -> Union[tokens.CodeBlock, tokens.MathBlock]:
         """Creates a code block token or a math block token."""
         block_tokens: List[Union[tokens.Fence, tokens.Fenced]] = []
-        block_tokens.append(self.__tokens.pop(0))
+        first_token = self.__tokens.pop(0)
+        assert isinstance(first_token, tokens.Fence)
+        block_tokens.append(first_token)
 
         while self.__tokens:
             token = self.__tokens[0]
-            if isinstance(token, type(block_tokens[0])):
+            if isinstance(token, tokens.Fence):
                 block_tokens.append(token)
                 self.__tokens.pop(0)
                 break
@@ -196,6 +204,7 @@ class AST:
 
     def __matches(self, token: tokens.Token, pattern: re.Pattern) -> bool:
         """Determines if a token matches a given pattern."""
+        assert not isinstance(token, tokens.Token) and isinstance(token.content, str)
         return bool(pattern.match(token.content))
 
     def __load_frontmatter(self, tokens_: List[tokens.Text]) -> Optional[object]:

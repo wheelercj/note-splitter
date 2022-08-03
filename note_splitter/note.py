@@ -166,7 +166,7 @@ def get_chosen_notes(window: sg.Window, all_notes: List[Note] = None) -> List[No
         will be retrieved.
     """
     if all_notes is None:
-        all_notes: List[Note] = get_all_notes(window)
+        all_notes = get_all_notes(window)
     if not all_notes:
         return []
 
