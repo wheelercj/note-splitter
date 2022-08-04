@@ -204,7 +204,7 @@ class AST:
 
     def __matches(self, token: tokens.Token, pattern: re.Pattern) -> bool:
         """Determines if a token matches a given pattern."""
-        assert not isinstance(token, tokens.Token) and isinstance(token.content, str)
+        assert isinstance(token.content, str)
         return bool(pattern.match(token.content))
 
     def __load_frontmatter(self, tokens_: List[tokens.Text]) -> Optional[object]:

@@ -80,7 +80,5 @@ class Lexer:
                 if isinstance(token_, fence_type):
                     between_fences = not between_fences
                 elif between_fences:
-                    assert not isinstance(token_, tokens.Token) and isinstance(
-                        token_.content, str
-                    )
+                    assert isinstance(token_.content, str)
                     self.__tokens[i] = fenced_type(token_.content)

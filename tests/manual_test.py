@@ -117,7 +117,7 @@ def __format_tokens(tokens_: List[tokens.Token]) -> str:
     """
     block = []
     for token in tokens_:
-        if not isinstance(token, tokens.Token) and isinstance(token.content, list):
+        if isinstance(token.content, list):
             block.append(__format_tokens(token.content))
         else:
             block.append(str(token))

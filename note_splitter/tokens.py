@@ -2,6 +2,13 @@
 
 See the hierarchy of all the token types here:
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
+
+Each token class has a ``content`` property. If the token is not a combination
+of other tokens, that ``content`` property is a string of the original content
+of the raw line of text. Otherwise, the ``content`` property is the list of
+subtokens. Each token class also has a boolean class variable (not an instance
+variable) named ``HAS_PATTERN``. If ``HAS_PATTERN`` is True, the class has a
+corresponding regular expression in patterns.py.
 """
 import inspect
 from abc import ABC
@@ -11,7 +18,6 @@ from types import ModuleType
 from typing import Any
 from typing import List
 from typing import Type
-from typing import Union
 
 from note_splitter import patterns
 
@@ -30,147 +36,148 @@ def _get_indentation_level(line: str) -> int:
 
 
 class Token(ABC):
-    """The abstract base class (ABC) for all tokens.
-
-    Each non-abstract child class must have a ``content`` attribute. If
-    the token is not a combination of other tokens, that ``content``
-    attribute must be a string of the original content of the raw line
-    of text. Otherwise, the ``content`` attribute is the list of
-    subtokens. This class and all child classes have a boolean class
-    attribute named ``HAS_PATTERN``. If ``HAS_PATTERN`` is True, the
-    class has a corresponding regular expression in patterns.py.
-    """
+    """The abstract base class (ABC) for all tokens."""
 
     HAS_PATTERN = False
 
     @abstractmethod
     def __init__(self):
-        pass
+        self._content: Any
 
     def __str__(self):
         """Returns the original content of the token's raw text."""
-        return self.content + "\n"
+        return self._content + "\n"
+
+    @property
+    def content(self) -> Any:
+        pass
+
+    @content.setter
+    def content(self, new_content: Any) -> None:
+        pass
+
+
+class Line(Token):
+    """The ABC for tokens that take up one line of a file."""
+
+    @abstractmethod
+    def __init__(self, line: str = ""):
+        self._content = line
+
+    @property
+    def content(self) -> str:
+        return self._content
+
+    @content.setter
+    def content(self, line: str) -> None:
+        self._content = line
 
 
 class Block(Token):
-    """The ABC for tokens that are each a combination of tokens.
-
-    Each child class must have a ``content`` attribute that is a list
-    of the subtokens.
-    """
+    """The ABC for tokens that are each a combination of tokens."""
 
     @abstractmethod
     def __init__(self):
-        self.content: List[Any]
+        pass
+
+    @property
+    def content(self) -> List[Any]:
+        return self._content
+
+    @content.setter
+    def content(self, new_content: List[Any]) -> None:
+        self._content = new_content
 
     def __str__(self):
         """Returns the original content of the token's raw text."""
-        return "".join([str(token) for token in self.content])
+        return "".join([str(token) for token in self._content])
 
     def __len__(self):
         """Returns the length of the token's content."""
-        return len(self.content)
+        return len(self._content)
 
     def __bool__(self):
         """Returns whether the token's content is empty."""
-        return bool(self.content)
+        return bool(self._content)
 
     def __getitem__(self, index: int) -> Token:
         """Returns the token at the given index."""
-        return self.content[index]
+        return self._content[index]
 
     def __setitem__(self, index: int, token: Token) -> None:
         """Sets the token at the given index to the given token."""
-        self.content[index] = token
+        self._content[index] = token
 
     def __delitem__(self, index: int) -> None:
         """Deletes the token at the given index."""
-        del self.content[index]
+        del self._content[index]
 
     def __iter__(self):
         """Returns an iterator for the token's content."""
-        return iter(self.content)
+        return iter(self._content)
 
     def __contains__(self, item: Token) -> bool:
         """Returns whether the token's content contains an item."""
-        return item in self.content
+        return item in self._content
 
     def insert(self, index: int, token: Token) -> None:
         """Inserts the given token at the given index."""
-        self.content.insert(index, token)
+        self._content.insert(index, token)
 
     def append(self, token: Token) -> None:
         """Appends the given token to the section."""
-        self.content.append(token)
+        self._content.append(token)
 
     def remove(self, token: Token) -> None:
         """Removes the given token from the section."""
-        self.content.remove(token)
+        self._content.remove(token)
 
 
-class CanHaveInlineElements(Token):
-    """The ABC for tokens that can have inline elements.
+class CanHaveInlineElements(Line):
+    """The ABC for single-line tokens that can have inline elements."""
 
-    Each child class must have a ``content`` attribute that is a string.
-    Not all tokens with a ``content`` attribute that is a string can
-    have inline elements.
-    """
+    @abstractmethod
+    def __init__(self, line: str = ""):
+        self._content = line
+
+
+class TextListItem(Line):
+    """The ABC for text list item tokens."""
 
     @abstractmethod
     def __init__(self):
-        self.content: str
-
-
-class TextListItem(Token):
-    """The abstract base class (ABC) for text list item tokens.
-
-    Each child class must have ``content`` and ``level`` attributes.
-    """
-
-    @abstractmethod
-    def __init__(self):
-        self.content: Union[str, List[Any]]
         self.level: int
 
 
-class TablePart(Token):
-    """The ABC for tokens that tables are made out of.
-
-    Each child class must have a ``content`` attribute.
-    """
+class TablePart(Line):
+    """The ABC for tokens that tables are made out of."""
 
     @abstractmethod
     def __init__(self):
-        self.content: str
+        pass
 
 
-class Fence(Token):
-    """The ABC for tokens that block fences are made out of.
-
-    Each child class must have a ``content`` attribute.
-    """
+class Fence(Line):
+    """The ABC for tokens that block fences are made out of."""
 
     @abstractmethod
     def __init__(self):
-        self.content: str
+        pass
 
 
-class Fenced(Token):
-    """The ABC for tokens that are between Fence tokens.
-
-    Each child class must have a ``content`` attribute.
-    """
+class Fenced(Line):
+    """The ABC for tokens that are between Fence tokens."""
 
     @abstractmethod
     def __init__(self):
-        self.content: str
+        pass
 
 
 class Text(CanHaveInlineElements):
     """Normal text.
 
-    This class is the catch-all for text that doesn't fall into any
-    other category.
+    This class is the catch-all for individual lines of text that don't fall
+    into any other category.
 
     Attributes
     ----------
@@ -181,12 +188,12 @@ class Text(CanHaveInlineElements):
     """
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.level: int = _get_indentation_level(line)
 
 
-class EmptyLine(Token):
-    """A line in a file with either whitespace characters or nothing.
+class EmptyLine(Line):
+    """A line with either whitespace characters or nothing.
 
     Attributes
     ----------
@@ -197,7 +204,7 @@ class EmptyLine(Token):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class Header(CanHaveInlineElements):
@@ -218,14 +225,13 @@ class Header(CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        """Parses a line of text and creates a header token."""
-        self.content: str = line
+        self._content: str = line
         self.body: str = line.lstrip("#")
         self.level: int = len(line) - len(self.body)
         self.body = self.body.lstrip()
 
 
-class HorizontalRule(Token):
+class HorizontalRule(Line):
     """A horizontal rule.
 
     Attributes
@@ -237,11 +243,11 @@ class HorizontalRule(Token):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class Blockquote(CanHaveInlineElements):
-    """A quote taking up one entire line of text.
+    """A single-line quote.
 
     Attributes
     ----------
@@ -254,7 +260,7 @@ class Blockquote(CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.level: int = _get_indentation_level(line)
 
 
@@ -268,7 +274,7 @@ class BlockquoteBlock(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
 
 
 class Footnote(CanHaveInlineElements):
@@ -286,7 +292,7 @@ class Footnote(CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         if line:
             self.reference: str = line.split(":")[0]
         else:
@@ -309,7 +315,7 @@ class Task(TextListItem, CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.level: int = _get_indentation_level(line)
         self.is_done: bool = patterns.finished_task.match(line) is not None
 
@@ -331,7 +337,7 @@ class UnorderedListItem(TextListItem, CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.level: int = _get_indentation_level(line)
 
 
@@ -349,7 +355,7 @@ class OrderedListItem(TextListItem, CanHaveInlineElements):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.level: int = _get_indentation_level(line)
 
 
@@ -357,8 +363,7 @@ class TextList(Block):
     """A list that is numbered, bullet-pointed, and/or checkboxed.
 
     A single text list may have any combination of ordered list items,
-    unordered list items, to dos, and other text lists with more
-    indentation.
+    unordered list items, tasks, and other text lists with more indentation.
 
     Attributes
     ----------
@@ -370,7 +375,7 @@ class TextList(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
         if tokens_:
             self.level: int = tokens_[0].level
         else:
@@ -389,7 +394,7 @@ class TableRow(TablePart):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class TableDivider(TablePart):
@@ -405,7 +410,7 @@ class TableDivider(TablePart):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class Table(Block):
@@ -418,7 +423,7 @@ class Table(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
 
 
 class CodeFence(Fence):
@@ -438,7 +443,7 @@ class CodeFence(Fence):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
         self.language: str = line.lstrip("~").lstrip("`").strip()
 
 
@@ -452,7 +457,7 @@ class Code(Fenced):
     """
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class CodeBlock(Block):
@@ -469,7 +474,7 @@ class CodeBlock(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
         if tokens_:
             self.language: str = tokens_[0].language
         else:
@@ -488,7 +493,7 @@ class MathFence(Fence):
     HAS_PATTERN = True
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class Math(Fenced):
@@ -501,7 +506,7 @@ class Math(Fenced):
     """
 
     def __init__(self, line: str = ""):
-        self.content: str = line
+        self._content: str = line
 
 
 class MathBlock(Block):
@@ -517,7 +522,7 @@ class MathBlock(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
 
 
 class Section(Block):
@@ -535,7 +540,7 @@ class Section(Block):
     """
 
     def __init__(self, tokens_: List[Any] = None):
-        self.content: List[Any] = tokens_ or []
+        self._content: List[Any] = tokens_ or []
 
 
 def __is_token_type(obj: Any) -> bool:
