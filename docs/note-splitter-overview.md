@@ -99,11 +99,10 @@ Continuing from the previous example, here's the result of splitting where the u
 Once again, all the previous tokens still exist and can be accessed, they have simply been grouped together inside other tokens. You can see the code for splitting in [splitter.py](https://github.com/wheelercj/note-splitter/blob/main/note_splitter/splitter.py).
 
 ## formatting
-The last big step is formatting and saving:
-1. adjust some details in each such as making header levels lower if the lowest header level is not 1
-2. copy certain elements of the source file into each of the new sections such as tags or footnotes (if the user chose that in settings)
-3. convert the section tokens back to strings
-4. save those strings into new files
+The last big step before saving is formatting, which includes:
+* Reducing header levels in sections that don't have level 1 headers.
+* Copying any relevant footnotes and global tags from the source file into each section (if enabled in settings).
+* Converting the sections back into strings.
 
 The code for formatting can be found in [formatter_.py](https://github.com/wheelercj/note-splitter/blob/main/note_splitter/formatter_.py).
 
