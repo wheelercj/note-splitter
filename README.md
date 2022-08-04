@@ -26,33 +26,34 @@ Here are some tips for how to use Note Splitter:
 
 ### Split Types
 
-| type name                | description                                                                     | parent types                             |
+| type name                | description                                                                      | parent types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
+| line                     | any individual line of text                                                      | token                                    |
 | block                    | any text element that spans multiple lines                                       | token                                    |
 | blockquote               | a quote                                                                          | can have inline elements                 |
 | blockquote block         | multiple consecutive quotes                                                      | block                                    |
-| can have inline elements | any full-line text element that can contain inline elements                      | token                                    |
+| can have inline elements | any line of text that can contain inline elements                                | line                                     |
 | code                     | a line of code                                                                   | fenced                                   |
 | code block               | a block of code made of at least one line of code surrounded by code fences      | block                                    |
 | code fence               | a delimiter that shows where a code block begins or ends                         | fence                                    |
-| empty line               | a line with nothing or only whitespace characters                                | token                                    |
-| fence                    | any full-line text element that delimits others                                  | token                                    |
-| fenced                   | any full-line text element that is delimited by fences                           | token                                    |
+| empty line               | a line with nothing or only whitespace characters                                | line                                     |
+| fence                    | any line of text that delimits others                                            | line                                     |
+| fenced                   | any line of text that is delimited by fences                                     | line                                     |
 | footnote                 | a footnote (commonly at the bottom of a file; not a footnote reference)          | can have inline elements                 |
 | header                   | a header, i.e. a title                                                           | can have inline elements                 |
-| horizontal rule          | a line that divides a document                                                   | token                                    |
+| horizontal rule          | a line that divides a document                                                   | line                                     |
 | math                     | a line of math                                                                   | fenced                                   |
 | math block               | a block of math made of at least one line of math surrounded by math fences      | block                                    |
 | math fence               | a delimiter that shows where a math block begins or ends                         | fence                                    |
 | ordered list item        | one line of a numbered list                                                      | text list item, can have inline elements |
 | table                    | a table, like this one                                                           | block                                    |
 | table divider            | the second line of a table that divides the table's title row from its body rows | table part                               |
-| table part               | any full-line text element that is part of a table                               | token                                    |
+| table part               | any line of text that is part of a table                                         | line                                     |
 | table row                | a row of a table, like this one                                                  | table part                               |
 | task                     | a line of a to do list                                                           | text list item, can have inline elements |
 | text                     | any line that does not fall into any of the other categories here                | can have inline elements                 |
 | text list                | a bullet-point list and/or an ordered list                                       | block                                    |
-| text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | token                                    |
+| text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | line                                     |
 | token                    | anything                                                                         |                                          |
 | unordered list item      | one line of a bullet-point list                                                  | text list item, can have inline elements |
 
