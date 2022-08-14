@@ -28,7 +28,6 @@ Here are some tips for how to use Note Splitter:
 
 | type name                | description                                                                      | parent types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
-| line                     | any individual line of text                                                      | token                                    |
 | block                    | any text element that spans multiple lines                                       | token                                    |
 | blockquote               | a quote                                                                          | can have inline elements                 |
 | blockquote block         | multiple consecutive quotes                                                      | block                                    |
@@ -42,6 +41,7 @@ Here are some tips for how to use Note Splitter:
 | footnote                 | a footnote (commonly at the bottom of a file; not a footnote reference)          | can have inline elements                 |
 | header                   | a header, i.e. a title                                                           | can have inline elements                 |
 | horizontal rule          | a line that divides a document                                                   | line                                     |
+| line                     | any individual line of text                                                      | token                                    |
 | math                     | a line of math                                                                   | fenced                                   |
 | math block               | a block of math made of at least one line of math surrounded by math fences      | block                                    |
 | math fence               | a delimiter that shows where a math block begins or ends                         | fence                                    |
