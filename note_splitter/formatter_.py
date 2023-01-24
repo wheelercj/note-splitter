@@ -5,7 +5,6 @@ and global tags to each section, and then converts the section tokens to
 strings.
 """
 import uuid
-from typing import List
 from typing import Optional
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
@@ -24,26 +23,26 @@ class Formatter:
 
     def __call__(
         self,
-        sections: List[tokens.Section],
-        global_tags: List[str],
+        sections: list[tokens.Section],
+        global_tags: list[str],
         frontmatter: Optional[object] = None,
-        footnotes: Optional[List[tokens.Footnote]] = None,
-    ) -> List[str]:
+        footnotes: Optional[list[tokens.Footnote]] = None,
+    ) -> list[str]:
         """Formats sections for output.
 
         Parameters
         ----------
-        sections : List[tokens.Section]
+        sections : list[tokens.Section]
             The sections to format.
-        global_tags : List[str]
+        global_tags : list[str]
             The global tags to add to each section.
         frontmatter : Optional[object]
             The frontmatter to add to each section.
-        footnotes : Optional[List[tokens.Footnote]]
+        footnotes : Optional[list[tokens.Footnote]]
             The footnotes to add to each section with the respective
             footnote reference.
         """
-        split_contents: List[str] = []
+        split_contents: list[str] = []
         for section in sections:
             if not section:
                 continue
@@ -86,13 +85,13 @@ class Formatter:
         return section[0].body
 
     def insert_global_tags(
-        self, global_tags: List[str], section: tokens.Section
+        self, global_tags: list[str], section: tokens.Section
     ) -> None:
         """Inserts the global tags into a section.
 
         Parameters
         ----------
-        global_tags : List[str]
+        global_tags : list[str]
             The global tags to add to the section.
         section : tokens.Section
             The section to insert the global tags into.
@@ -151,13 +150,13 @@ class Formatter:
         section.insert(0, tokens.Text(frontmatter_string))
 
     def move_footnotes(
-        self, footnotes: List[tokens.Footnote], section: tokens.Section
+        self, footnotes: list[tokens.Footnote], section: tokens.Section
     ) -> None:
         """Moves footnotes to sections with the relevant references.
 
         Parameters
         ----------
-        footnotes : List[tokens.Footnote]
+        footnotes : list[tokens.Footnote]
             The footnotes to add to the section if it contains
             references to them, or to remove from the section if it does
             not contain references to them.

@@ -1,8 +1,6 @@
 import re
 from textwrap import dedent
 from typing import Callable
-from typing import List
-from typing import Tuple
 
 import pytest
 
@@ -16,7 +14,7 @@ from note_splitter.splitter import Splitter
 
 
 @pytest.fixture
-def callables() -> Tuple[Lexer, Splitter, Formatter]:
+def callables() -> tuple[Lexer, Splitter, Formatter]:
     tokenize = Lexer()
     split = Splitter()
     format_ = Formatter()
@@ -32,16 +30,16 @@ def callables() -> Tuple[Lexer, Splitter, Formatter]:
 ################
 
 
-def test_split_text_with_nothing(callables: Tuple[Callable, Callable, Callable]):
+def test_split_text_with_nothing(callables: tuple[Callable, Callable, Callable]):
     tokenize, split, format_ = callables
     settings["parse_blocks"] = False
     settings["split_type"] = tokens.Header
     settings["split_attrs"] = {}
-    result: List[str] = main.split_text("", tokenize, split, format_)
+    result: list[str] = main.split_text("", tokenize, split, format_)
     assert result == []
 
 
-def test_split_text_with_headers(callables: Tuple[Callable, Callable, Callable]):
+def test_split_text_with_headers(callables: tuple[Callable, Callable, Callable]):
     tokenize, split, format_ = callables
     content = dedent(
         """\
@@ -54,7 +52,7 @@ def test_split_text_with_headers(callables: Tuple[Callable, Callable, Callable])
     settings["parse_blocks"] = False
     settings["split_type"] = tokens.Header
     settings["split_attrs"] = {}
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
             """\
@@ -73,7 +71,7 @@ def test_split_text_with_headers(callables: Tuple[Callable, Callable, Callable])
     assert result == expected
 
 
-def test_split_text_with_blocks(callables: Tuple[Callable, Callable, Callable]):
+def test_split_text_with_blocks(callables: tuple[Callable, Callable, Callable]):
     tokenize, split, format_ = callables
     content = dedent(
         """\
@@ -94,7 +92,7 @@ def test_split_text_with_blocks(callables: Tuple[Callable, Callable, Callable]):
     settings["parse_blocks"] = True
     settings["split_type"] = tokens.Header
     settings["split_attrs"] = {}
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
             """\
@@ -122,7 +120,7 @@ def test_split_text_with_blocks(callables: Tuple[Callable, Callable, Callable]):
 
 
 def test_split_text_with_elements_to_copy(
-    callables: Tuple[Callable, Callable, Callable]
+    callables: tuple[Callable, Callable, Callable]
 ):
     tokenize, split, format_ = callables
     content = dedent(
@@ -157,7 +155,7 @@ def test_split_text_with_elements_to_copy(
     settings["copy_global_tags"] = True
     settings["copy_frontmatter"] = True
     settings["move_footnotes"] = True
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
             """\
@@ -183,7 +181,7 @@ def test_split_text_with_elements_to_copy(
 
 
 def test_split_text_with_top_ordered_list_items(
-    callables: Tuple[Callable, Callable, Callable]
+    callables: tuple[Callable, Callable, Callable]
 ):
     tokenize, split, format_ = callables
     content = dedent(
@@ -201,7 +199,7 @@ def test_split_text_with_top_ordered_list_items(
     settings["parse_blocks"] = True
     settings["split_type"] = tokens.OrderedListItem
     settings["split_attrs"] = {"level": 0}
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
             """\
@@ -226,7 +224,7 @@ def test_split_text_with_top_ordered_list_items(
 
 
 def test_split_text_with_all_ordered_list_items(
-    callables: Tuple[Callable, Callable, Callable]
+    callables: tuple[Callable, Callable, Callable]
 ):
     tokenize, split, format_ = callables
     content = dedent(
@@ -244,7 +242,7 @@ def test_split_text_with_all_ordered_list_items(
     settings["parse_blocks"] = False
     settings["split_type"] = tokens.OrderedListItem
     settings["split_attrs"] = {}
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         "1. first item\n",
         "    1. first subitem\n",
@@ -256,7 +254,7 @@ def test_split_text_with_all_ordered_list_items(
     assert result == expected
 
 
-def test_split_text_with_custom_pattern(callables: Tuple[Callable, Callable, Callable]):
+def test_split_text_with_custom_pattern(callables: tuple[Callable, Callable, Callable]):
     tokenize, split, format_ = callables
     content = dedent(
         """\
@@ -277,7 +275,7 @@ def test_split_text_with_custom_pattern(callables: Tuple[Callable, Callable, Cal
     patterns.__dict__["ordered_list_item"] = re.compile(
         settings["ordered_list_item_pattern"]
     )
-    result: List[str] = main.split_text(content, tokenize, split, format_)
+    result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
             """\

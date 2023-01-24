@@ -2,7 +2,6 @@
 from textwrap import dedent
 from typing import Any
 from typing import Callable
-from typing import List
 
 from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
@@ -58,7 +57,7 @@ def __manual_test() -> None:
 
     load_settings()
     tokenize: Callable = Lexer()
-    tokens_: List[tokens.Token] = tokenize(sample_markdown)
+    tokens_: list[tokens.Token] = tokenize(sample_markdown)
     __print_lexer_output(tokens_)
 
     settings["parse_blocks"] = True
@@ -72,18 +71,18 @@ def __manual_test() -> None:
     __print_splitter_output(sections, global_tags)
 
     format_: Callable = Formatter()
-    split_contents: List[str] = format_(
+    split_contents: list[str] = format_(
         sections, global_tags, ast.frontmatter, ast.footnotes
     )
     __print_formatter_output(split_contents)
 
 
-def __print_tokens(tokens_: List[Any]) -> None:
+def __print_tokens(tokens_: list[Any]) -> None:
     """Prints tokens' types and contents.
 
     Parameters
     ----------
-    tokens_ : List[tokens.Token]
+    tokens_ : list[tokens.Token]
         The list of tokens to print.
     """
     for token in tokens_:
@@ -107,12 +106,12 @@ def __print_token(token: tokens.Token, token_content: str) -> None:
     print(f"{str(type(token).__name__):>18s} | {token_content}", end="")
 
 
-def __format_tokens(tokens_: List[tokens.Token]) -> str:
+def __format_tokens(tokens_: list[tokens.Token]) -> str:
     """Formats tokens' contents for test output.
 
     Parameters
     ----------
-    tokens_ : List[tokens.Token]
+    tokens_ : list[tokens.Token]
         The list of tokens to format for printing.
     """
     block = []
@@ -124,12 +123,12 @@ def __format_tokens(tokens_: List[tokens.Token]) -> str:
     return (" " * 18 + " | ").join(block)
 
 
-def __print_lexer_output(tokens_: List[tokens.Token]) -> None:
+def __print_lexer_output(tokens_: list[tokens.Token]) -> None:
     """Displays the lexer's output.
 
     Parameters
     ----------
-    tokens_ : List[tokens.Token]
+    tokens_ : list[tokens.Token]
         The list of tokens to print.
     """
     print("**Lexer output:**\n")
@@ -158,15 +157,15 @@ def __print_parser_output(ast: AST) -> None:
 
 
 def __print_splitter_output(
-    sections: List[tokens.Section], global_tags: List[str]
+    sections: list[tokens.Section], global_tags: list[str]
 ) -> None:
     """Displays the splitter's output.
 
     Parameters
     ----------
-    sections : List[tokens.Section]
+    sections : list[tokens.Section]
         The list of sections to print.
-    global_tags : List[str]
+    global_tags : list[str]
         The list of global tags to print.
     """
     print("\n**Splitter output:**\n")
@@ -175,12 +174,12 @@ def __print_splitter_output(
     input("**Press enter to continue**")
 
 
-def __print_formatter_output(split_contents: List[str]) -> None:
+def __print_formatter_output(split_contents: list[str]) -> None:
     """Displays the formatter's output.
 
     Parameters
     ----------
-    split_contents : List[str]
+    split_contents : list[str]
         The list of strings to print. Each string represents one new
         file's content.
     """

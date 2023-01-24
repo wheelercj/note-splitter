@@ -1,9 +1,7 @@
 """Various functions for building the graphical user interface."""
 import inspect
 from textwrap import dedent
-from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
@@ -50,7 +48,7 @@ def create_main_menu_window() -> sg.Window:
     return window
 
 
-def create_main_menu_layout() -> List[List[sg.Element]]:
+def create_main_menu_layout() -> list[list[sg.Element]]:
     """Creates the main menu's layout."""
     tabgroup_layout = [
         [
@@ -76,7 +74,7 @@ def create_main_menu_layout() -> List[List[sg.Element]]:
     return layout
 
 
-def create_home_tab_layout() -> List[List[sg.Element]]:
+def create_home_tab_layout() -> list[list[sg.Element]]:
     """Creates the home tab's layout."""
     frame_layout = [
         [sg.T("Choose which files to split: ")],
@@ -131,7 +129,7 @@ def create_home_tab_layout() -> List[List[sg.Element]]:
     return tab_layout
 
 
-def create_settings_tab_layout() -> List[List[sg.Element]]:
+def create_settings_tab_layout() -> list[list[sg.Element]]:
     """Creates the settings tab's layout."""
     return [
         [
@@ -241,7 +239,7 @@ def create_settings_tab_layout() -> List[List[sg.Element]]:
     # [sg.Button('Set Theme')],
 
 
-def create_about_tab_layout() -> List[List[sg.Element]]:
+def create_about_tab_layout() -> list[list[sg.Element]]:
     """Creates the about tab's layout."""
     return [
         [
@@ -282,7 +280,7 @@ def create_about_tab_layout() -> List[List[sg.Element]]:
     ]
 
 
-def create_patterns_tab_layout() -> List[List[sg.Element]]:
+def create_patterns_tab_layout() -> list[list[sg.Element]]:
     """Creates the patterns tab's layout."""
     elements = []
     for name, value in settings.items():
@@ -310,7 +308,7 @@ def create_pattern_input_field(name: str, value: str) -> sg.Element:
     ]
 
 
-def create_hyperlink(text: str, url: str, font: Tuple[str, int, str] = None) -> sg.Text:
+def create_hyperlink(text: str, url: str, font: tuple[str, int, str] = None) -> sg.Text:
     """Creates a PySimpleGUI Text object with a clickable hyperlink.
 
     When the user clicks the hyperlink, the event created will start
@@ -322,7 +320,7 @@ def create_hyperlink(text: str, url: str, font: Tuple[str, int, str] = None) -> 
         The text to display in the Text object.
     url : str
         The URL to open when the hyperlink is clicked.
-    font : Tuple[str, int, str]
+    font : tuple[str, int, str]
         The font to use for the Text object. The first element is the
         font family, the second is the font size, and the third is the
         font style. The default is ('Arial', 14, 'underline').
@@ -364,7 +362,7 @@ def update_split_type_and_attrs(values: dict, window: sg.Window) -> None:
         The window to update.
     """
     if values["parseBlocks"]:
-        type_names: List[str] = get_token_type_names()
+        type_names: list[str] = get_token_type_names()
         type_names.remove("section")
         default_value = get_token_type_name(settings["split_type"])
     else:
@@ -382,7 +380,7 @@ def update_split_type_and_attrs(values: dict, window: sg.Window) -> None:
 def create_split_attr_dropdown() -> sg.Combo:
     """Creates a dropdown element listing token attributes and None."""
     if inspect.isabstract(settings["split_type"]):
-        attr_names: List[Union[str, None]] = [None]
+        attr_names: list[Union[str, None]] = [None]
     else:
         obj = settings["split_type"]()
         attr_names = sorted(list(obj.__dict__.keys()))
@@ -409,7 +407,7 @@ def update_split_attrs(values: dict, window: sg.Window) -> None:
         The window to update.
     """
     if inspect.isabstract(settings["split_type"]):
-        attr_names: List[Union[str, None]] = []
+        attr_names: list[Union[str, None]] = []
         default_attr = None
         settings["split_attr"] = {}
     else:
@@ -425,12 +423,12 @@ def update_split_attrs(values: dict, window: sg.Window) -> None:
     window["-SPLIT ATTR-"].update(default_attr, values=attr_names)
 
 
-def create_split_summary_window(notes: List[note.Note], listbox_key: str) -> sg.Window:
+def create_split_summary_window(notes: list[note.Note], listbox_key: str) -> sg.Window:
     """Creates a window displaying the number of notes split.
 
     Parameters
     ----------
-    notes : List[note.Note]
+    notes : list[note.Note]
         The notes displayed in the listbox.
     listbox_key : str
         The key of the listbox.
@@ -445,15 +443,15 @@ def create_split_summary_window(notes: List[note.Note], listbox_key: str) -> sg.
 
 
 def run_split_summary_window(
-    notes: List[note.Note], all_notes: List[note.Note]
+    notes: list[note.Note], all_notes: list[note.Note]
 ) -> None:
     """Runs the split summary window.
 
     Parameters
     ----------
-    notes : List[note.Note]
+    notes : list[note.Note]
         The notes displayed in the listbox.
-    all_notes : List[note.Note]
+    all_notes : list[note.Note]
         All of the user's notes.
     """
     listbox_key = "-LISTBOX-"
@@ -469,8 +467,8 @@ def run_split_summary_window(
 
 
 def create_note_listbox_layout_with_buttons(
-    notes: List[note.Note], key: str
-) -> List[List[sg.Element]]:
+    notes: list[note.Note], key: str
+) -> list[list[sg.Element]]:
     """Creates a listbox of note titles and relevant buttons.
 
     The listbox itself has the given key, and the buttons have these
@@ -480,7 +478,7 @@ def create_note_listbox_layout_with_buttons(
 
     Parameters
     ----------
-    notes : List[note.Note]
+    notes : list[note.Note]
         The notes to display in the listbox.
     key : str
         The key to use for the listbox and part of each of its buttons.
@@ -498,13 +496,13 @@ def create_note_listbox_layout_with_buttons(
 
 
 def create_note_listbox_layout(
-    notes: Optional[List[note.Note]], key: str
-) -> List[List[sg.Element]]:
+    notes: Optional[list[note.Note]], key: str
+) -> list[list[sg.Element]]:
     """Creates a listbox of note titles.
 
     Parameters
     ----------
-    notes : List[note.Note], optional
+    notes : list[note.Note], optional
         The notes to display in the listbox.
     key : str
         The key to use for the listbox.
@@ -559,10 +557,10 @@ def handle_note_listbox_event(
     event: str,
     values: dict,
     window: sg.Window,
-    listbox_notes: List[note.Note],
+    listbox_notes: list[note.Note],
     listbox_key: str,
-    all_notes: List[note.Note],
-) -> List[note.Note]:
+    all_notes: list[note.Note],
+) -> list[note.Note]:
     """Handles an event from a listbox of notes.
 
     Parameters
@@ -573,16 +571,16 @@ def handle_note_listbox_event(
         The values of the event.
     window : sg.Window
         The window containing the listbox.
-    listbox_notes : List[note.Note]
+    listbox_notes : list[note.Note]
         The notes displayed in the listbox.
     listbox_key : str
         The key of the listbox.
-    all_notes : List[note.Note]
+    all_notes : list[note.Note]
         All of the user's notes.
 
     Returns
     -------
-    List[note.Note]
+    list[note.Note]
         The notes displayed in the listbox.
     """
     listbox_notes_dict = {n.title: n for n in listbox_notes}

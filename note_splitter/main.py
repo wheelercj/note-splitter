@@ -1,19 +1,11 @@
 """This module runs the entire application."""
 import os
 import re
-import sys
 import webbrowser
 from tkinter import filedialog
 from typing import Callable
-from typing import List
-from typing import Tuple
+from typing import Literal
 from typing import Union
-
-if sys.version_info < (3, 8):
-    from typing_extensions import Literal
-else:
-    from typing import Literal
-
 
 import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
 
@@ -36,8 +28,8 @@ def run_main_menu() -> None:
     load_settings()
     sg.theme("TanBlue")
     window = gui.create_main_menu_window()
-    listbox_notes: List[note.Note] = []
-    all_notes: List[note.Note] = []
+    listbox_notes: list[note.Note] = []
+    all_notes: list[note.Note] = []
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, "Close"):
@@ -49,7 +41,7 @@ def run_main_menu() -> None:
         )
 
 
-def split_files(window: sg.Window, notes: List[note.Note] = None) -> List[note.Note]:
+def split_files(window: sg.Window, notes: list[note.Note] = None) -> list[note.Note]:
     """Splits files into multiple smaller files.
 
     If no notes are provided, they will be found using the split keyword
@@ -59,12 +51,12 @@ def split_files(window: sg.Window, notes: List[note.Note] = None) -> List[note.N
     ----------
     window : sg.Window
         The main menu window.
-    notes : List[note.Note]
+    notes : list[note.Note]
         The notes to be split.
 
     Returns
     -------
-    new_notes : List[note.Note]
+    new_notes : list[note.Note]
         The newly created notes.
     """
     tokenize: Callable = Lexer()
@@ -72,15 +64,15 @@ def split_files(window: sg.Window, notes: List[note.Note] = None) -> List[note.N
     format_: Callable = Formatter()
 
     notes = notes or note.get_chosen_notes(window)
-    all_new_notes: List[note.Note] = []
+    all_new_notes: list[note.Note] = []
     for i, source_note in enumerate(notes):
         gui.show_progress(i, len(notes), 1, 5)
         with open(source_note.path, "r", encoding="utf8") as file:
             content: str = file.read()
         gui.show_progress(i, len(notes), 2, 5)
-        split_contents: List[str] = split_text(content, tokenize, split, format_)
+        split_contents: list[str] = split_text(content, tokenize, split, format_)
         gui.show_progress(i, len(notes), 3, 5)
-        new_file_names: List[str] = note.create_file_names(
+        new_file_names: list[str] = note.create_file_names(
             source_note.ext, split_contents
         )
         gui.show_progress(i, len(notes), 4, 5)
@@ -103,7 +95,7 @@ def split_files(window: sg.Window, notes: List[note.Note] = None) -> List[note.N
 
 def split_text(
     content: str, tokenize: Callable, split: Callable, format_: Callable
-) -> List[str]:
+) -> list[str]:
     """Splits a string into multiple strings based on several factors.
 
     Attributes
@@ -122,37 +114,37 @@ def split_text(
 
     Returns
     -------
-    split_contents : List[str]
+    split_contents : list[str]
         A list of strings that are the sections of the original string.
     """
-    tokens_: List[tokens.Token] = tokenize(content)
+    tokens_: list[tokens.Token] = tokenize(content)
     ast = AST(tokens_, settings["parse_blocks"])
     sections, global_tags = split(ast.content)
-    split_contents: List[str] = format_(
+    split_contents: list[str] = format_(
         sections, global_tags, ast.frontmatter, ast.footnotes
     )
     return split_contents
 
 
 def save_new_notes(
-    split_contents: List[str], new_file_names: List[str], window: sg.Window
-) -> List[note.Note]:
+    split_contents: list[str], new_file_names: list[str], window: sg.Window
+) -> list[note.Note]:
     """Creates new files and saves strings into them.
 
     The lists for the contents and names of the new files are parallel.
 
     Attributes
     ----------
-    split_contents : List[str]
+    split_contents : list[str]
         A list of strings to each be saved into a new file.
-    new_file_names : List[str]
+    new_file_names : list[str]
         A list of names of files to be created.
     window : sg.Window
         The main menu window.
 
     Returns
     -------
-    new_notes : List[note.Note]
+    new_notes : list[note.Note]
         The newly created notes.
     """
     new_notes = []
@@ -174,14 +166,14 @@ def save_new_notes(
     return new_notes
 
 
-def create_index_file_(source_note: note.Note, new_notes: List[note.Note]) -> note.Note:
+def create_index_file_(source_note: note.Note, new_notes: list[note.Note]) -> note.Note:
     """Creates an index file for the new notes in the same folder.
 
     Parameters
     ----------
     source_note : note.Note
         The note that the new notes were created from.
-    new_notes : List[note.Note]
+    new_notes : list[note.Note]
         The newly created notes.
 
     Returns
@@ -201,14 +193,14 @@ def create_index_file_(source_note: note.Note, new_notes: List[note.Note]) -> no
     return note.Note(index_file_path, folder_path, index_name)
 
 
-def append_backlinks(root_note: note.Note, notes: List[note.Note]) -> None:
+def append_backlinks(root_note: note.Note, notes: list[note.Note]) -> None:
     """Appends backlinks to the root note in each of the given notes.
 
     Parameters
     ----------
     root_note : str
         The note that the backlinks will link to.
-    notes : List[note.Note]
+    notes : list[note.Note]
         The notes to append backlinks to.
     """
     for note_ in notes:
@@ -220,9 +212,9 @@ def handle_main_menu_event(
     event: str,
     values: dict,
     window: sg.Window,
-    listbox_notes: List[note.Note],
-    all_notes: List[note.Note],
-) -> Tuple[List[note.Note], List[note.Note]]:
+    listbox_notes: list[note.Note],
+    all_notes: list[note.Note],
+) -> tuple[list[note.Note], list[note.Note]]:
     """Handles the main menu's events.
 
     Parameters
@@ -233,16 +225,16 @@ def handle_main_menu_event(
         The values of the widgets in the main menu.
     window : sg.Window
         The main menu window.
-    listbox_notes : List[note.Note]
+    listbox_notes : list[note.Note]
         The notes displayed in the listbox. This list may be empty.
-    all_notes : List[note.Note]
+    all_notes : list[note.Note]
         All of the user's notes. This list may be empty.
 
     Returns
     -------
-    listbox_notes : List[note.Note]
+    listbox_notes : list[note.Note]
         The notes displayed in the listbox. This list may be empty.
-    all_notes : List[note.Note]
+    all_notes : list[note.Note]
         All of the user's notes. This list may be empty.
     """
     if event.startswith("URL "):
@@ -254,11 +246,11 @@ def handle_main_menu_event(
         patterns.__dict__[setting_name[:-8]] = re.compile(settings[setting_name])
     elif event == "open file browser":
         all_notes = note.get_all_notes(window)
-        file_paths: Union[Literal[""], Tuple[str, ...]] = filedialog.askopenfilenames()
+        file_paths: Union[Literal[""], tuple[str, ...]] = filedialog.askopenfilenames()
         if not file_paths:
             return listbox_notes, all_notes
         listbox_notes = [note.Note(f) for f in file_paths]
-        titles: List[str] = [n.title for n in listbox_notes]
+        titles: list[str] = [n.title for n in listbox_notes]
         window["-NOTES TO SPLIT-"].update(values=titles)
         settings["using_split_keyword"] = False
     elif event == "find by keyword":
@@ -268,7 +260,7 @@ def handle_main_menu_event(
         titles = [n.title for n in listbox_notes]
         window["-NOTES TO SPLIT-"].update(values=titles)
     elif event == "Split all":
-        new_notes: List[note.Note] = split_files(window, listbox_notes)
+        new_notes: list[note.Note] = split_files(window, listbox_notes)
         gui.run_split_summary_window(new_notes, all_notes)
         window["-NOTES TO SPLIT-"].update(values=[])
     elif event == "Split selected":

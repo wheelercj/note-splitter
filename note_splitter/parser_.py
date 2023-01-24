@@ -2,7 +2,6 @@
 import re
 from typing import Any
 from typing import Callable
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -19,18 +18,18 @@ class AST:
     ----------
     frontmatter : Optional[object]
         The file's optional YAML frontmatter as a Python object.
-    content : List[tokens.Token]
+    content : list[tokens.Token]
         All the tokens below any frontmatter.
-    footnotes : List[tokens.Footnote]
+    footnotes : list[tokens.Footnote]
         All the footnotes in the file.
     """
 
-    def __init__(self, tokens_: List[tokens.Token], parse_blocks: bool = True):
+    def __init__(self, tokens_: list[tokens.Token], parse_blocks: bool = True):
         """Creates an AST from a list of tokens.
 
         Parameters
         ----------
-        tokens_ : List[tokens.Token]
+        tokens_ : list[tokens.Token]
             A list of tokens created from a Lexer object.
         parse_blocks : bool
             If True, some of the tokens will be grouped together into
@@ -43,8 +42,8 @@ class AST:
         self.__tokens = tokens_  # This attribute empties into self.content.
 
         self.frontmatter: Optional[object] = self.__get_frontmatter()
-        self.footnotes: List[tokens.Footnote] = self.__get_footnotes()
-        self.content: List[tokens.Token] = []
+        self.footnotes: list[tokens.Footnote] = self.__get_footnotes()
+        self.content: list[tokens.Token] = []
         if parse_blocks:
             self.__parse_blocks()
         else:
@@ -70,7 +69,7 @@ class AST:
             YAML frontmatter loaded as a Python object. If there is no
             frontmatter, None will be returned.
         """
-        frontmatter_tokens: List[tokens.Text] = []
+        frontmatter_tokens: list[tokens.Text] = []
         in_frontmatter = False
         while self.__tokens:
             token = self.__tokens[0]
@@ -129,7 +128,7 @@ class AST:
             The indentation level (in spaces) of the first item in the
             list.
         """
-        block_tokens: List[Union[tokens.TextList, tokens.TextListItem]] = []
+        block_tokens: list[Union[tokens.TextList, tokens.TextListItem]] = []
         first_token = self.__tokens.pop(0)
         assert isinstance(first_token, tokens.TextListItem)
         block_tokens.append(first_token)
@@ -168,7 +167,7 @@ class AST:
         sub_token_type : Union[tokens.Blockquote, tokens.TablePart]
             The type of the tokens within the block.
         """
-        block_tokens: List[Any] = []
+        block_tokens: list[Any] = []
         block_tokens.append(self.__tokens.pop(0))
         while self.__tokens:
             token = self.__tokens[0]
@@ -181,7 +180,7 @@ class AST:
 
     def __get_fenced_block(self) -> Union[tokens.CodeBlock, tokens.MathBlock]:
         """Creates a code block token or a math block token."""
-        block_tokens: List[Union[tokens.Fence, tokens.Fenced]] = []
+        block_tokens: list[Union[tokens.Fence, tokens.Fenced]] = []
         first_token = self.__tokens.pop(0)
         assert isinstance(first_token, tokens.Fence)
         block_tokens.append(first_token)
@@ -207,20 +206,20 @@ class AST:
         assert isinstance(token.content, str)
         return bool(pattern.match(token.content))
 
-    def __load_frontmatter(self, tokens_: List[tokens.Text]) -> Optional[object]:
+    def __load_frontmatter(self, tokens_: list[tokens.Text]) -> Optional[object]:
         """Converts Text tokens into a Python object.
 
         Parameters
         ----------
-        tokens_ : List[tokens.Text]
+        tokens_ : list[tokens.Text]
             The tokens that make up the frontmatter.
         """
         text: str = "\n".join([t.content for t in tokens_])
         return yaml.load(text, Loader=yaml.FullLoader)
 
-    def __get_footnotes(self) -> List[tokens.Footnote]:
+    def __get_footnotes(self) -> list[tokens.Footnote]:
         """Gets the footnotes in the token list."""
-        footnotes: List[tokens.Footnote] = []
+        footnotes: list[tokens.Footnote] = []
         for token in self.__tokens:
             if isinstance(token, tokens.Footnote):
                 footnotes.append(token)

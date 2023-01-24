@@ -1,7 +1,4 @@
 """For splitting an AST's tokens into Sections tokens."""
-from typing import List
-from typing import Tuple
-
 from note_splitter import patterns
 from note_splitter import tokens
 from note_splitter.settings import settings
@@ -11,42 +8,42 @@ class Splitter:
     """Creates a Callable that splits a token list into Sections."""
 
     def __call__(
-        self, tokens_: List[tokens.Token]
-    ) -> Tuple[List[tokens.Section], List[str]]:
+        self, tokens_: list[tokens.Token]
+    ) -> tuple[list[tokens.Section], list[str]]:
         """Splits a tokens list into Sections.
 
         Parameters
         ----------
-        tokens_ : List[tokens.Token]
+        tokens_ : list[tokens.Token]
             A list of tokens to split.
 
         Returns
         -------
-        sections : List[tokens.Section]
+        sections : list[tokens.Section]
             A list of the sections created by splitting. These are like
             smaller ASTs.
-        global_tags : List[str]
+        global_tags : list[str]
             A list of the tags that are not in any of the sections.
         """
         self.__tokens = tokens_
         sections, global_tags = self.__get_sections()
         return sections, global_tags
 
-    def __get_sections(self) -> Tuple[List[tokens.Section], List[str]]:
+    def __get_sections(self) -> tuple[list[tokens.Section], list[str]]:
         """Groups the tokens into section tokens.
 
         Returns
         -------
-        sections : List[tokens.Section]
+        sections : list[tokens.Section]
             A list of the sections created by splitting. These are like
             smaller ASTs.
-        global_tags : List[str]
+        global_tags : list[str]
             A list of the tags that are not in any of the sections.
         """
         # Depth-first search for tokens of the chosen split type.
         # Irrelevant tokens are deleted as the loop iterates.
-        sections: List[tokens.Section] = []
-        global_tags: List[str] = []
+        sections: list[tokens.Section] = []
+        global_tags: list[str] = []
         while self.__tokens:
             token = self.__tokens[0]
             if (
@@ -92,7 +89,7 @@ class Splitter:
         any other headers of level 2 or any of level 1, but may contain
         headers of level 3 or greater.
         """
-        section_tokens: List[tokens.Token] = []
+        section_tokens: list[tokens.Token] = []
         section_tokens.append(self.__tokens.pop(0))
 
         while self.__tokens:

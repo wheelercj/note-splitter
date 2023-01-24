@@ -8,9 +8,7 @@ import webbrowser
 from copy import copy
 from datetime import datetime
 from datetime import timedelta
-from typing import List
 from typing import Optional
-from typing import Tuple
 
 import PySimpleGUI as sg
 from send2trash import send2trash  # https://github.com/arsenetar/send2trash
@@ -105,7 +103,7 @@ class Note:
         return True
 
     def move(
-        self, new_folder_path: str, window: sg.Window, all_notes: List["Note"]
+        self, new_folder_path: str, window: sg.Window, all_notes: list["Note"]
     ) -> Optional[bool]:
         """Moves the note file to a new folder.
 
@@ -115,7 +113,7 @@ class Note:
             The absolute path to the new folder.
         window : sg.Window
             The application window.
-        all_notes : List[Note]
+        all_notes : list[Note]
             A list of all the notes in the user's notes folder.
 
         Returns
@@ -153,14 +151,14 @@ class Note:
         return True
 
 
-def get_chosen_notes(window: sg.Window, all_notes: List[Note] = None) -> List[Note]:
+def get_chosen_notes(window: sg.Window, all_notes: list[Note] = None) -> list[Note]:
     """Gets the notes that the user chose to split.
 
     Parameters
     ----------
     window : sg.Window
         The application window.
-    all_notes : List[Note], optional
+    all_notes : list[Note], optional
         The list of all the notes in the user's chosen folder. If not
         provided, the list of all the notes in the user's chosen folder
         will be retrieved.
@@ -170,7 +168,7 @@ def get_chosen_notes(window: sg.Window, all_notes: List[Note] = None) -> List[No
     if not all_notes:
         return []
 
-    chosen_notes: List[Note] = []
+    chosen_notes: list[Note] = []
     for note in all_notes:
         with open(note.path, "r", encoding="utf8") as file:
             contents = file.read()
@@ -220,7 +218,7 @@ def request_folder_path(folder_description: str) -> Optional[str]:
     return folder_path
 
 
-def get_all_notes(window: sg.Window) -> List[Note]:
+def get_all_notes(window: sg.Window) -> list[Note]:
     """Gets all the notes in the user's chosen folder.
 
     Parameters
@@ -228,7 +226,7 @@ def get_all_notes(window: sg.Window) -> List[Note]:
     window : sg.Window
         The application window.
     """
-    notes: List[Note] = []
+    notes: list[Note] = []
     try:
         folder_list = os.listdir(settings["source_folder_path"])
     except FileNotFoundError:
@@ -250,7 +248,7 @@ def get_all_notes(window: sg.Window) -> List[Note]:
     return notes
 
 
-def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
+def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
     """Creates names for new files.
 
     The returned file names are in the format specified in the
@@ -262,7 +260,7 @@ def create_file_names(file_ext: str, files_contents: List[str]) -> List[str]:
     ----------
     file_ext : str
         The file extension, including the leading period.
-    files_contents : List[str]
+    files_contents : list[str]
         The contents of the files to be named.
     """
     file_names = []
@@ -337,7 +335,7 @@ def create_file_id(file_contents: str, dt: datetime = None) -> str:
     return file_id
 
 
-def __get_variables(file_contents: str, dt: datetime) -> List[Tuple[str, str]]:
+def __get_variables(file_contents: str, dt: datetime) -> list[tuple[str, str]]:
     """Gets the variable names and values for file name and ID formats.
 
     Parameters
@@ -442,10 +440,10 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
 
 
 def move_files(
-    paths_of_files_to_move: List[str],
+    paths_of_files_to_move: list[str],
     destination_path: str,
     window: sg.Window,
-    all_notes: List[Note] = None,
+    all_notes: list[Note] = None,
 ) -> None:
     """Moves files and updates all relevant references everywhere.
 
@@ -455,15 +453,15 @@ def move_files(
 
     Parameters
     ----------
-    paths_of_files_to_move : List[str]
-        List of absolute paths of files to be moved. These can be files
+    paths_of_files_to_move : list[str]
+        list of absolute paths of files to be moved. These can be files
         of any type.
     destination_path : str
         Absolute path to the destination folder.
     window : sg.Window
         The window to update.
-    all_notes : List[Note], optional
-        List of all notes in the source folder. If not given, it will be
+    all_notes : list[Note], optional
+        list of all notes in the source folder. If not given, it will be
         loaded from the source folder.
     """
     if all_notes is None:
@@ -499,7 +497,7 @@ def make_file_paths_absolute(note_content: str, note_path: str) -> str:
         The note's content with all file paths made absolute.
     """
     note_folder_path = os.path.dirname(note_path)
-    file_paths: List[Tuple[str, str]] = get_file_paths(note_content, note_folder_path)
+    file_paths: list[tuple[str, str]] = get_file_paths(note_content, note_folder_path)
     for original_path, formatted_path in file_paths:
         note_content = note_content.replace(original_path, formatted_path)
     return note_content
@@ -524,7 +522,7 @@ def _make_file_paths_absolute(note_path: str) -> None:
 
 
 def __change_all_links_to_file(
-    current_path_to_change: str, new_path: str, all_notes: List[Note]
+    current_path_to_change: str, new_path: str, all_notes: list[Note]
 ) -> None:
     """Changes the path to a file in all notes' links.
 
@@ -536,8 +534,8 @@ def __change_all_links_to_file(
         Absolute path to the file.
     new_path : str
         Absolute path the file will have after being moved.
-    all_notes : List[Note]
-        List of all notes in the source folder.
+    all_notes : list[Note]
+        list of all notes in the source folder.
     """
     for note_ in all_notes:
         with open(note_.path, "r", encoding="utf8") as file:
@@ -550,7 +548,7 @@ def __change_all_links_to_file(
             file.write(content)
 
 
-def get_file_paths(note_content: str, note_folder_path: str) -> List[Tuple[str, str]]:
+def get_file_paths(note_content: str, note_folder_path: str) -> list[tuple[str, str]]:
     """Gets the original and formatted file paths in links in a note.
 
     Only paths to files that exist are returned.
@@ -564,16 +562,16 @@ def get_file_paths(note_content: str, note_folder_path: str) -> List[Tuple[str, 
 
     Returns
     -------
-    List[Tuple[str, str]]
-        List of tuples of the original file path in the note and its
+    list[tuple[str, str]]
+        list of tuples of the original file path in the note and its
         normalized, absolute version. All the paths are valid. (Broken
         file links and links to websites are ignored.)
     """
-    noted_file_path_groups: List[Tuple[str]] = patterns.file_path_in_link.findall(
+    noted_file_path_groups: list[tuple[str]] = patterns.file_path_in_link.findall(
         note_content
     )
-    noted_file_paths: List[str] = [t[0] for t in noted_file_path_groups]
-    file_paths: List[Tuple[str, str]] = []
+    noted_file_paths: list[str] = [t[0] for t in noted_file_path_groups]
+    file_paths: list[tuple[str, str]] = []
     for file_path in noted_file_paths:
         if os.path.isabs(file_path):
             abs_path = file_path
@@ -585,13 +583,13 @@ def get_file_paths(note_content: str, note_folder_path: str) -> List[Tuple[str, 
     return file_paths
 
 
-def get_by_title(notes: List[Note], title: str) -> Note:
+def get_by_title(notes: list[Note], title: str) -> Note:
     """Gets a note by its title.
 
     Parameters
     ----------
-    notes : List[Note]
-        List of all notes in the source folder.
+    notes : list[Note]
+        list of all notes in the source folder.
     title : str
         The title of the note.
 

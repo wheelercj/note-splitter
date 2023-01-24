@@ -7,9 +7,6 @@ types such as header. Then the lexer makes a quick pass over the token
 list while looking at each token's context to ensure they have the
 correct type.
 """
-from typing import List
-from typing import Type
-
 from note_splitter import patterns
 from note_splitter import settings
 from note_splitter import tokens
@@ -18,7 +15,7 @@ from note_splitter import tokens
 class Lexer:
     """Creates a Callable that converts raw text to a list of tokens."""
 
-    def __call__(self, text: str) -> List[tokens.Token]:
+    def __call__(self, text: str) -> list[tokens.Token]:
         """Converts raw text to a list of tokens.
 
         Parameters
@@ -26,36 +23,40 @@ class Lexer:
         text : str
             The raw text to convert to a list of tokens.
         """
-        self.__tokens: List[tokens.Token] = []
+        self.__tokens: list[tokens.Token] = []
         all_token_types = tokens.get_all_token_types(tokens)
         for line in text.split("\n"):
             self.__tokens.append(self.__create_token(line, all_token_types))
         self.__check_token_types()
         return self.__tokens
 
-    def __create_token(self, line: str, all_token_types: List[Type]) -> tokens.Token:
+    def __create_token(self, line: str, all_token_types: list[type]) -> tokens.Token:
         """Lexes the text, creates a token, and returns it.
 
         Parameters
         ----------
         line : str
             The line of text to parse.
-        all_token_types : List[Type]
+        all_token_types : list[type]
             A list of all token types.
         """
         for type_ in all_token_types:
-            if type_.HAS_PATTERN and self.__matches(line, type_):
+            if (
+                not isinstance(type_, type)
+                and type_.HAS_PATTERN
+                and self.__matches(line, type_)
+            ):
                 return type_(line)
         return tokens.Text(line)
 
-    def __matches(self, line: str, type_: Type[tokens.Token]) -> bool:
+    def __matches(self, line: str, type_: type[tokens.Token]) -> bool:
         """Determines if the line matches the given type's pattern.
 
         Parameters
         ----------
         line : str
             The line of text to check.
-        type_ : Type[tokens.Token]
+        type_ : type[tokens.Token]
             The token type to check the pattern of.
         """
         type_name = settings.get_token_type_name(type_).replace(" ", "_")

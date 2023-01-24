@@ -16,8 +16,6 @@ from abc import abstractmethod
 from functools import lru_cache
 from types import ModuleType
 from typing import Any
-from typing import List
-from typing import Type
 
 from note_splitter import patterns
 
@@ -81,11 +79,11 @@ class Block(Token):
         pass
 
     @property
-    def content(self) -> List[Any]:
+    def content(self) -> list[Any]:
         return self._content
 
     @content.setter
-    def content(self, new_content: List[Any]) -> None:
+    def content(self, new_content: list[Any]) -> None:
         self._content = new_content
 
     def __str__(self):
@@ -269,12 +267,12 @@ class BlockquoteBlock(Block):
 
     Attributes
     ----------
-    content : List[Blockquote]
+    content : list[Blockquote]
         The consecutive blockquote tokens.
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
 
 
 class Footnote(CanHaveInlineElements):
@@ -367,15 +365,15 @@ class TextList(Block):
 
     Attributes
     ----------
-    content : List[Union[TextListItem, "TextList"]]
+    content : list[Union[TextListItem, "TextList"]]
         The tokens that make up the list. Lists may have sublists.
     level : int
         The number of spaces of indentation of the first item in the
         list.
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
         if tokens_:
             self.level: int = tokens_[0].level
         else:
@@ -418,12 +416,12 @@ class Table(Block):
 
     Attributes
     ----------
-    content : List[Union[TableRow, TableDivider]]
+    content : list[Union[TableRow, TableDivider]]
         The table's row token(s) and possibly divider token(s).
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
 
 
 class CodeFence(Fence):
@@ -465,7 +463,7 @@ class CodeBlock(Block):
 
     Attributes
     ----------
-    content : List[Union[CodeFence, Code]]
+    content : list[Union[CodeFence, Code]]
         The code block's code fence tokens surrounding code token(s).
     language : str
         Any text that follows the triple backticks (or tildes) on the
@@ -473,8 +471,8 @@ class CodeBlock(Block):
         characters are removed.
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
         if tokens_:
             self.language: str = tokens_[0].language
         else:
@@ -517,12 +515,12 @@ class MathBlock(Block):
 
     Attributes
     ----------
-    content : List[Math]
+    content : list[Math]
         The mathblock's math fence tokens surrounding math token(s).
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
 
 
 class Section(Block):
@@ -534,13 +532,13 @@ class Section(Block):
 
     Attributes
     ----------
-    content : List[Token]
+    content : list[Token]
         The tokens in this section, starting with a token of the chosen
         split type.
     """
 
-    def __init__(self, tokens_: List[Any] = None):
-        self._content: List[Any] = tokens_ or []
+    def __init__(self, tokens_: list[Any] = None):
+        self._content: list[Any] = tokens_ or []
 
 
 def __is_token_type(obj: Any) -> bool:
@@ -555,7 +553,7 @@ def __is_token_type(obj: Any) -> bool:
 
 
 @lru_cache(maxsize=1)
-def get_all_token_types(tokens_module: ModuleType) -> List[Type[Token]]:
+def get_all_token_types(tokens_module: ModuleType) -> list[type[Token]]:
     """Gets the list of all token types.
 
     Call the function like this: ``tokens.get_all_token_types(tokens)``.

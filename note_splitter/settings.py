@@ -48,7 +48,7 @@ move_footnotes : bool
     Whether or not to copy footnotes into each new file that has the
     relevant footnote references, and remove them from the ones that
     don't have the relevant references.
-note_types : List[str]
+note_types : list[str]
     The file extensions of the files that may be chosen to be split. Each
     must start with a period.
 ordered_list_item_pattern : str
@@ -70,7 +70,7 @@ split_attrs : dict
 split_keyword : str
     The tag/keyword the program searches for to know which file(s) to
     split.
-split_type : Type
+split_type : type
     The type to split by. This can be any token type, even an abstract
     one.
 table_divider_pattern : str
@@ -108,9 +108,6 @@ Every time file_id_format is changed, file_id_regex must be updated.
 import json
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Type
 
 from note_splitter import patterns
 from note_splitter import tokens
@@ -154,12 +151,12 @@ __DEFAULT_SETTINGS = {
 }
 
 
-settings: Dict[str, Any] = {}
+settings: dict[str, Any] = {}
 
 
 def save_settings() -> None:
     """Save the settings to a JSON file."""
-    split_type: Type = settings["split_type"]
+    split_type: type = settings["split_type"]
     settings["split_type"] = get_token_type_name(split_type)
     with open("settings.json", "w") as file:
         json.dump(settings, file, indent=4)
@@ -198,15 +195,15 @@ def reset_settings() -> None:
 
 
 def get_token_type_names(
-    filter_predicate: Callable[[Type], bool] = None, all_token_types: List[Type] = None
-) -> List[str]:
+    filter_predicate: Callable[[type], bool] = None, all_token_types: list[type] = None
+) -> list[str]:
     """Get all token types' output-formatted names.
 
     Parameters
     ----------
     predicate : Callable, optional
         A function that filters the token types.
-    all_token_types : List, optional
+    all_token_types : list, optional
         A list of all token types. If not provided, the list of all
         token types will be fetched.
     """
@@ -220,12 +217,12 @@ def get_token_type_names(
     return token_names
 
 
-def get_token_type_name(token_type: Type) -> str:
+def get_token_type_name(token_type: type) -> str:
     """Get the token type's output-formatted name.
 
     Parameters
     ----------
-    token_type : Type
+    token_type : type
         The token type to get the name of.
     """
     token_name = []
@@ -235,11 +232,11 @@ def get_token_type_name(token_type: Type) -> str:
                 token_name.append(" ")
             token_name.append(letter)
     except AttributeError:
-        raise TypeError(f"{token_type} is not a Type.")
+        raise TypeError(f"{token_type} is not a type.")
     return "".join(token_name).lower()
 
 
-def get_token_type(chosen_name: str) -> Type:
+def get_token_type(chosen_name: str) -> type:
     """Get a token type by name.
 
     Parameters
@@ -247,7 +244,7 @@ def get_token_type(chosen_name: str) -> Type:
     chosen_name : str
         The output-formatted name of the token type to get.
     """
-    all_token_types: List[Type] = tokens.get_all_token_types(tokens)
+    all_token_types: list[type] = tokens.get_all_token_types(tokens)
     token_type_names = get_token_type_names(None, all_token_types)
     for name, type_ in zip(token_type_names, all_token_types):
         if name == chosen_name:
