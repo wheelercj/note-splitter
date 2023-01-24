@@ -2,8 +2,6 @@
 
 Here are some notes that might help with setting up your development environment while working on Note Splitter.
 
-We're using Python 3.7.9, but newer versions should work too.
-
 ## dependencies
 
 After cloning the repo, you will need to use a few commands to get started:

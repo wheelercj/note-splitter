@@ -1,5 +1,6 @@
 token-hierarchy.rst
 settings.json
+venv310
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
