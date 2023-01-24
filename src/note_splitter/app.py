@@ -1,17 +1,8 @@
 import sys
 from importlib import metadata as importlib_metadata
 
+from note_splitter.main_window import MainWindow
 from PySide6 import QtWidgets
-
-
-class NoteSplitter(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.init_ui()
-
-    def init_ui(self):
-        self.setWindowTitle("note_splitter")
-        self.show()
 
 
 def main():
@@ -30,7 +21,19 @@ def main():
     metadata = importlib_metadata.metadata(app_module)
 
     QtWidgets.QApplication.setApplicationName(metadata["Formal-Name"])
+    QtWidgets.QApplication.setOrganizationDomain(
+        "https://github.com/wheelercj/note-splitter"
+    )
+    QtWidgets.QApplication.setOrganizationName("Note Splitter")
 
+    QtWidgets.QApplication.setStyle("Fusion")
     app = QtWidgets.QApplication(sys.argv)
-    main_window = NoteSplitter()  # noqa: F841
+    app.setStyleSheet(
+        """
+        QWidget {
+            font-size: 14px;
+        }
+        """
+    )
+    main_window = MainWindow()  # noqa: F841
     sys.exit(app.exec())
