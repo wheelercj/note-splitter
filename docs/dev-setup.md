@@ -8,7 +8,7 @@ After cloning the repo, you will need to use a few commands to get started:
 
 * I highly recommend creating a virtual environment first.
 * `pip install -e .` to locally install Note Splitter and its dependencies listed in requirements.txt.
-* `pip install -r .\requirements_dev.txt` to install the dependencies for development.
+* `pip install -r .\requirements-dev.txt` to install the dependencies for development.
 * `pre-commit install` to set up [pre-commit](https://pre-commit.com/) git hook scripts
 
 **when the dependencies change**
