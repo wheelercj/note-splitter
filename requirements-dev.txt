@@ -1,12 +1,9 @@
-pre-commit
-
-# testing
-pytest-cov==3.0.0
-pytest==6.2.5
-tox==3.24.4
-
-# documentation
+-e .  # for documentation
+briefcase==0.3.11
+coverage
 myst-parser
+pre-commit
+pytest==7.2.1
 sphinx-rtd-theme
 sphinx==4.2.0
--e .
+tox==3.24.4
