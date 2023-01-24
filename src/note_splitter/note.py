@@ -10,9 +10,6 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Optional
 
-import PySimpleGUI as sg
-from send2trash import send2trash  # https://github.com/arsenetar/send2trash
-
 from note_splitter import patterns
 from note_splitter.settings import settings
 

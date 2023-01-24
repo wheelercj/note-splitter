@@ -4,8 +4,6 @@ from textwrap import dedent
 from typing import Optional
 from typing import Union
 
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-
 from note_splitter import note
 from note_splitter import tokens
 from note_splitter.settings import get_token_type_name

@@ -14,13 +14,6 @@ Here are various guides, tools, etc. that have been helpful to us while building
 * [Python import: Advanced Techniques and Tips](https://realpython.com/python-import/#create-and-install-a-local-package)
 * [python packaging: basic setup.py and declarative metadata (intermediate)](https://www.youtube.com/watch?v=GaWs-LenLYE&list=PLWBKAf81pmOaP9naRiNAqug6EBnkPakvY)
 
-### PySimpleGUI
-
-* [PySimpleGUI](http://www.PySimpleGUI.org)
-* [PySimpleGUI Demo Programs](https://github.com/PySimpleGUI/PySimpleGUI/tree/master/DemoPrograms)
-* [PySimpleGUI Cookbook](http://Cookbook.PySimpleGUI.org)
-* [GeeksforGeeks - Introduction to PySimpleGUI](https://www.geeksforgeeks.org/introduction-to-pysimplegui/)
-
 ## design patterns
 
 * [Python Design Patterns](https://python-patterns.guide/) by Brandon Rhodes

@@ -8,7 +8,6 @@ import uuid
 from typing import Optional
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-
 from note_splitter import tokens
 from note_splitter.settings import settings
 

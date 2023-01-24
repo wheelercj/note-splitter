@@ -7,8 +7,6 @@ from typing import Callable
 from typing import Literal
 from typing import Union
 
-import PySimpleGUI as sg  # https://pysimplegui.readthedocs.io/en/latest/
-
 from note_splitter import gui
 from note_splitter import note
 from note_splitter import patterns

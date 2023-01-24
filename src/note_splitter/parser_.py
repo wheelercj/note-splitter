@@ -6,7 +6,6 @@ from typing import Optional
 from typing import Union
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
-
 from note_splitter import patterns
 from note_splitter import tokens
 

@@ -4,5 +4,54 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = [
-    "tests",
+    "src/tests",
 ]
+
+[tool.briefcase]
+project_name = "Note Splitter"
+bundle = "wheelercj.note-splitter"
+version = "0.0.1"
+url = "https://github.com/wheelercj/note-splitter"
+license = "GNU General Public License v3 (GPLv3)"
+author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
+author_email = "christopher.wheeler.320@my.csun.edu"
+
+[tool.briefcase.app.note_splitter]
+formal_name = "Note Splitter"
+description = "Split markdown files into multiple smaller files."
+icon = "src/note_splitter/resources/note_splitter"
+sources = ['src/note_splitter']
+requires = [
+    'pyside6>=6.2.4',
+]
+
+
+[tool.briefcase.app.note_splitter.macOS]
+requires = [
+    'std-nslog~=1.0.0'
+]
+
+[tool.briefcase.app.note_splitter.linux]
+requires = []
+
+[tool.briefcase.app.note_splitter.linux.appimage]
+system_requires = []
+linuxdeploy_plugins = []
+
+[tool.briefcase.app.note_splitter.linux.flatpak]
+flatpak_runtime = 'org.kde.Platform'
+flatpak_runtime_version = '6.3'
+flatpak_sdk = 'org.kde.Sdk'
+
+[tool.briefcase.app.note_splitter.windows]
+requires = []
+
+# Mobile deployments
+[tool.briefcase.app.note_splitter.iOS]
+supported = false
+
+[tool.briefcase.app.note_splitter.android]
+supported = false
+
+[tool.briefcase.app.note_splitter.web]
+supported = false
