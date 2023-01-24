@@ -4,7 +4,8 @@ Split markdown files into multiple smaller files.
 
 ![Tests](https://github.com/wheelercj/note-splitter/actions/workflows/tests.yml/badge.svg)
 
-## Features
+## features
+
 * Split by almost any feature of text you can describe.
 * Split multiple files at the same time.
 * The user interface makes Note Splitter easy to use.
@@ -16,7 +17,8 @@ Split markdown files into multiple smaller files.
 
 ![demo](docs/images/demo.png)
 
-## Usage
+## usage
+
 Here are some tips for how to use Note Splitter:
 
 * If you want to split some of the files that were found but not all of them, you can select the ones you want to split by clicking on them.
@@ -24,7 +26,7 @@ Here are some tips for how to use Note Splitter:
 * The settings on all tabs save whenever the application closes.
 * See the sections below for more tips.
 
-### Split Types
+### split types
 
 | type name                | description                                                                      | parent types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
@@ -58,14 +60,16 @@ Here are some tips for how to use Note Splitter:
 | unordered list item      | one line of a bullet-point list                                                  | text list item, can have inline elements |
 
 
-### Split Attributes and Values
+### split attributes and values
+
 Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should leave the value field blank and/or select `None` as the attribute, but if you want to split by headers of level 2 you should choose `level` as the attribute and `2` as the value.
 
 Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header (a smaller number for the split value means a larger header). However, some other split types such as `ordered list item` also have a level attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
 
 The "parse blocks" checkbox must be checked to split by elements of text that span multiple lines. This option also changes the behavior when splitting by single-line elements; each split section also ends where its containing block ends instead of only when the next element of the split type is found.
 
-### File Name Formats
+### file name formats
+
 The file name format setting can use these variables:
 
 `%uuid4` - A universally unique identifier
@@ -86,10 +90,12 @@ If the file name format contains any of `#%{&}\\<>*?/$!\'":@+|=` or backticks, t
 
 All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
 
-### Patterns
+### patterns
+
 Although you hopefully will never need to, you can also customize the regular expressions Note Splitter uses in the Patterns tab. Note Splitter uses Python regex, which is more or less identical to ECMAScript (JavaScript) regex. [Here](https://wheelercj.github.io/notes/pages/20210506235005.html) are some resources for learning and using regex.
 
-## Contributing
+## contributing
+
 If Note Splitter sounds like it could be helpful to you, please [share your workflow](https://github.com/wheelercj/note-splitter/discussions/17) so we might be able to automate it! [Feature requests](https://github.com/wheelercj/note-splitter/issues), [discussions](https://github.com/wheelercj/note-splitter/discussions), pull requests, etc. are welcome!
 
 [Developer documentation](https://note-splitter.readthedocs.io/)
