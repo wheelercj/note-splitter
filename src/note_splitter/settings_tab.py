@@ -1,6 +1,6 @@
+from note_splitter.gui import folder_browse
 from note_splitter.settings import update_from_checkbox
 from note_splitter.settings import update_from_le
-from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
@@ -21,7 +21,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.source_folder_layout.addWidget(self.source_folder_line_edit)
         self.source_folder_browse_button = QtWidgets.QPushButton("browse")
         self.source_folder_browse_button.clicked.connect(
-            lambda self=self: self._browse(
+            lambda self=self: folder_browse(
                 self.source_folder_line_edit,
                 "choose the source folder",
             )
@@ -43,7 +43,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.destination_folder_layout.addWidget(self.destination_folder_line_edit)
         self.destination_folder_browse_button = QtWidgets.QPushButton("browse")
         self.destination_folder_browse_button.clicked.connect(
-            lambda self=self: self._browse(
+            lambda self=self: folder_browse(
                 self.destination_folder_line_edit,
                 "choose the destination folder",
             )
@@ -125,17 +125,3 @@ class SettingsTab(QtWidgets.QWidget):
             "create backlinks:", self.create_backlinks_checkbox
         )
         self.create_backlinks_checkbox.setChecked(False)
-
-    def _browse(self, line_edit: QtWidgets.QLineEdit, title: str) -> str:
-        """Opens a file dialog, sets the line edit's text, & emits ``editingFinished``.
-
-        If the user cancels the dialog, the line edit's text is not changed, the signal
-        is not emitted, and an empty string is returned.
-        """
-        folder_path: str = QtWidgets.QFileDialog.getExistingDirectory(
-            self, title, QtCore.QDir.currentPath(), QtWidgets.QFileDialog.ShowDirsOnly
-        )
-        if folder_path:
-            line_edit.setText(folder_path)
-            line_edit.editingFinished.emit()
-        return folder_path
