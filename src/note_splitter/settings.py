@@ -213,6 +213,11 @@ def update_from_le(setting_name: str, line_edit: QtWidgets.QLineEdit) -> None:
     QtCore.QSettings().setValue(setting_name, line_edit.text())
 
 
+def update_from_checkbox(setting_name: str, check_box: QtWidgets.QCheckBox) -> None:
+    """Updates a setting in the registry with a check box's state."""
+    QtCore.QSettings().setValue(setting_name, check_box.isChecked())
+
+
 def get_token_type_names(
     filter_predicate: Callable[[type], bool] = None, all_token_types: list[type] = None
 ) -> list[str]:
