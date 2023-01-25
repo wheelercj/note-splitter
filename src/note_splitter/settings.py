@@ -102,6 +102,7 @@ from typing import Callable
 from note_splitter import patterns
 from note_splitter import tokens
 from PySide6 import QtCore
+from PySide6 import QtWidgets
 
 
 __DEFAULT_SETTINGS = {
@@ -200,6 +201,16 @@ def reset_settings() -> None:
     settings = QtCore.QSettings()
     for key, value in __DEFAULT_SETTINGS.items():
         settings.setValue(key, value)
+
+
+def update_setting(setting_name: str, value: Any) -> None:
+    """Updates a setting in the registry."""
+    QtCore.QSettings().setValue(setting_name, value)
+
+
+def update_from_le(setting_name: str, line_edit: QtWidgets.QLineEdit) -> None:
+    """Updates a setting in the registry with a line edit's text."""
+    QtCore.QSettings().setValue(setting_name, line_edit.text())
 
 
 def get_token_type_names(
