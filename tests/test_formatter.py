@@ -1,10 +1,9 @@
 from textwrap import dedent
 
 import pytest
-
 from note_splitter import formatter_
 from note_splitter import tokens
-from note_splitter.settings import settings
+from PySide6 import QtCore
 
 
 ##############
@@ -19,9 +18,10 @@ def test_format_section_with_empty_section():
 
 
 def test_format():
-    settings["copy_global_tags"] = True
-    settings["move_footnotes"] = True
-    settings["copy_frontmatter"] = True
+    settings = QtCore.QSettings()
+    settings.setValue("copy_global_tags", True)
+    settings.setValue("move_footnotes", True)
+    settings.setValue("copy_frontmatter", True)
     format = formatter_.Formatter()
     sections = [
         tokens.Section(

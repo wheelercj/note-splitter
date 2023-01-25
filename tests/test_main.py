@@ -3,14 +3,12 @@ from textwrap import dedent
 from typing import Callable
 
 import pytest
-
 from note_splitter import main
 from note_splitter import patterns
-from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
-from note_splitter.settings import settings
 from note_splitter.splitter import Splitter
+from PySide6 import QtCore
 
 
 @pytest.fixture
@@ -18,10 +16,11 @@ def callables() -> tuple[Lexer, Splitter, Formatter]:
     tokenize = Lexer()
     split = Splitter()
     format_ = Formatter()
-    settings["using_split_keyword"] = False
-    settings["copy_global_tags"] = False
-    settings["copy_frontmatter"] = False
-    settings["move_footnotes"] = False
+    settings = QtCore.QSettings()
+    settings.setValue("using_split_keyword", False)
+    settings.setValue("copy_global_tags", False)
+    settings.setValue("copy_frontmatter", False)
+    settings.setValue("move_footnotes", False)
     return tokenize, split, format_
 
 
@@ -32,9 +31,10 @@ def callables() -> tuple[Lexer, Splitter, Formatter]:
 
 def test_split_text_with_nothing(callables: tuple[Callable, Callable, Callable]):
     tokenize, split, format_ = callables
-    settings["parse_blocks"] = False
-    settings["split_type"] = tokens.Header
-    settings["split_attrs"] = {}
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", False)
+    settings.setValue("split_type", "header")
+    settings.setValue("split_attrs", {})
     result: list[str] = main.split_text("", tokenize, split, format_)
     assert result == []
 
@@ -49,9 +49,10 @@ def test_split_text_with_headers(callables: tuple[Callable, Callable, Callable])
         Here is another sentence.
         """
     )
-    settings["parse_blocks"] = False
-    settings["split_type"] = tokens.Header
-    settings["split_attrs"] = {}
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", False)
+    settings.setValue("split_type", "header")
+    settings.setValue("split_attrs", {})
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
@@ -89,9 +90,10 @@ def test_split_text_with_blocks(callables: tuple[Callable, Callable, Callable]):
         $$
         """
     )
-    settings["parse_blocks"] = True
-    settings["split_type"] = tokens.Header
-    settings["split_attrs"] = {}
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", True)
+    settings.setValue("split_type", "header")
+    settings.setValue("split_attrs", {})
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
@@ -149,12 +151,13 @@ def test_split_text_with_elements_to_copy(
         Here[^1] is a sentence.
         """
     )
-    settings["parse_blocks"] = True
-    settings["split_type"] = tokens.Header
-    settings["split_attrs"] = {"level": 2}
-    settings["copy_global_tags"] = True
-    settings["copy_frontmatter"] = True
-    settings["move_footnotes"] = True
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", True)
+    settings.setValue("split_type", "header")
+    settings.setValue("split_attrs", {"level": 2})
+    settings.setValue("copy_global_tags", True)
+    settings.setValue("copy_frontmatter", True)
+    settings.setValue("move_footnotes", True)
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
@@ -196,9 +199,10 @@ def test_split_text_with_top_ordered_list_items(
             1. first subitem
         """
     )
-    settings["parse_blocks"] = True
-    settings["split_type"] = tokens.OrderedListItem
-    settings["split_attrs"] = {"level": 0}
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", True)
+    settings.setValue("split_type", "ordered list item")
+    settings.setValue("split_attrs", {"level": 0})
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         dedent(
@@ -239,9 +243,10 @@ def test_split_text_with_all_ordered_list_items(
             1. third subitem
         """
     )
-    settings["parse_blocks"] = False
-    settings["split_type"] = tokens.OrderedListItem
-    settings["split_attrs"] = {}
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", False)
+    settings.setValue("split_type", "ordered list item")
+    settings.setValue("split_attrs", {})
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [
         "1. first item\n",
@@ -268,12 +273,13 @@ def test_split_text_with_custom_pattern(callables: tuple[Callable, Callable, Cal
             1. third subitem
         """
     )
-    settings["parse_blocks"] = False
-    settings["split_type"] = tokens.OrderedListItem
-    settings["split_attrs"] = {"level": 0}
-    settings["ordered_list_item_pattern"] = r"^\s*\d+[.)]\s*.*$"
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", False)
+    settings.setValue("split_type", "ordered list item")
+    settings.setValue("split_attrs", {"level": 0})
+    settings.setValue("ordered_list_item_pattern", r"^\s*\d+[.)]\s*.*$")
     patterns.__dict__["ordered_list_item"] = re.compile(
-        settings["ordered_list_item_pattern"]
+        settings.value("ordered_list_item_pattern")
     )
     result: list[str] = main.split_text(content, tokenize, split, format_)
     expected = [

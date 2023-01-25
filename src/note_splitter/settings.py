@@ -1,33 +1,28 @@
 """The user's application settings and related functions.
 
-The settings are stored in a dictionary named ``settings`` with the
-following keys. Some of these settings may be hidden from the user.
+The settings are stored in a dictionary named ``settings`` with the following keys. Some
+of these settings may be hidden from the user.
 
 create_backlinks : bool
-    Whether or not to append a backlink to the source file in each new
-    file.
+    Whether or not to append a backlink to the source file in each new file.
 blockquote_pattern : str
     The uncompiled regex pattern for blockquotes.
 code_fence_pattern : str
     The uncompiled regex pattern for code fences.
 copy_frontmatter : bool
-    Whether or not to copy frontmatter from the source file to each new
-    file.
+    Whether or not to copy frontmatter from the source file to each new file.
 copy_global_tags : bool
-    Whether or not to copy global tags from the source file to each new
-    file.
+    Whether or not to copy global tags from the source file to each new file.
 create_index_file : bool
     Whether or not to create an index file.
 destination_folder_path : str
-    The absolute path to the user's folder where new files will be
-    saved.
+    The absolute path to the user's folder where new files will be saved.
 empty_line_pattern : str
     The uncompiled regex pattern for empty lines.
 file_id_format : str
     The format of the file IDs.
 file_id_regex : str
-    The uncompiled regular expression to use to extract file IDs from
-    the files.
+    The uncompiled regular expression to use to extract file IDs from the files.
 file_name_format : str
     The format of the new file names.
 file_path_in_link_pattern : str
@@ -45,34 +40,30 @@ horizontal_rule_pattern : str
 math_fence_pattern : str
     The uncompiled regex pattern for math fences.
 move_footnotes : bool
-    Whether or not to copy footnotes into each new file that has the
-    relevant footnote references, and remove them from the ones that
-    don't have the relevant references.
+    Whether or not to copy footnotes into each new file that has the relevant footnote
+    references, and remove them from the ones that don't have the relevant references.
 note_types : list[str]
-    The file extensions of the files that may be chosen to be split. Each
-    must start with a period.
+    The file extensions of the files that may be chosen to be split. Each must start
+    with a period.
 ordered_list_item_pattern : str
     The uncompiled regex pattern for ordered list items.
 parse_blocks : bool
     Whether or not to create ``Block`` tokens while parsing.
 remove_split_keyword : bool
-    Whether or not to remove the split keyword from the source file and
-    new file(s).
+    Whether or not to remove the split keyword from the source file and new file(s).
 replace_split_contents : bool
-    Whether or not to replace the parts of the source file that was
-    split out with links to the new files.
+    Whether or not to replace the parts of the source file that was split out with links
+    to the new files.
 source_folder_path : str
-    The absolute path to the user's folder containing the files to be
-    split.
+    The absolute path to the user's folder containing the files to be split.
 split_attrs : dict
-    The attributes to split by. If the chosen split type has an
-    attribute, it can be used to narrow down what to split by.
+    The attributes to split by. If the chosen split type has an attribute, it can be
+    used to narrow down what to split by.
 split_keyword : str
-    The tag/keyword the program searches for to know which file(s) to
-    split.
-split_type : type
-    The type to split by. This can be any token type, even an abstract
-    one.
+    The tag/keyword the program searches for to know which file(s) to split.
+split_type : str
+    The output-formatted name of the type to split by. This can be any token type, even
+    an abstract one.
 table_divider_pattern : str
     The uncompiled regex pattern for table dividers.
 table_row_pattern : str
@@ -86,12 +77,11 @@ unordered_list_item_pattern : str
 using_split_keyword : bool
     Whether or not the split keyword was used to find file(s) to split.
 
-The settings for the formats of file names and IDs can use the following
-variables:
+The settings for the formats of file names and IDs can use the following variables:
 
  * ``%uuid4`` - A universally unique identifier.
- * ``%title`` - The title of the file (the body of its first header, or
-   the first line of the file if there is no header).
+ * ``%title`` - The title of the file (the body of its first header, or the first line
+    of the file if there is no header).
  * ``%Y`` - The current year.
  * ``%M`` - The current month.
  * ``%D`` - The current day.
@@ -99,18 +89,19 @@ variables:
  * ``%m`` - The current minute.
  * ``%s`` - The current second.
 
-Additionally, the file name format setting can use the ``%id`` variable
-which gets replaced with the ID of the file as described by the file ID
-format setting.
+Additionally, the file name format setting can use the ``%id`` variable which gets
+replaced with the ID of the file as described by the file ID format setting.
 
 Every time file_id_format is changed, file_id_regex must be updated.
 """
 import json
+import os
 from typing import Any
 from typing import Callable
 
 from note_splitter import patterns
 from note_splitter import tokens
+from PySide6 import QtCore
 
 
 __DEFAULT_SETTINGS = {
@@ -141,7 +132,7 @@ __DEFAULT_SETTINGS = {
     "source_folder_path": "",
     "split_attrs": {"level": 2},
     "split_keyword": "#split",
-    "split_type": tokens.Header,
+    "split_type": "header",
     "table_divider_pattern": patterns.table_divider.pattern,
     "table_row_pattern": patterns.table_row.pattern,
     "tag_pattern": patterns.tag.pattern,
@@ -151,47 +142,64 @@ __DEFAULT_SETTINGS = {
 }
 
 
-settings: dict[str, Any] = {}
-
-
-def save_settings() -> None:
-    """Save the settings to a JSON file."""
-    split_type: type = settings["split_type"]
-    settings["split_type"] = get_token_type_name(split_type)
-    with open("settings.json", "w") as file:
-        json.dump(settings, file, indent=4)
-    settings["split_type"] = split_type
-
-
-def load_settings() -> None:
-    """Attempt to load the settings from a JSON file.
-
-    If the file does not exist or cannot be decoded, the default
-    settings are used.
-    """
-    try:
-        with open("settings.json", "r") as file:
-            settings.update(json.load(file))
-    except (FileNotFoundError, json.JSONDecodeError):
-        settings.update(__DEFAULT_SETTINGS)
-    else:
-        if "null" in settings["split_attrs"]:
-            settings["split_attrs"] = {None: ""}
-        settings["split_type"] = get_token_type(settings["split_type"])
-        add_new_settings()
-
-
-def add_new_settings() -> None:
-    """Add any new settings to the settings file."""
+def init_settings() -> None:
+    """Save the default settings to the registry."""
+    settings = QtCore.QSettings()
     for key, value in __DEFAULT_SETTINGS.items():
-        if key not in settings:
-            settings[key] = value
+        settings.setValue(key, value)
+
+
+def export_settings() -> None:
+    """Export the settings from the registry to a JSON file."""
+    # TODO: call this function somewhere.
+    settings = QtCore.QSettings()
+    settings_dict: dict[str, Any] = {}
+    for key in __DEFAULT_SETTINGS.keys():
+        settings_dict[key] = settings.value(key)
+    try:
+        with open("settings.json", "x") as file:
+            json.dump(settings_dict, file, indent=4)
+    except Exception as e:
+        print(f"Error: could not export settings to 'settings.json' because {e}.")
+    else:
+        os.startfile("settings.json")
+
+
+def import_settings() -> None:
+    """Attempt to import settings from a JSON file to the registry.
+
+    Overwrites any existing conflicting settings.
+    """
+    # TODO: call this function somewhere.
+    try:
+        with open("settings.json", "r") as file:  # TODO: let user choose the json file.
+            settings_dict: dict[str, Any] = json.load(file)
+    except Exception as e:
+        print(f"Error: could not import settings from 'settings.json' because {e}.")
+    else:
+        if not isinstance(settings_dict, dict):
+            print("Error: invalid settings file format.")
+            return
+        if "null" in settings_dict["split_attrs"]:
+            settings_dict["split_attrs"] = {None: ""}
+        settings = QtCore.QSettings()
+        for key, value in settings_dict.items():
+            settings.setValue(key, value)
+        add_new_settings(settings)
+
+
+def add_new_settings(settings: QtCore.QSettings) -> None:
+    """Add any new settings to the registry without overwriting existing ones."""
+    for key, value in __DEFAULT_SETTINGS.items():
+        if not settings.contains(key):
+            settings.setValue(key, value)
 
 
 def reset_settings() -> None:
     """Reset the settings to their defaults."""
-    settings.clear()
-    settings.update(__DEFAULT_SETTINGS)
+    settings = QtCore.QSettings()
+    for key, value in __DEFAULT_SETTINGS.items():
+        settings.setValue(key, value)
 
 
 def get_token_type_names(
@@ -204,8 +212,8 @@ def get_token_type_names(
     predicate : Callable, optional
         A function that filters the token types.
     all_token_types : list, optional
-        A list of all token types. If not provided, the list of all
-        token types will be fetched.
+        A list of all token types. If not provided, the list of all token types will be
+        fetched.
     """
     if not all_token_types:
         all_token_types = tokens.get_all_token_types(tokens)

@@ -8,7 +8,6 @@ from note_splitter import note
 from note_splitter import tokens
 from note_splitter.settings import get_token_type_name
 from note_splitter.settings import get_token_type_names
-from note_splitter.settings import settings
 
 
 def show_progress(

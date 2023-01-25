@@ -1,7 +1,8 @@
 """For splitting an AST's tokens into Sections tokens."""
 from note_splitter import patterns
 from note_splitter import tokens
-from note_splitter.settings import settings
+from note_splitter.settings import get_token_type
+from PySide6 import QtCore
 
 
 class Splitter:
@@ -44,15 +45,18 @@ class Splitter:
         # Irrelevant tokens are deleted as the loop iterates.
         sections: list[tokens.Section] = []
         global_tags: list[str] = []
+        settings = QtCore.QSettings()
         while self.__tokens:
             token = self.__tokens[0]
             if (
-                settings["using_split_keyword"]
-                and settings["remove_split_keyword"]
+                settings.value("using_split_keyword")
+                and settings.value("remove_split_keyword")
                 and isinstance(token, tokens.CanHaveInlineElements)
-                and settings["split_keyword"] in token.content
+                and settings.value("split_keyword") in token.content
             ):
-                token.content = token.content.replace(settings["split_keyword"], "")
+                token.content = token.content.replace(
+                    settings.value("split_keyword"), ""
+                )
                 if not token.content:
                     self.__tokens.pop(0)
                     continue
@@ -118,21 +122,22 @@ class Splitter:
             of a lower level than the chosen split level. True by
             default.
         """
-        if not isinstance(token, settings["split_type"]):
+        settings = QtCore.QSettings()
+        if not isinstance(token, get_token_type(settings.value("split_type"))):
             return False
         if (
-            settings["split_attrs"]
-            and list(settings["split_attrs"])[0]
+            settings.value("split_attrs")
+            and list(settings.value("split_attrs"))
             and (
-                list(settings["split_attrs"].values())[0]
-                or list(settings["split_attrs"].values())[0] == 0
+                list(settings.value("split_attrs").values())[0]
+                or list(settings.value("split_attrs").values())[0] == 0
             )
         ):
-            for key, value in settings["split_attrs"].items():
+            for key, value in settings.value("split_attrs").items():
                 if isinstance(value, str) and value.isnumeric():
                     value = int(value)
-                if is_splitting and key == "level":
-                    if token.level > value:
+                if is_splitting and key == "level" and hasattr(token, "level"):
+                    if getattr(token, "level") > value:
                         return False
                 elif key is not None and getattr(token, key) != value:
                     return False

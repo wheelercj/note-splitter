@@ -7,9 +7,9 @@ from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import AST
-from note_splitter.settings import load_settings
-from note_splitter.settings import settings
+from note_splitter.settings import init_settings
 from note_splitter.splitter import Splitter
+from PySide6 import QtCore
 
 
 def __manual_test() -> None:
@@ -55,17 +55,17 @@ def __manual_test() -> None:
         """
     )
 
-    load_settings()
+    init_settings()
     tokenize: Callable = Lexer()
     tokens_: list[tokens.Token] = tokenize(sample_markdown)
     __print_lexer_output(tokens_)
-
-    settings["parse_blocks"] = True
-    ast = AST(tokens_, settings["parse_blocks"])
+    settings = QtCore.QSettings()
+    settings.setValue("parse_blocks", True)
+    ast = AST(tokens_, settings.value("parse_blocks"))
     __print_parser_output(ast)
 
-    settings["split_type"] = tokens.Header
-    settings["split_attrs"] = dict()
+    settings.setValue("split_type", "header")
+    settings.setValue("split_attrs", dict())
     split: Callable = Splitter()
     sections, global_tags = split(ast.content)
     __print_splitter_output(sections, global_tags)
