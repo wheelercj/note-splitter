@@ -1,13 +1,20 @@
+import inspect
+
+from note_splitter import tokens
 from note_splitter.gui import files_browse
+from note_splitter.settings import get_token_type
+from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
 from note_splitter.settings import update_from_combo_box
 from note_splitter.settings import update_from_le
+from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
 class HomeTab(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        settings = QtCore.QSettings()
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(QtWidgets.QLabel("Choose files to split:"))
         files_choosing_layout = QtWidgets.QHBoxLayout()
@@ -15,12 +22,12 @@ class HomeTab(QtWidgets.QWidget):
         self.browse_button = QtWidgets.QPushButton("browse")
         files_choosing_layout.addWidget(self.browse_button)
         files_choosing_layout.addWidget(QtWidgets.QLabel(" or "))
-        self.search_button = QtWidgets.QPushButton("search")
-        self.search_button.clicked.connect(
+        self.keyword_search_button = QtWidgets.QPushButton("search by keyword")
+        self.keyword_search_button.clicked.connect(
             # TODO
         )
-        files_choosing_layout.addWidget(self.search_button)
-        self.keyword_line_edit = QtWidgets.QLineEdit()
+        files_choosing_layout.addWidget(self.keyword_search_button)
+        self.keyword_line_edit = QtWidgets.QLineEdit(settings.value("split_keyword"))
         self.keyword_line_edit.editingFinished.connect(
             lambda le=self.keyword_line_edit: update_from_le("split_keyword", le)
         )
@@ -39,17 +46,18 @@ class HomeTab(QtWidgets.QWidget):
         self.split_by_layout.addLayout(self.type_layout)
         self.type_layout.addWidget(QtWidgets.QLabel("type:"))
         self.type_combo_box = QtWidgets.QComboBox()
-        self.type_combo_box.currentTextChanged.connect(
-            lambda cb=self.type_combo_box: update_from_combo_box("split_type", cb)
-        )
+        token_type_names = get_token_type_names()
+        token_type_names.remove("section")
+        self.type_combo_box.addItems(token_type_names)
+        self.type_combo_box.setCurrentText(settings.value("split_type"))
+        self.type_combo_box.currentTextChanged.connect(self.__on_split_type_change)
         self.type_layout.addWidget(self.type_combo_box)
         self.attribute_layout = QtWidgets.QVBoxLayout()
         self.split_by_layout.addLayout(self.attribute_layout)
         self.attribute_layout.addWidget(QtWidgets.QLabel("attribute:"))
         self.attribute_combo_box = QtWidgets.QComboBox()
-        self.attribute_combo_box.currentTextChanged.connect(
-            lambda cb=self.attribute_combo_box: update_from_combo_box("split_attrs", cb)
-        )
+        self.attribute_combo_box.addItems(self.__get_split_type_attr_names())
+        self.attribute_combo_box.currentTextChanged.connect(self.__on_split_attr_change)
         self.attribute_layout.addWidget(self.attribute_combo_box)
         self.value_layout = QtWidgets.QVBoxLayout()
         self.split_by_layout.addLayout(self.value_layout)
@@ -86,7 +94,34 @@ class HomeTab(QtWidgets.QWidget):
         self.split_buttons_layout.addWidget(self.split_selected_button)
         self.split_buttons_layout.addStretch()
 
+    def __on_split_type_change(self) -> None:
+        update_from_combo_box("split_type", self.type_combo_box)
+        self.attribute_combo_box.clear()
+        attr_names: list[str] = self.__get_split_type_attr_names()
+        self.attribute_combo_box.addItems(attr_names)
+        settings = QtCore.QSettings()
+        settings.setValue("split_attrs", {attr_names[0]} if attr_names else {})
+        self.value_line_edit.clear()
+
+    def __on_split_attr_change(self) -> None:
+        update_from_combo_box("split_attrs", self.attribute_combo_box)
+        self.value_line_edit.clear()
+
     def __get_files_to_split(self) -> None:
+        """Shows a file dialog and saves the selected files."""
         self.abs_paths_of_files_to_split = files_browse(
             self, self.file_list_text_browser, "choose files to split"
         )
+
+    def __get_split_type_attr_names(self) -> list[str]:
+        """Returns a list of attribute names of the split type."""
+        split_type: type[tokens.Token] = get_token_type(
+            QtCore.QSettings().value("split_type")
+        )
+        if inspect.isabstract(split_type):
+            attr_names: list[str] = []
+        else:
+            attr_names = sorted(list(split_type().__dict__.keys()))
+            if issubclass(split_type, tokens.Block):
+                attr_names.remove("content")
+        return attr_names
