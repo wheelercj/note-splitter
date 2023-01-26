@@ -22,7 +22,7 @@ class HomeTab(QtWidgets.QWidget):
         self.browse_button = QtWidgets.QPushButton("browse")
         files_choosing_layout.addWidget(self.browse_button)
         files_choosing_layout.addWidget(QtWidgets.QLabel(" or "))
-        self.keyword_search_button = QtWidgets.QPushButton("search by keyword")
+        self.keyword_search_button = QtWidgets.QPushButton("find by keyword")
         self.keyword_search_button.clicked.connect(
             # TODO
         )
