@@ -1,7 +1,11 @@
 import inspect
+import os
 
 from note_splitter import tokens
 from note_splitter.gui import files_browse
+from note_splitter.gui import request_folder_path
+from note_splitter.gui import show_message
+from note_splitter.note import Note
 from note_splitter.settings import get_token_type
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
@@ -12,8 +16,9 @@ from PySide6 import QtWidgets
 
 
 class HomeTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, main_window: QtWidgets.QMainWindow):
         super().__init__()
+        self.main_window = main_window
         settings = QtCore.QSettings()
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(QtWidgets.QLabel("Choose files to split:"))
@@ -23,9 +28,7 @@ class HomeTab(QtWidgets.QWidget):
         files_choosing_layout.addWidget(self.browse_button)
         files_choosing_layout.addWidget(QtWidgets.QLabel(" or "))
         self.keyword_search_button = QtWidgets.QPushButton("find by keyword")
-        self.keyword_search_button.clicked.connect(
-            # TODO
-        )
+        self.keyword_search_button.clicked.connect(self.__on_keyword_search)
         files_choosing_layout.addWidget(self.keyword_search_button)
         self.keyword_line_edit = QtWidgets.QLineEdit(settings.value("split_keyword"))
         self.keyword_line_edit.editingFinished.connect(
@@ -79,19 +82,35 @@ class HomeTab(QtWidgets.QWidget):
         self.parse_blocks_layout.addStretch()
 
         self.split_button = QtWidgets.QPushButton("split")
-        self.split_button.clicked.connect(
-            # TODO
-        )
+        self.split_button.clicked.connect(self.__on_split_button_click)
         self.layout.addWidget(self.split_button)
         self.layout.addStretch()
+
+    def __on_keyword_search(self) -> None:
+        """Searches for files with the keyword and updates the file list."""
+        self.abs_paths_of_files_to_split = []
+        keyword = self.keyword_line_edit.text()
+        if not keyword:
+            show_message("No keyword entered.")
+            return
+        QtCore.QSettings().setValue("using_split_keyword", True)
+        all_notes: list[Note] = self.__get_all_notes()
+        if not all_notes:
+            return
+        chosen_notes = self.__get_chosen_notes(all_notes)
+        if not chosen_notes:
+            show_message("No notes found.")
+            return
+        self.file_list_text_browser.setText("\n".join(n.title for n in chosen_notes))
 
     def __on_split_type_change(self) -> None:
         update_from_combo_box("split_type", self.type_combo_box)
         self.attribute_combo_box.clear()
         attr_names: list[str] = self.__get_split_type_attr_names()
         self.attribute_combo_box.addItems(attr_names)
-        settings = QtCore.QSettings()
-        settings.setValue("split_attrs", {attr_names[0]} if attr_names else {})
+        QtCore.QSettings().setValue(
+            "split_attrs", {attr_names[0]} if attr_names else {}
+        )
         self.value_line_edit.clear()
 
     def __on_split_attr_change(self) -> None:
@@ -116,3 +135,63 @@ class HomeTab(QtWidgets.QWidget):
             if issubclass(split_type, tokens.Block):
                 attr_names.remove("content")
         return attr_names
+
+    def __on_split_button_click(self) -> None:
+        # TODO
+        # new_notes: list[note.Note] = split_files(window, listbox_notes)
+        # gui.run_split_summary_window(new_notes, all_notes)
+        # window["-NOTES TO SPLIT-"].update(values=[])
+        pass
+
+    def __get_all_notes(self) -> list[Note]:
+        """Gets all the notes in the user's chosen source folder.
+
+        If a source folder has not been chosen yet, it will ask the user to choose one.
+        """
+        notes: list[Note] = []
+        folder_list: list[str]
+        settings = QtCore.QSettings()
+        source_folder_path: str | None = settings.value("source_folder_path")
+        try:
+            folder_list = os.listdir(source_folder_path)
+        except FileNotFoundError:
+            source_folder_path = request_folder_path("source")
+            if not source_folder_path:
+                return []
+            else:
+                settings.setValue("source_folder_path", source_folder_path)
+                self.main_window.settings_tab.source_folder_line_edit.setText(
+                    source_folder_path
+                )
+                folder_list = os.listdir(source_folder_path)
+        note_types: list[str] = settings.value("note_types")
+        assert source_folder_path is not None
+        for file_name in folder_list:
+            file_path: str = os.path.join(source_folder_path, file_name)
+            if os.path.isfile(file_path):
+                _, file_ext = os.path.splitext(file_name)
+                if file_ext in note_types:
+                    notes.append(Note(file_path, source_folder_path, file_name))
+        return notes
+
+    def __get_chosen_notes(self, all_notes: list[Note] | None = None) -> list[Note]:
+        """Gets the notes that the user chose to split.
+
+        Parameters
+        ----------
+        all_notes : list[Note], optional
+            The list of all the notes in the user's chosen folder. If not provided, the
+            list of all the notes in the user's chosen folder will be retrieved.
+        """
+        if all_notes is None:
+            all_notes = self.__get_all_notes()
+        if not all_notes:
+            return []
+        split_keyword: str = QtCore.QSettings().value("split_keyword")
+        chosen_notes: list[Note] = []
+        for note in all_notes:
+            with open(note.path, "r", encoding="utf8") as file:
+                contents = file.read()
+            if split_keyword in contents:
+                chosen_notes.append(note)
+        return chosen_notes

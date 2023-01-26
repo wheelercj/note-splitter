@@ -11,7 +11,7 @@ class Menu(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.tab_widget = QtWidgets.QTabWidget()
         self.layout.addWidget(self.tab_widget)
-        self.home_tab = HomeTab()
+        self.home_tab = HomeTab(self)
         self.tab_widget.addTab(self.home_tab, "home")
         self.settings_tab = SettingsTab()
         self.tab_widget.addTab(self.settings_tab, "settings")

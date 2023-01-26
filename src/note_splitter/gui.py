@@ -1,14 +1,11 @@
 """Various functions for building the graphical user interface."""
-# import inspect
-# from textwrap import dedent
-# from typing import Optional
-# from typing import Union
-# from note_splitter import note
-# from note_splitter import tokens
-# from note_splitter.settings import get_token_type_name
-# from note_splitter.settings import get_token_type_names
 from PySide6 import QtCore
 from PySide6 import QtWidgets
+
+
+def show_message(text: str) -> None:
+    """Shows the user a message dialog and waits for the user to close it."""
+    QtWidgets.QMessageBox(text=text).exec()
 
 
 def folder_browse(
@@ -46,6 +43,47 @@ def files_browse(
     if file_paths:
         text_browser.setText("\n".join(file_paths))  # TODO: show file titles instead.
     return file_paths
+
+
+def require_folder_path(folder_description: str) -> str:
+    """Requires the user to choose a folder.
+
+    Parameters
+    ----------
+    folder_description : str
+        The description of the folder that the user will be choosing.
+
+    Returns
+    -------
+    str
+        The absolute path to a folder.
+    """
+    while True:
+        folder_path = request_folder_path(folder_description)
+        if folder_path:
+            return folder_path
+
+
+def request_folder_path(folder_description: str) -> str | None:
+    """Prompts the user to select a folder.
+
+    Parameters
+    ----------
+    folder_description : str
+        The description of the folder.
+
+    Returns
+    -------
+    str, None
+        The absolute path to a folder, or None if the user canceled.
+    """
+    message = f"Please select the {folder_description} folder."
+    folder_path: str = QtWidgets.QFileDialog.getExistingDirectory(
+        None, message, QtCore.QDir.currentPath(), QtWidgets.QFileDialog.ShowDirsOnly
+    )
+    if not folder_path:
+        return None
+    return folder_path
 
 
 # def show_progress(
