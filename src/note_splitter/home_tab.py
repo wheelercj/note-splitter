@@ -80,19 +80,12 @@ class HomeTab(QtWidgets.QWidget):
         self.parse_blocks_layout.addWidget(QtWidgets.QLabel("parse blocks"))
         self.parse_blocks_layout.addStretch()
 
-        self.split_buttons_layout = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(self.split_buttons_layout)
-        self.split_all_button = QtWidgets.QPushButton("split all")
-        self.split_all_button.clicked.connect(
+        self.split_button = QtWidgets.QPushButton("split")
+        self.split_button.clicked.connect(
             # TODO
         )
-        self.split_buttons_layout.addWidget(self.split_all_button)
-        self.split_selected_button = QtWidgets.QPushButton("split selected")
-        self.split_selected_button.clicked.connect(
-            # TODO
-        )
-        self.split_buttons_layout.addWidget(self.split_selected_button)
-        self.split_buttons_layout.addStretch()
+        self.layout.addWidget(self.split_button)
+        self.layout.addStretch()
 
     def __on_split_type_change(self) -> None:
         update_from_combo_box("split_type", self.type_combo_box)
