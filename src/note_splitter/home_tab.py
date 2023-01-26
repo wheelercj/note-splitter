@@ -1,16 +1,26 @@
 import inspect
 import os
+from typing import Callable
 
 from note_splitter import tokens
+from note_splitter.formatter_ import Formatter
 from note_splitter.gui import files_browse
 from note_splitter.gui import request_folder_path
+from note_splitter.gui import require_folder_path
 from note_splitter.gui import show_message
+from note_splitter.lexer import Lexer
+from note_splitter.note import create_file_names
+from note_splitter.note import ensure_file_path_uniqueness
+from note_splitter.note import make_file_paths_absolute
 from note_splitter.note import Note
+from note_splitter.note import validate_file_name
+from note_splitter.parser_ import AST
 from note_splitter.settings import get_token_type
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
 from note_splitter.settings import update_from_combo_box
 from note_splitter.settings import update_from_line_edit
+from note_splitter.splitter import Splitter
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -20,6 +30,7 @@ class HomeTab(QtWidgets.QWidget):
         super().__init__()
         self.main_window = main_window
         settings = QtCore.QSettings()
+        self.chosen_notes: list[Note] = []
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(QtWidgets.QLabel("Choose files to split:"))
         files_choosing_layout = QtWidgets.QHBoxLayout()
@@ -38,8 +49,7 @@ class HomeTab(QtWidgets.QWidget):
 
         self.layout.addWidget(QtWidgets.QLabel("Files to split:"))
         self.file_list_text_browser = QtWidgets.QTextBrowser()
-        self.abs_paths_of_files_to_split: list[str] = []
-        self.browse_button.clicked.connect(lambda: self.__get_files_to_split())
+        self.browse_button.clicked.connect(self.__on_browse_button_click)
         self.layout.addWidget(self.file_list_text_browser)
 
         self.layout.addWidget(QtWidgets.QLabel("Choose what to split by:"))
@@ -86,22 +96,38 @@ class HomeTab(QtWidgets.QWidget):
         self.layout.addWidget(self.split_button)
         self.layout.addStretch()
 
+    def __on_browse_button_click(self) -> None:
+        """Shows a file dialog and saves the selected files."""
+        abs_paths_of_files_to_split: list[str] = files_browse(
+            self, self.file_list_text_browser, "choose files to split"
+        )
+        if not abs_paths_of_files_to_split:
+            return
+        self.chosen_notes = self.__create_notes(abs_paths_of_files_to_split)
+        if not self.chosen_notes:
+            self.file_list_text_browser.setText("")
+        else:
+            self.file_list_text_browser.setText(
+                "\n".join(n.title for n in self.chosen_notes)
+            )
+
     def __on_keyword_search(self) -> None:
         """Searches for files with the keyword and updates the file list."""
-        self.abs_paths_of_files_to_split = []
         keyword = self.keyword_line_edit.text()
         if not keyword:
             show_message("No keyword entered.")
             return
         QtCore.QSettings().setValue("using_split_keyword", True)
-        all_notes: list[Note] = self.__get_all_notes()
+        all_notes: list[Note] = self.__get_all_notes_in_source_folder()
         if not all_notes:
             return
-        chosen_notes = self.__get_chosen_notes(all_notes)
-        if not chosen_notes:
+        self.chosen_notes = self.__get_notes_with_keyword(all_notes)
+        if not self.chosen_notes:
             show_message("No notes found.")
             return
-        self.file_list_text_browser.setText("\n".join(n.title for n in chosen_notes))
+        self.file_list_text_browser.setText(
+            "\n".join(n.title for n in self.chosen_notes)
+        )
 
     def __on_split_type_change(self) -> None:
         update_from_combo_box("split_type", self.type_combo_box)
@@ -117,12 +143,6 @@ class HomeTab(QtWidgets.QWidget):
         update_from_combo_box("split_attrs", self.attribute_combo_box)
         self.value_line_edit.clear()
 
-    def __get_files_to_split(self) -> None:
-        """Shows a file dialog and saves the selected files."""
-        self.abs_paths_of_files_to_split = files_browse(
-            self, self.file_list_text_browser, "choose files to split"
-        )
-
     def __get_split_type_attr_names(self) -> list[str]:
         """Returns a list of attribute names of the split type."""
         split_type: type[tokens.Token] = get_token_type(
@@ -137,18 +157,21 @@ class HomeTab(QtWidgets.QWidget):
         return attr_names
 
     def __on_split_button_click(self) -> None:
+        if not self.chosen_notes:
+            show_message("No files to split.")
+            return
+        new_notes: list[Note] = self.__split_files(self.chosen_notes)
         # TODO
-        # new_notes: list[note.Note] = split_files(window, listbox_notes)
         # gui.run_split_summary_window(new_notes, all_notes)
-        # window["-NOTES TO SPLIT-"].update(values=[])
-        pass
+        self.file_list_text_browser.clear()
+        self.chosen_notes = []
 
-    def __get_all_notes(self) -> list[Note]:
+    def __get_all_notes_in_source_folder(self) -> list[Note]:
         """Gets all the notes in the user's chosen source folder.
 
-        If a source folder has not been chosen yet, it will ask the user to choose one.
+        If a source folder has not been chosen yet, the user will be asked to choose
+        one.
         """
-        notes: list[Note] = []
         folder_list: list[str]
         settings = QtCore.QSettings()
         source_folder_path: str | None = settings.value("source_folder_path")
@@ -164,27 +187,43 @@ class HomeTab(QtWidgets.QWidget):
                     source_folder_path
                 )
                 folder_list = os.listdir(source_folder_path)
-        note_types: list[str] = settings.value("note_types")
         assert source_folder_path is not None
-        for file_name in folder_list:
-            file_path: str = os.path.join(source_folder_path, file_name)
+        file_paths: list[str] = [
+            os.path.join(source_folder_path, file_name) for file_name in folder_list
+        ]
+        return self.__create_notes(file_paths)
+
+    def __create_notes(self, file_paths: list[str]) -> list[Note]:
+        """Creates a list of notes from a list of file paths.
+
+        Parameters
+        ----------
+        file_paths : list[str]
+            The absolute file paths of the notes. Folders and files of types that are
+            not in the list of note types will be ignored.
+        """
+        notes: list[Note] = []
+        note_types: list[str] = QtCore.QSettings().value("note_types")
+        for file_path in file_paths:
             if os.path.isfile(file_path):
-                _, file_ext = os.path.splitext(file_name)
+                _, file_ext = os.path.splitext(file_path)
                 if file_ext in note_types:
-                    notes.append(Note(file_path, source_folder_path, file_name))
+                    notes.append(Note(file_path))
         return notes
 
-    def __get_chosen_notes(self, all_notes: list[Note] | None = None) -> list[Note]:
-        """Gets the notes that the user chose to split.
+    def __get_notes_with_keyword(
+        self, all_notes: list[Note] | None = None
+    ) -> list[Note]:
+        """Filters to the notes that have the split keyword.
 
         Parameters
         ----------
         all_notes : list[Note], optional
-            The list of all the notes in the user's chosen folder. If not provided, the
+            The list of all the notes in the user's source folder. If not provided, the
             list of all the notes in the user's chosen folder will be retrieved.
         """
         if all_notes is None:
-            all_notes = self.__get_all_notes()
+            all_notes = self.__get_all_notes_in_source_folder()
         if not all_notes:
             return []
         split_keyword: str = QtCore.QSettings().value("split_keyword")
@@ -195,3 +234,173 @@ class HomeTab(QtWidgets.QWidget):
             if split_keyword in contents:
                 chosen_notes.append(note)
         return chosen_notes
+
+    def __split_files(self, notes: list[Note] = None) -> list[Note]:
+        """Splits files into multiple smaller files.
+
+        If no notes are provided, they will be found using the split keyword and the
+        source folder path chosen in settings.
+
+        Parameters
+        ----------
+        notes : list[Note]
+            The notes to be split.
+
+        Returns
+        -------
+        new_notes : list[Note]
+            The newly created notes.
+        """
+        tokenize: Callable = Lexer()
+        split: Callable = Splitter()
+        format_: Callable = Formatter()
+        notes = notes or self.__get_notes_with_keyword()
+        all_new_notes: list[Note] = []
+        settings = QtCore.QSettings()
+        progress = QtWidgets.QProgressDialog(
+            "splitting...", "", 0, 100, self, modal=True
+        )
+        note_count = len(notes)
+        for i, source_note in enumerate(notes):
+            progress.setValue((i + 1) / (note_count + 5) * 100)
+            with open(source_note.path, "r", encoding="utf8") as file:
+                content: str = file.read()
+            progress.setValue((i + 2) / (note_count + 5) * 100)
+            split_contents: list[str] = split_text(content, tokenize, split, format_)
+            progress.setValue((i + 3) / (note_count + 5) * 100)
+            new_file_names: list[str] = create_file_names(
+                source_note.ext, split_contents
+            )
+            progress.setValue((i + 4) / (note_count + 5) * 100)
+            new_notes = self.save_new_notes(split_contents, new_file_names)
+            all_new_notes.extend(new_notes)
+            progress.setValue((i + 5) / (note_count + 5) * 100)
+            print(f"Created {len(new_notes)} new files.")
+            if new_notes:
+                if settings.value("create_index_file"):
+                    index_note: Note = create_index_file_(source_note, new_notes)
+                    print(f"Created index file at {index_note.path}")
+                    all_new_notes.append(index_note)
+                    if settings.value("create_backlinks"):
+                        append_backlinks(index_note, new_notes)
+                elif settings.value("create_backlinks"):
+                    append_backlinks(source_note, new_notes)
+        return all_new_notes
+
+    def save_new_notes(
+        self, split_contents: list[str], new_file_names: list[str]
+    ) -> list[Note]:
+        """Creates new files and saves strings into them.
+
+        The lists for the contents and names of the new files are parallel.
+
+        Attributes
+        ----------
+        split_contents : list[str]
+            A list of strings to each be saved into a new file.
+        new_file_names : list[str]
+            A list of names of files to be created.
+
+        Returns
+        -------
+        new_notes : list[Note]
+            The newly created notes.
+        """
+        new_notes = []
+        settings = QtCore.QSettings()
+        for new_file_name, split_content in zip(new_file_names, split_contents):
+            if not settings.value("destination_folder_path") or not os.path.exists(
+                settings.value("destination_folder_path")
+            ):
+                settings.setValue(
+                    "destination_folder_path", require_folder_path("destination")
+                )
+                self.main_window.settings_tab.destination_folder_line_edit.setText(
+                    settings.value("destination_folder_path")
+                )
+            new_file_path = os.path.join(
+                settings.value("destination_folder_path"), new_file_name
+            )
+            new_file_path = ensure_file_path_uniqueness(new_file_path)
+            if settings.value("destination_folder_path") != settings.value(
+                "source_folder_path"
+            ):
+                split_content = make_file_paths_absolute(split_content, new_file_path)
+            with open(new_file_path, "x", encoding="utf8") as file:
+                file.write(split_content)
+            new_notes.append(Note(new_file_path))
+        return new_notes
+
+
+def split_text(
+    content: str, tokenize: Callable, split: Callable, format_: Callable
+) -> list[str]:
+    """Splits a string into multiple strings based on several factors.
+
+    Attributes
+    ----------
+    content : str
+        The string to be split.
+    tokenize : Callable
+        A function created from the Lexer class that converts a string into a list of
+        tokens.
+    split : Callable
+        A function created from the Splitter class that groups the tokens into sections.
+    format_ : Callable
+        A function created from the Formatter class that adjusts the formatting of each
+        section and converts them to strings.
+
+    Returns
+    -------
+    split_contents : list[str]
+        A list of strings that are the sections of the original string.
+    """
+    tokens_: list[tokens.Token] = tokenize(content)
+    ast = AST(tokens_, QtCore.QSettings().value("parse_blocks"))
+    sections, global_tags = split(ast.content)
+    split_contents: list[str] = format_(
+        sections, global_tags, ast.frontmatter, ast.footnotes
+    )
+    return split_contents
+
+
+def create_index_file_(source_note: Note, new_notes: list[Note]) -> Note:
+    """Creates an index file for the new notes in the same folder.
+
+    Parameters
+    ----------
+    source_note : Note
+        The note that the new notes were created from.
+    new_notes : list[Note]
+        The newly created notes.
+
+    Returns
+    -------
+    Note
+        The newly created index note.
+    """
+    index_name = validate_file_name(f"index - {source_note.title}.md", 35)
+    folder_path = new_notes[0].folder_path
+    index_file_path = os.path.join(folder_path, index_name)
+    index_file_path = ensure_file_path_uniqueness(index_file_path)
+    with open(index_file_path, "x", encoding="utf8") as file:
+        file.write(f"# index of {source_note.title}\n\n")
+        for n in new_notes:
+            file.write(f"* [{n.title}]({n.path})\n")
+        file.write(f"\n[Source: {source_note.title}]({source_note.path})")
+    return Note(index_file_path, folder_path, index_name)
+
+
+def append_backlinks(root_note: Note, notes: list[Note]) -> None:
+    """Appends backlinks to the root note in each of the given notes.
+
+    Parameters
+    ----------
+    root_note : str
+        The note that the backlinks will link to.
+    notes : list[Note]
+        The notes to append backlinks to.
+    """
+    for note_ in notes:
+        with open(note_.path, "a", encoding="utf8") as file:
+            file.write(f"\n\n[Backlink: {root_note.title}]({root_note.path})\n")

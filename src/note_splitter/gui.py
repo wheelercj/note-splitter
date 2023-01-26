@@ -86,26 +86,6 @@ def request_folder_path(folder_description: str) -> str | None:
     return folder_path
 
 
-# def show_progress(
-#     note_number: int, note_count: int, call_number: int, call_count: int
-# ) -> None:
-#     """Shows the progress of the application.
-
-#     Parameters
-#     ----------
-#     note_number: int
-#         The number of the note being processed.
-#     note_count: int
-#         The total number of notes being processed.
-#     call_number: int
-#         The number of the call to this function.
-#     call_count: int
-#         The total number of calls to this function.
-#     """
-#     n = int((note_number + call_number) / (note_count * call_count) * 100)
-#     sg.one_line_progress_meter("splitting", n, 100, "splitting progress")
-
-
 # def create_main_menu_window() -> sg.Window:
 #     """Creates the main menu window."""
 #     window = sg.Window(
