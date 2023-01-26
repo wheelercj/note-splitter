@@ -208,7 +208,7 @@ def update_setting(setting_name: str, value: Any) -> None:
     QtCore.QSettings().setValue(setting_name, value)
 
 
-def update_from_le(setting_name: str, line_edit: QtWidgets.QLineEdit) -> None:
+def update_from_line_edit(setting_name: str, line_edit: QtWidgets.QLineEdit) -> None:
     """Updates a setting in the registry with a line edit's text."""
     QtCore.QSettings().setValue(setting_name, line_edit.text())
 

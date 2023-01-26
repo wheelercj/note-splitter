@@ -1,6 +1,6 @@
 from note_splitter.gui import folder_browse
 from note_splitter.settings import update_from_checkbox
-from note_splitter.settings import update_from_le
+from note_splitter.settings import update_from_line_edit
 from PySide6 import QtWidgets
 
 
@@ -14,7 +14,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.source_folder_layout.addWidget(QtWidgets.QLabel("source folder:"))
         self.source_folder_line_edit = QtWidgets.QLineEdit()
         self.source_folder_line_edit.editingFinished.connect(
-            lambda le=self.source_folder_line_edit: update_from_le(
+            lambda le=self.source_folder_line_edit: update_from_line_edit(
                 "source_folder_path", le
             )
         )
@@ -36,7 +36,7 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.destination_folder_line_edit = QtWidgets.QLineEdit()
         self.destination_folder_line_edit.editingFinished.connect(
-            lambda le=self.destination_folder_line_edit: update_from_le(
+            lambda le=self.destination_folder_line_edit: update_from_line_edit(
                 "destination_folder_path", le
             )
         )
@@ -58,7 +58,7 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.new_file_name_format_line_edit = QtWidgets.QLineEdit()
         self.new_file_name_format_line_edit.editingFinished.connect(
-            lambda le=self.new_file_name_format_line_edit: update_from_le(
+            lambda le=self.new_file_name_format_line_edit: update_from_line_edit(
                 "file_name_format", le
             )
         )

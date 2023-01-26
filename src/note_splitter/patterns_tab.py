@@ -1,4 +1,4 @@
-from note_splitter.settings import update_from_le
+from note_splitter.settings import update_from_line_edit
 from PySide6 import QtWidgets
 
 
@@ -8,28 +8,28 @@ class PatternsTab(QtWidgets.QWidget):
         self.layout = QtWidgets.QFormLayout(self)
         self.blockquote_line_edit = QtWidgets.QLineEdit()
         self.blockquote_line_edit.editingFinished.connect(
-            lambda le=self.blockquote_line_edit: update_from_le(
+            lambda le=self.blockquote_line_edit: update_from_line_edit(
                 "blockquote_pattern", le
             )
         )
         self.layout.addRow("blockquote (full-line):", self.blockquote_line_edit)
         self.code_fence_line_edit = QtWidgets.QLineEdit()
         self.code_fence_line_edit.editingFinished.connect(
-            lambda le=self.code_fence_line_edit: update_from_le(
+            lambda le=self.code_fence_line_edit: update_from_line_edit(
                 "code_fence_pattern", le
             )
         )
         self.layout.addRow("code fence (full-line):", self.code_fence_line_edit)
         self.empty_line_line_edit = QtWidgets.QLineEdit()
         self.empty_line_line_edit.editingFinished.connect(
-            lambda le=self.empty_line_line_edit: update_from_le(
+            lambda le=self.empty_line_line_edit: update_from_line_edit(
                 "empty_line_pattern", le
             )
         )
         self.layout.addRow("empty line (full-line):", self.empty_line_line_edit)
         self.file_path_in_link_line_edit = QtWidgets.QLineEdit()
         self.file_path_in_link_line_edit.editingFinished.connect(
-            lambda le=self.file_path_in_link_line_edit: update_from_le(
+            lambda le=self.file_path_in_link_line_edit: update_from_line_edit(
                 "file_path_in_link_pattern", le
             )
         )
@@ -38,19 +38,21 @@ class PatternsTab(QtWidgets.QWidget):
         )
         self.finished_task_line_edit = QtWidgets.QLineEdit()
         self.finished_task_line_edit.editingFinished.connect(
-            lambda le=self.finished_task_line_edit: update_from_le(
+            lambda le=self.finished_task_line_edit: update_from_line_edit(
                 "finished_task_pattern", le
             )
         )
         self.layout.addRow("finished task (full-line):", self.finished_task_line_edit)
         self.footnote_line_edit = QtWidgets.QLineEdit()
         self.footnote_line_edit.editingFinished.connect(
-            lambda le=self.footnote_line_edit: update_from_le("footnote_pattern", le)
+            lambda le=self.footnote_line_edit: update_from_line_edit(
+                "footnote_pattern", le
+            )
         )
         self.layout.addRow("footnote (full-line):", self.footnote_line_edit)
         self.frontmatter_fence_line_edit = QtWidgets.QLineEdit()
         self.frontmatter_fence_line_edit.editingFinished.connect(
-            lambda le=self.frontmatter_fence_line_edit: update_from_le(
+            lambda le=self.frontmatter_fence_line_edit: update_from_line_edit(
                 "frontmatter_fence_pattern", le
             )
         )
@@ -59,12 +61,12 @@ class PatternsTab(QtWidgets.QWidget):
         )
         self.header_line_edit = QtWidgets.QLineEdit()
         self.header_line_edit.editingFinished.connect(
-            lambda le=self.header_line_edit: update_from_le("header_pattern", le)
+            lambda le=self.header_line_edit: update_from_line_edit("header_pattern", le)
         )
         self.layout.addRow("header (full-line):", self.header_line_edit)
         self.horizontal_rule_line_edit = QtWidgets.QLineEdit()
         self.horizontal_rule_line_edit.editingFinished.connect(
-            lambda le=self.horizontal_rule_line_edit: update_from_le(
+            lambda le=self.horizontal_rule_line_edit: update_from_line_edit(
                 "horizontal_rule_pattern", le
             )
         )
@@ -73,14 +75,14 @@ class PatternsTab(QtWidgets.QWidget):
         )
         self.math_fence_line_edit = QtWidgets.QLineEdit()
         self.math_fence_line_edit.editingFinished.connect(
-            lambda le=self.math_fence_line_edit: update_from_le(
+            lambda le=self.math_fence_line_edit: update_from_line_edit(
                 "math_fence_pattern", le
             )
         )
         self.layout.addRow("math fence (full-line):", self.math_fence_line_edit)
         self.ordered_list_item_line_edit = QtWidgets.QLineEdit()
         self.ordered_list_item_line_edit.editingFinished.connect(
-            lambda le=self.ordered_list_item_line_edit: update_from_le(
+            lambda le=self.ordered_list_item_line_edit: update_from_line_edit(
                 "ordered_list_item_pattern", le
             )
         )
@@ -89,29 +91,31 @@ class PatternsTab(QtWidgets.QWidget):
         )
         self.table_divider_line_edit = QtWidgets.QLineEdit()
         self.table_divider_line_edit.editingFinished.connect(
-            lambda le=self.table_divider_line_edit: update_from_le(
+            lambda le=self.table_divider_line_edit: update_from_line_edit(
                 "table_divider_pattern", le
             )
         )
         self.layout.addRow("table divider (full-line):", self.table_divider_line_edit)
         self.table_row_line_edit = QtWidgets.QLineEdit()
         self.table_row_line_edit.editingFinished.connect(
-            lambda le=self.table_row_line_edit: update_from_le("table_row_pattern", le)
+            lambda le=self.table_row_line_edit: update_from_line_edit(
+                "table_row_pattern", le
+            )
         )
         self.layout.addRow("table row (full-line):", self.table_row_line_edit)
         self.tag_line_edit = QtWidgets.QLineEdit()
         self.tag_line_edit.editingFinished.connect(
-            lambda le=self.tag_line_edit: update_from_le("tag_pattern", le)
+            lambda le=self.tag_line_edit: update_from_line_edit("tag_pattern", le)
         )
         self.layout.addRow("tag (inline):", self.tag_line_edit)
         self.task_line_edit = QtWidgets.QLineEdit()
         self.task_line_edit.editingFinished.connect(
-            lambda le=self.task_line_edit: update_from_le("task_pattern", le)
+            lambda le=self.task_line_edit: update_from_line_edit("task_pattern", le)
         )
         self.layout.addRow("task (full-line):", self.task_line_edit)
         self.unordered_list_item_line_edit = QtWidgets.QLineEdit()
         self.unordered_list_item_line_edit.editingFinished.connect(
-            lambda le=self.unordered_list_item_line_edit: update_from_le(  # noqa: E501
+            lambda le=self.unordered_list_item_line_edit: update_from_line_edit(  # noqa: E501
                 "unordered_list_item_pattern", le
             )
         )

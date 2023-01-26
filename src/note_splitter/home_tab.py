@@ -6,7 +6,7 @@ from note_splitter.settings import get_token_type
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
 from note_splitter.settings import update_from_combo_box
-from note_splitter.settings import update_from_le
+from note_splitter.settings import update_from_line_edit
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -29,7 +29,7 @@ class HomeTab(QtWidgets.QWidget):
         files_choosing_layout.addWidget(self.keyword_search_button)
         self.keyword_line_edit = QtWidgets.QLineEdit(settings.value("split_keyword"))
         self.keyword_line_edit.editingFinished.connect(
-            lambda le=self.keyword_line_edit: update_from_le("split_keyword", le)
+            lambda le=self.keyword_line_edit: update_from_line_edit("split_keyword", le)
         )
         files_choosing_layout.addWidget(self.keyword_line_edit)
 
@@ -64,7 +64,7 @@ class HomeTab(QtWidgets.QWidget):
         self.value_layout.addWidget(QtWidgets.QLabel("value:"))
         self.value_line_edit = QtWidgets.QLineEdit()
         self.value_line_edit.textChanged.connect(
-            lambda le=self.value_line_edit: update_from_le("split_value", le)
+            lambda le=self.value_line_edit: update_from_line_edit("split_value", le)
         )
         self.value_layout.addWidget(self.value_line_edit)
 
