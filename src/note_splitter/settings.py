@@ -218,6 +218,11 @@ def update_from_checkbox(setting_name: str, check_box: QtWidgets.QCheckBox) -> N
     QtCore.QSettings().setValue(setting_name, check_box.isChecked())
 
 
+def update_from_combo_box(setting_name: str, combo_box: QtWidgets.QComboBox) -> None:
+    """Updates a setting in the registry with a combo box's value."""
+    QtCore.QSettings().setValue(setting_name, combo_box.currentText())
+
+
 def get_token_type_names(
     filter_predicate: Callable[[type], bool] = None, all_token_types: list[type] = None
 ) -> list[str]:

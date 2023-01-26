@@ -29,6 +29,25 @@ def folder_browse(
     return folder_path
 
 
+def files_browse(
+    parent: QtWidgets.QWidget, text_browser: QtWidgets.QTextBrowser, title: str
+) -> list[str]:
+    """Opens a file dialog, sets the text_browser's text, & returns the abs file paths.
+
+    If the user cancels the dialog, the text_browser's text is not changed and an empty
+    list is returned.
+    """
+    file_paths: list[str] = QtWidgets.QFileDialog.getOpenFileNames(
+        parent,
+        title,
+        QtCore.QDir.currentPath(),
+        "Text Files (*.txt *.md *.rst);;All Files (*)",
+    )
+    if file_paths:
+        text_browser.setText("\n".join(file_paths))  # TODO: show file titles instead.
+    return file_paths
+
+
 # def show_progress(
 #     note_number: int, note_count: int, call_number: int, call_count: int
 # ) -> None:
