@@ -29,7 +29,7 @@ class HomeTab(QtWidgets.QWidget):
         files_choosing_layout.addWidget(self.keyword_search_button)
         self.keyword_line_edit = QtWidgets.QLineEdit(settings.value("split_keyword"))
         self.keyword_line_edit.editingFinished.connect(
-            lambda le=self.keyword_line_edit: update_from_line_edit("split_keyword", le)
+            lambda: update_from_line_edit("split_keyword", self.keyword_line_edit)
         )
         files_choosing_layout.addWidget(self.keyword_line_edit)
 
@@ -64,7 +64,7 @@ class HomeTab(QtWidgets.QWidget):
         self.value_layout.addWidget(QtWidgets.QLabel("value:"))
         self.value_line_edit = QtWidgets.QLineEdit()
         self.value_line_edit.textChanged.connect(
-            lambda le=self.value_line_edit: update_from_line_edit("split_value", le)
+            lambda: update_from_line_edit("split_value", self.value_line_edit)
         )
         self.value_layout.addWidget(self.value_line_edit)
 
@@ -72,9 +72,7 @@ class HomeTab(QtWidgets.QWidget):
         self.layout.addLayout(self.parse_blocks_layout)
         self.parse_blocks_checkbox = QtWidgets.QCheckBox()
         self.parse_blocks_checkbox.changeEvent.connect(
-            lambda cb=self.parse_blocks_checkbox: update_from_checkbox(
-                "parse_blocks", cb
-            )
+            lambda: update_from_checkbox("parse_blocks", self.parse_blocks_checkbox)
         )
         self.parse_blocks_layout.addWidget(self.parse_blocks_checkbox)
         self.parse_blocks_layout.addWidget(QtWidgets.QLabel("parse blocks"))

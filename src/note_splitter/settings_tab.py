@@ -14,14 +14,14 @@ class SettingsTab(QtWidgets.QWidget):
         self.source_folder_layout.addWidget(QtWidgets.QLabel("source folder:"))
         self.source_folder_line_edit = QtWidgets.QLineEdit()
         self.source_folder_line_edit.editingFinished.connect(
-            lambda le=self.source_folder_line_edit: update_from_line_edit(
-                "source_folder_path", le
+            lambda: update_from_line_edit(
+                "source_folder_path", self.source_folder_line_edit
             )
         )
         self.source_folder_layout.addWidget(self.source_folder_line_edit)
         self.source_folder_browse_button = QtWidgets.QPushButton("browse")
         self.source_folder_browse_button.clicked.connect(
-            lambda self=self: folder_browse(
+            lambda: folder_browse(
                 self.source_folder_line_edit,
                 "choose the source folder",
             )
@@ -36,14 +36,14 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.destination_folder_line_edit = QtWidgets.QLineEdit()
         self.destination_folder_line_edit.editingFinished.connect(
-            lambda le=self.destination_folder_line_edit: update_from_line_edit(
-                "destination_folder_path", le
+            lambda: update_from_line_edit(
+                "destination_folder_path", self.destination_folder_line_edit
             )
         )
         self.destination_folder_layout.addWidget(self.destination_folder_line_edit)
         self.destination_folder_browse_button = QtWidgets.QPushButton("browse")
         self.destination_folder_browse_button.clicked.connect(
-            lambda self=self: folder_browse(
+            lambda: folder_browse(
                 self.destination_folder_line_edit,
                 "choose the destination folder",
             )
@@ -58,8 +58,8 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.new_file_name_format_line_edit = QtWidgets.QLineEdit()
         self.new_file_name_format_line_edit.editingFinished.connect(
-            lambda le=self.new_file_name_format_line_edit: update_from_line_edit(
-                "file_name_format", le
+            lambda: update_from_line_edit(
+                "file_name_format", self.new_file_name_format_line_edit
             )
         )
         self.file_name_format_layout.addWidget(self.new_file_name_format_line_edit)
@@ -69,8 +69,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.layout.addLayout(self.checkboxes_layout)
         self.create_index_file_checkbox = QtWidgets.QCheckBox()
         self.create_index_file_checkbox.stateChanged.connect(
-            lambda cb=self.create_index_file_checkbox: update_from_checkbox(
-                "create_index_file", cb
+            lambda: update_from_checkbox(
+                "create_index_file", self.create_index_file_checkbox
             )
         )
         self.checkboxes_layout.addRow(
@@ -79,8 +79,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.create_index_file_checkbox.setChecked(True)
         self.remove_split_keyword_checkbox = QtWidgets.QCheckBox()
         self.remove_split_keyword_checkbox.stateChanged.connect(
-            lambda cb=self.remove_split_keyword_checkbox: update_from_checkbox(
-                "remove_split_keyword", cb
+            lambda: update_from_checkbox(
+                "remove_split_keyword", self.remove_split_keyword_checkbox
             )
         )
         self.checkboxes_layout.addRow(
@@ -89,16 +89,14 @@ class SettingsTab(QtWidgets.QWidget):
         self.remove_split_keyword_checkbox.setChecked(True)
         self.move_footnotes_checkbox = QtWidgets.QCheckBox()
         self.move_footnotes_checkbox.stateChanged.connect(
-            lambda cb=self.move_footnotes_checkbox: update_from_checkbox(
-                "move_footnotes", cb
-            )
+            lambda: update_from_checkbox("move_footnotes", self.move_footnotes_checkbox)
         )
         self.checkboxes_layout.addRow("move footnotes:", self.move_footnotes_checkbox)
         self.move_footnotes_checkbox.setChecked(True)
         self.copy_frontmatter_checkbox = QtWidgets.QCheckBox()
         self.copy_frontmatter_checkbox.stateChanged.connect(
-            lambda cb=self.copy_frontmatter_checkbox: update_from_checkbox(
-                "copy_frontmatter", cb
+            lambda: update_from_checkbox(
+                "copy_frontmatter", self.copy_frontmatter_checkbox
             )
         )
         self.checkboxes_layout.addRow(
@@ -107,8 +105,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.copy_frontmatter_checkbox.setChecked(False)
         self.copy_global_tags_checkbox = QtWidgets.QCheckBox()
         self.copy_global_tags_checkbox.stateChanged.connect(
-            lambda cb=self.copy_global_tags_checkbox: update_from_checkbox(
-                "copy_global_tags", cb
+            lambda: update_from_checkbox(
+                "copy_global_tags", self.copy_global_tags_checkbox
             )
         )
         self.checkboxes_layout.addRow(
@@ -117,8 +115,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.copy_global_tags_checkbox.setChecked(True)
         self.create_backlinks_checkbox = QtWidgets.QCheckBox()
         self.create_backlinks_checkbox.stateChanged.connect(
-            lambda cb=self.create_backlinks_checkbox: update_from_checkbox(
-                "create_backlinks", cb
+            lambda: update_from_checkbox(
+                "create_backlinks", self.create_backlinks_checkbox
             )
         )
         self.checkboxes_layout.addRow(
