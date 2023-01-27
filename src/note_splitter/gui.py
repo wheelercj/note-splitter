@@ -1,4 +1,6 @@
 """Various functions for building the graphical user interface."""
+from note_splitter.note import create_notes
+from note_splitter.note import Note
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -26,23 +28,19 @@ def folder_browse(
     return folder_path
 
 
-def files_browse(
-    parent: QtWidgets.QWidget, text_browser: QtWidgets.QTextBrowser, title: str
-) -> list[str]:
-    """Opens a file dialog, sets the text_browser's text, & returns the abs file paths.
+def files_browse(parent: QtWidgets.QWidget, title: str) -> list[Note]:
+    """Opens a file dialog, and returns the selected notes.
 
-    If the user cancels the dialog, the text_browser's text is not changed and an empty
-    list is returned.
+    If the user cancels the dialog, an empty list is returned.
     """
-    file_paths: list[str] = QtWidgets.QFileDialog.getOpenFileNames(
-        parent,
-        title,
-        QtCore.QDir.currentPath(),
-        "Text Files (*.txt *.md *.rst);;All Files (*)",
+    return create_notes(
+        QtWidgets.QFileDialog.getOpenFileNames(
+            parent,
+            title,
+            QtCore.QDir.currentPath(),
+            "Text Files (*.txt *.md *.rst);;All Files (*)",
+        )
     )
-    if file_paths:
-        text_browser.setText("\n".join(file_paths))  # TODO: show file titles instead.
-    return file_paths
 
 
 def require_folder_path(folder_description: str) -> str:

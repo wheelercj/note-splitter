@@ -10,6 +10,7 @@ from note_splitter.gui import require_folder_path
 from note_splitter.gui import show_message
 from note_splitter.lexer import Lexer
 from note_splitter.note import create_file_names
+from note_splitter.note import create_notes
 from note_splitter.note import ensure_file_path_uniqueness
 from note_splitter.note import make_file_paths_absolute
 from note_splitter.note import Note
@@ -97,19 +98,14 @@ class HomeTab(QtWidgets.QWidget):
         self.layout.addStretch()
 
     def __on_browse_button_click(self) -> None:
-        """Shows a file dialog and saves the selected files."""
-        abs_paths_of_files_to_split: list[str] = files_browse(
-            self, self.file_list_text_browser, "choose files to split"
-        )
-        if not abs_paths_of_files_to_split:
-            return
-        self.chosen_notes = self.__create_notes(abs_paths_of_files_to_split)
-        if not self.chosen_notes:
-            self.file_list_text_browser.setText("")
-        else:
+        """Shows a file dialog and saves selected files into ``self.chosen_notes``."""
+        self.chosen_notes = files_browse(self, "choose files to split")
+        if self.chosen_notes:
             self.file_list_text_browser.setText(
                 "\n".join(n.title for n in self.chosen_notes)
             )
+        else:
+            self.file_list_text_browser.setText("")
 
     def __on_keyword_search(self) -> None:
         """Searches for files with the keyword and updates the file list."""
@@ -191,25 +187,7 @@ class HomeTab(QtWidgets.QWidget):
         file_paths: list[str] = [
             os.path.join(source_folder_path, file_name) for file_name in folder_list
         ]
-        return self.__create_notes(file_paths)
-
-    def __create_notes(self, file_paths: list[str]) -> list[Note]:
-        """Creates a list of notes from a list of file paths.
-
-        Parameters
-        ----------
-        file_paths : list[str]
-            The absolute file paths of the notes. Folders and files of types that are
-            not in the list of note types will be ignored.
-        """
-        notes: list[Note] = []
-        note_types: list[str] = QtCore.QSettings().value("note_types")
-        for file_path in file_paths:
-            if os.path.isfile(file_path):
-                _, file_ext = os.path.splitext(file_path)
-                if file_ext in note_types:
-                    notes.append(Note(file_path))
-        return notes
+        return create_notes(file_paths)
 
     def __get_notes_with_keyword(
         self, all_notes: list[Note] | None = None

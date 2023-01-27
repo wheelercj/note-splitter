@@ -148,6 +148,25 @@ class Note:
         return True
 
 
+def create_notes(file_paths: list[str]) -> list[Note]:
+    """Creates a list of notes from a list of file paths.
+
+    Parameters
+    ----------
+    file_paths : list[str]
+        The absolute file paths of the notes. Folders and files of types that are not in
+        the list of note types will be ignored.
+    """
+    notes: list[Note] = []
+    note_types: list[str] = QtCore.QSettings().value("note_types")
+    for file_path in file_paths:
+        if os.path.isfile(file_path):
+            _, file_ext = os.path.splitext(file_path)
+            if file_ext in note_types:
+                notes.append(Note(file_path))
+    return notes
+
+
 def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
     """Creates names for new files.
 
