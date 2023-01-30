@@ -20,9 +20,8 @@ class Note:
     Attributes
     ----------
     title : str
-        The title of the note. This is the body of the first header, or
-        the first line of the file if there is no header, or an empty
-        string if the file is empty.
+        The title of the note. This is the body of the first header, or the first line
+        of the file if there is no header, or an empty string if the file is empty.
     name : str
         The name of the file, including the file extension.
     ext : str
@@ -43,11 +42,11 @@ class Note:
         path : str
             The absolute path to the file.
         folder_path : str, optional
-            The absolute path to the folder that the file is in. If not
-            provided, it will be retrieved from the path.
+            The absolute path to the folder that the file is in. If not provided, it
+            will be retrieved from the path.
         name : str, optional
-            The name of the file, including the file extension. If not
-            provided, it will be retrieved from the path.
+            The name of the file, including the file extension. If not provided, it will
+            be retrieved from the path.
         """
         self.path = path
         if folder_path is None:
@@ -69,8 +68,7 @@ class Note:
         Returns
         -------
         bool, None
-            True if the note was opened successfully, None if the note
-            does not exist.
+            True if the note was opened successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
             sg.Popup(f"File not found: {self.path}")
@@ -84,8 +82,7 @@ class Note:
         Returns
         -------
         bool, None
-            True if the note was shown successfully, None if the note
-            does not exist.
+            True if the note was shown successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
             sg.Popup(f"File not found: {self.path}")
@@ -116,8 +113,8 @@ class Note:
         Returns
         -------
         bool, None
-            True if the note was moved successfully, None if the note
-            does not exist, False otherwise.
+            True if the note was moved successfully, None if the note does not exist,
+            False otherwise.
         """
         if not os.path.exists(self.path):
             sg.Popup(f"File not found: {self.path}")
@@ -137,8 +134,7 @@ class Note:
         Returns
         -------
         bool, None
-            True if the note was deleted successfully, None if the note
-            does not exist.
+            True if the note was deleted successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
             sg.Popup(f"File not found: {self.path}")
@@ -170,10 +166,9 @@ def create_notes(file_paths: list[str]) -> list[Note]:
 def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
     """Creates names for new files.
 
-    The returned file names are in the format specified in the
-    file_name_format setting. If more than one file name is created and
-    file_name_format contains a time variable, the time will be
-    incremented for each file name.
+    The returned file names are in the format specified in the file_name_format setting.
+    If more than one file name is created and file_name_format contains a time variable,
+    the time will be incremented for each file name.
 
     Parameters
     ----------
@@ -221,8 +216,8 @@ def __create_file_name(
     file_contents : str
         The contents of the file to be named.
     dt : datetime
-        The date and time to use for the file name if the file name
-        format contains any date and/or time variables.
+        The date and time to use for the file name if the file name format contains any
+        date and/or time variables.
     """
     if not file_name_format:
         file_name_format = r"%uuid4"
@@ -243,8 +238,8 @@ def create_file_id(file_contents: str, dt: datetime = None) -> str:
     file_contents : str
         The contents of the file to be IDed.
     dt : datetime, optional
-        The datetime to use in the file name. If not provided, the
-        current time will be used.
+        The datetime to use in the file name. If not provided, the current time will be
+        used.
     """
     if dt is None:
         dt = datetime.now()
@@ -263,8 +258,8 @@ def __get_variables(file_contents: str, dt: datetime) -> list[tuple[str, str]]:
     file_contents : str
         The contents of the file being named or IDed.
     dt : datetime
-        The datetime to use in the file name or ID if the format
-        contains any date and/or time variables.
+        The datetime to use in the file name or ID if the format contains any date
+        and/or time variables.
     """
     return [
         (r"%uuid4", str(uuid.uuid4())),
@@ -281,8 +276,8 @@ def __get_variables(file_contents: str, dt: datetime) -> list[tuple[str, str]]:
 def get_title(file_contents: str) -> str:
     """Gets the title of the file.
 
-    The title is the body of the first header, or the first line if
-    there is no header, or a random string if the file is empty.
+    The title is the body of the first header, or the first line if there is no header,
+    or a random string if the file is empty.
 
     Parameters
     ----------
@@ -301,11 +296,10 @@ def get_title(file_contents: str) -> str:
 def validate_file_name(file_name: str, max_length: int = 30) -> str:
     """Validates a file name's characters and length.
 
-    This function does NOT ensure that a file with the same name does
-    not already exist. Invalid characters are replaced with hyphens. If
-    the file name has a length greater than max_length, it is truncated.
-    If the file name starts or ends with certain characters, they are
-    removed.
+    This function does NOT ensure that a file with the same name does not already exist.
+    Invalid characters are replaced with hyphens. If the file name has a length greater
+    than max_length, it is truncated. If the file name starts or ends with certain
+    characters, they are removed.
 
     Parameters
     ----------
@@ -331,10 +325,9 @@ def validate_file_name(file_name: str, max_length: int = 30) -> str:
 def ensure_file_path_uniqueness(file_path: str) -> str:
     """Makes sure a file's path is unique.
 
-    If a file with the same name already exists, a ``.1`` is appended
-    to the file name unless that is already there, in which case it is
-    changed to ``.2``, etc. This function assumes the file name does
-    not have any invalid characters.
+    If a file with the same name already exists, a ``.1`` is appended to the file name
+    unless that is already there, in which case it is changed to ``.2``, etc. This
+    function assumes the file name does not have any invalid characters.
 
     Parameters
     ----------
@@ -367,15 +360,13 @@ def move_files(
 ) -> None:
     """Moves files and updates all relevant references everywhere.
 
-    Updates paths to these files in any of the notes in the source
-    folder chosen in settings, and updates any relative paths in these
-    files if they are of a note type.
+    Updates paths to these files in any of the notes in the source folder chosen in
+    settings, and updates any relative paths in these files if they are of a note type.
 
     Parameters
     ----------
     paths_of_files_to_move : list[str]
-        list of absolute paths of files to be moved. These can be files
-        of any type.
+        list of absolute paths of files to be moved. These can be files of any type.
     destination_path : str
         Absolute path to the destination folder.
     window : sg.Window
@@ -426,8 +417,8 @@ def make_file_paths_absolute(note_content: str, note_path: str) -> str:
 def _make_file_paths_absolute(note_path: str) -> None:
     """Makes all file paths in a note's file links absolute.
 
-    Assumes that all the file paths that should be made absolute are
-    valid. Invalid paths are ignored.
+    Assumes that all the file paths that should be made absolute are valid. Invalid
+    paths are ignored.
 
     Parameters
     ----------
@@ -483,9 +474,9 @@ def get_file_paths(note_content: str, note_folder_path: str) -> list[tuple[str, 
     Returns
     -------
     list[tuple[str, str]]
-        list of tuples of the original file path in the note and its
-        normalized, absolute version. All the paths are valid. (Broken
-        file links and links to websites are ignored.)
+        list of tuples of the original file path in the note and its normalized,
+        absolute version. All the paths are valid. (Broken file links and links to
+        websites are ignored.)
     """
     noted_file_path_groups: list[tuple[str]] = patterns.file_path_in_link.findall(
         note_content
