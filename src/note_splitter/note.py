@@ -8,7 +8,6 @@ import webbrowser
 from copy import copy
 from datetime import datetime
 from datetime import timedelta
-from typing import Optional
 
 from note_splitter import patterns
 from note_splitter.gui import show_message
@@ -63,12 +62,12 @@ class Note:
             contents = file.read()
         self.title = get_title(contents)
 
-    def open(self) -> Optional[bool]:
+    def open(self) -> bool | None:
         """Opens the note in the device's default editor.
 
         Returns
         -------
-        bool, None
+        bool | None
             True if the note was opened successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
@@ -77,12 +76,12 @@ class Note:
         webbrowser.open("file://" + self.path)
         return True
 
-    def show(self) -> Optional[bool]:
+    def show(self) -> bool | None:
         """Shows the note in the file browser.
 
         Returns
         -------
-        bool, None
+        bool | None
             True if the note was shown successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
@@ -97,7 +96,7 @@ class Note:
             subprocess.call(["xdg-open", "-R", self.path])
         return True
 
-    def move(self, new_folder_path: str, all_notes: list["Note"]) -> Optional[bool]:
+    def move(self, new_folder_path: str, all_notes: list["Note"]) -> bool | None:
         """Moves the note file to a new folder and updates internal links to them.
 
         Parameters
@@ -109,7 +108,7 @@ class Note:
 
         Returns
         -------
-        bool, None
+        bool | None
             True if the note was moved successfully, None if the note does not exist,
             False otherwise.
         """
@@ -125,12 +124,12 @@ class Note:
         self.folder_path = new_folder_path
         return True
 
-    def delete(self) -> Optional[bool]:
+    def delete(self) -> bool | None:
         """Moves the note file to the trash or recycle bin.
 
         Returns
         -------
-        bool, None
+        bool | None
             True if the note was deleted successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):

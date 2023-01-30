@@ -2,7 +2,6 @@
 import re
 from typing import Any
 from typing import Callable
-from typing import Optional
 from typing import Union
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
@@ -15,7 +14,7 @@ class AST:
 
     Attributes
     ----------
-    frontmatter : Optional[object]
+    frontmatter : object | None
         The file's optional YAML frontmatter as a Python object.
     content : list[tokens.Token]
         All the tokens below any frontmatter.
@@ -40,7 +39,7 @@ class AST:
             return
         self.__tokens = tokens_  # This attribute empties into self.content.
 
-        self.frontmatter: Optional[object] = self.__get_frontmatter()
+        self.frontmatter: object | None = self.__get_frontmatter()
         self.footnotes: list[tokens.Footnote] = self.__get_footnotes()
         self.content: list[tokens.Token] = []
         if parse_blocks:
@@ -55,7 +54,7 @@ class AST:
             raw_content.append(str(token))
         return "".join(raw_content)
 
-    def __get_frontmatter(self) -> Optional[object]:
+    def __get_frontmatter(self) -> object | None:
         """Gets frontmatter from the tokens list, if it has frontmatter.
 
         If the tokens list does have frontmatter, those tokens are
@@ -64,7 +63,7 @@ class AST:
 
         Returns
         -------
-        Optional[object]
+        object | None
             YAML frontmatter loaded as a Python object. If there is no
             frontmatter, None will be returned.
         """
@@ -205,7 +204,7 @@ class AST:
         assert isinstance(token.content, str)
         return bool(pattern.match(token.content))
 
-    def __load_frontmatter(self, tokens_: list[tokens.Text]) -> Optional[object]:
+    def __load_frontmatter(self, tokens_: list[tokens.Text]) -> object | None:
         """Converts Text tokens into a Python object.
 
         Parameters

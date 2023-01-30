@@ -5,7 +5,6 @@ and global tags to each section, and then converts the section tokens to
 strings.
 """
 import uuid
-from typing import Optional
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 from note_splitter import tokens
@@ -24,8 +23,8 @@ class Formatter:
         self,
         sections: list[tokens.Section],
         global_tags: list[str],
-        frontmatter: Optional[object] = None,
-        footnotes: Optional[list[tokens.Footnote]] = None,
+        frontmatter: object | None = None,
+        footnotes: list[tokens.Footnote] | None = None,
     ) -> list[str]:
         """Formats sections for output.
 
@@ -35,9 +34,9 @@ class Formatter:
             The sections to format.
         global_tags : list[str]
             The global tags to add to each section.
-        frontmatter : Optional[object]
+        frontmatter : object | None, optional
             The frontmatter to add to each section.
-        footnotes : Optional[list[tokens.Footnote]]
+        footnotes : list[tokens.Footnote] | None, optional
             The footnotes to add to each section with the respective
             footnote reference.
         """
@@ -126,14 +125,15 @@ class Formatter:
         return str(uuid.uuid4())
 
     def prepend_frontmatter(
-        self, frontmatter: Optional[object], section_title: str, section: tokens.Section
+        self, frontmatter: object | None, section_title: str, section: tokens.Section
     ) -> None:
         """Prepends the frontmatter to a section as a Text object.
 
         Parameters
         ----------
-        frontmatter : Optional[object]
-            The frontmatter to add to the section.
+        frontmatter : object | None
+            The frontmatter to add to the section. If None, the function will
+            immediately return.
         section_title : str
             The title of the section.
         section : tokens.Section
@@ -141,9 +141,8 @@ class Formatter:
         """
         if not frontmatter:
             return
-        if isinstance(frontmatter, dict):
-            if "title" in frontmatter:
-                frontmatter["title"] = section_title
+        if isinstance(frontmatter, dict) and "title" in frontmatter:
+            frontmatter["title"] = section_title
         frontmatter_string = yaml.dump(frontmatter)
         frontmatter_string = "---\n" + frontmatter_string + "---\n"
         frontmatter_string = frontmatter_string.replace("\n\n", "\n")
