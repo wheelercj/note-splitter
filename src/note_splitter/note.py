@@ -11,6 +11,7 @@ from datetime import timedelta
 from typing import Optional
 
 from note_splitter import patterns
+from note_splitter.gui import show_message
 from PySide6 import QtCore
 
 
@@ -71,7 +72,7 @@ class Note:
             True if the note was opened successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
-            sg.Popup(f"File not found: {self.path}")
+            show_message(f"File not found: {self.path}")
             return None
         webbrowser.open("file://" + self.path)
         return True
@@ -85,7 +86,7 @@ class Note:
             True if the note was shown successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
-            sg.Popup(f"File not found: {self.path}")
+            show_message(f"File not found: {self.path}")
             return None
         if platform.system() == "Windows":
             temp_path = self.path.replace("/", "\\")
@@ -96,17 +97,13 @@ class Note:
             subprocess.call(["xdg-open", "-R", self.path])
         return True
 
-    def move(
-        self, new_folder_path: str, window: sg.Window, all_notes: list["Note"]
-    ) -> Optional[bool]:
-        """Moves the note file to a new folder.
+    def move(self, new_folder_path: str, all_notes: list["Note"]) -> Optional[bool]:
+        """Moves the note file to a new folder and updates internal links to them.
 
         Parameters
         ----------
         new_folder_path : str
             The absolute path to the new folder.
-        window : sg.Window
-            The application window.
         all_notes : list[Note]
             A list of all the notes in the user's notes folder.
 
@@ -117,13 +114,13 @@ class Note:
             False otherwise.
         """
         if not os.path.exists(self.path):
-            sg.Popup(f"File not found: {self.path}")
+            show_message(f"File not found: {self.path}")
             return None
         new_path = os.path.join(new_folder_path, self.name)
         if os.path.exists(new_path):
-            sg.Popup(f"File already exists: {new_path}")
+            show_message(f"File already exists: {new_path}")
             return False
-        move_files([self.path], new_folder_path, window, all_notes)
+        move_files([self.path], new_folder_path, all_notes)
         self.path = new_path
         self.folder_path = new_folder_path
         return True
@@ -137,10 +134,9 @@ class Note:
             True if the note was deleted successfully, None if the note does not exist.
         """
         if not os.path.exists(self.path):
-            sg.Popup(f"File not found: {self.path}")
+            show_message(f"File not found: {self.path}")
             return None
-        path = os.path.normpath(self.path)
-        send2trash([path])
+        QtCore.QFile.moveToTrash(os.path.normpath(self.path))
         return True
 
 
@@ -355,8 +351,7 @@ def ensure_file_path_uniqueness(file_path: str) -> str:
 def move_files(
     paths_of_files_to_move: list[str],
     destination_path: str,
-    window: sg.Window,
-    all_notes: list[Note] = None,
+    all_notes: list[Note],
 ) -> None:
     """Moves files and updates all relevant references everywhere.
 
@@ -369,22 +364,16 @@ def move_files(
         list of absolute paths of files to be moved. These can be files of any type.
     destination_path : str
         Absolute path to the destination folder.
-    window : sg.Window
-        The window to update.
-    all_notes : list[Note], optional
-        list of all notes in the source folder. If not given, it will be
-        loaded from the source folder.
+    all_notes : list[Note]
+        All the notes in the source folder.
     """
-    if all_notes is None:
-        all_notes = get_all_notes(window)
     for path in paths_of_files_to_move:
         path = os.path.normpath(path)
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
         if file_ext in QtCore.QSettings().value("note_types"):
             _make_file_paths_absolute(note_path=path)
-        new_path = os.path.join(destination_path, file_name_with_ext)
-        new_path = os.path.normpath(new_path)
+        new_path = os.path.normpath(os.path.join(destination_path, file_name_with_ext))
         __change_all_links_to_file(path, new_path, all_notes)
         os.rename(path, new_path)
 

@@ -8,6 +8,7 @@ from note_splitter.gui import files_browse
 from note_splitter.gui import request_folder_path
 from note_splitter.gui import require_folder_path
 from note_splitter.gui import show_message
+from note_splitter.gui import SplitSummaryDialog
 from note_splitter.lexer import Lexer
 from note_splitter.note import create_file_names
 from note_splitter.note import create_notes
@@ -31,6 +32,7 @@ class HomeTab(QtWidgets.QWidget):
         super().__init__()
         self.main_window = main_window
         settings = QtCore.QSettings()
+        self.all_notes: list[Note] = []
         self.chosen_notes: list[Note] = []
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(QtWidgets.QLabel("Choose files to split:"))
@@ -114,10 +116,10 @@ class HomeTab(QtWidgets.QWidget):
             show_message("No keyword entered.")
             return
         QtCore.QSettings().setValue("using_split_keyword", True)
-        all_notes: list[Note] = self.__get_all_notes_in_source_folder()
-        if not all_notes:
+        self.all_notes = self.__get_all_notes_in_source_folder()
+        if not self.all_notes:
             return
-        self.chosen_notes = self.__get_notes_with_keyword(all_notes)
+        self.chosen_notes = self.__get_notes_with_keyword()
         if not self.chosen_notes:
             show_message("No notes found.")
             return
@@ -153,12 +155,12 @@ class HomeTab(QtWidgets.QWidget):
         return attr_names
 
     def __on_split_button_click(self) -> None:
-        if not self.chosen_notes:
+        if not self.chosen_notes or not self.all_notes:
             show_message("No files to split.")
             return
         new_notes: list[Note] = self.__split_files(self.chosen_notes)
-        # TODO
-        # gui.run_split_summary_window(new_notes, all_notes)
+        dialog = SplitSummaryDialog(new_notes, self.all_notes, self)
+        dialog.exec()
         self.file_list_text_browser.clear()
         self.chosen_notes = []
 
@@ -189,24 +191,15 @@ class HomeTab(QtWidgets.QWidget):
         ]
         return create_notes(file_paths)
 
-    def __get_notes_with_keyword(
-        self, all_notes: list[Note] | None = None
-    ) -> list[Note]:
-        """Filters to the notes that have the split keyword.
-
-        Parameters
-        ----------
-        all_notes : list[Note], optional
-            The list of all the notes in the user's source folder. If not provided, the
-            list of all the notes in the user's chosen folder will be retrieved.
-        """
-        if all_notes is None:
-            all_notes = self.__get_all_notes_in_source_folder()
-        if not all_notes:
+    def __get_notes_with_keyword(self) -> list[Note]:
+        """Filters to the notes that have the split keyword."""
+        if not self.all_notes:
+            self.all_notes = self.__get_all_notes_in_source_folder()
+        if not self.all_notes:
             return []
         split_keyword: str = QtCore.QSettings().value("split_keyword")
         chosen_notes: list[Note] = []
-        for note in all_notes:
+        for note in self.all_notes:
             with open(note.path, "r", encoding="utf8") as file:
                 contents = file.read()
             if split_keyword in contents:

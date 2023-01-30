@@ -84,6 +84,68 @@ def request_folder_path(folder_description: str) -> str | None:
     return folder_path
 
 
+class SplitSummaryDialog(QtWidgets.QDialog):
+    def __init__(
+        self, new_notes: list[Note], all_notes: list[Note], parent: QtWidgets.QWidget
+    ):
+        super().__init__(parent, QtCore.Qt.WindowModality.WindowModal)
+        self.new_notes = new_notes
+        self.all_notes = all_notes
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.note_count_label = QtWidgets.QLabel(
+            f"Number of new files created: {len(self.new_notes)}"
+        )
+        self.notes_list_widget = QtWidgets.QListWidget()
+        self.notes_list_widget.addItems(n.title for n in self.new_notes)
+        group_box_layout = QtWidgets.QVBoxLayout()
+        group_box_layout.addWidget(self.notes_list_widget)
+        notes_buttons_layout = QtWidgets.QHBoxLayout()
+        group_box_layout.addLayout(notes_buttons_layout)
+        self.open_button = QtWidgets.QPushButton("open")
+        self.open_button.clicked.connect(self.__open_notes)
+        notes_buttons_layout.addWidget(self.open_button)
+        self.delete_button = QtWidgets.QPushButton("delete")
+        self.delete_button.clicked.connect(self.__delete_notes)
+        notes_buttons_layout.addWidget(self.delete_button)
+        self.move_button = QtWidgets.QPushButton("move")
+        self.move_button.clicked.connect(self.__move_notes)
+        notes_buttons_layout.addWidget(self.move_button)
+        self.show_in_file_browser_button = QtWidgets.QPushButton("show in file browser")
+        self.show_in_file_browser_button.clicked.connect(self.__show_notes)
+        notes_buttons_layout.addWidget(self.show_in_file_browser_button)
+        group_box = QtWidgets.QGroupBox()
+        group_box.setLayout(group_box_layout)
+        self.layout.addWidget(group_box)
+        self.ok_button = QtWidgets.QPushButton("ok")
+        self.ok_button.clicked.connect(self.accept)
+        self.layout.addWidget(self.ok_button)
+
+    def __open_notes(self) -> None:
+        """Opens the selected new_notes."""
+        for note_title in self.notes_list_widget.selectedItems():
+            note = next(n for n in self.new_notes if n.title == note_title)
+            note.open()
+
+    def __delete_notes(self) -> None:
+        """Deletes the selected notes."""
+        for note_title in self.notes_list_widget.selectedItems():
+            note = next(n for n in self.new_notes if n.title == note_title)
+            note.delete()
+
+    def __move_notes(self) -> None:
+        """Moves the selected notes and updates internal links to them."""
+        if destination := request_folder_path("destination"):
+            for note_title in self.notes_list_widget.selectedItems():
+                note = next(n for n in self.new_notes if n.title == note_title)
+                note.move(destination, self.all_notes)
+
+    def __show_notes(self) -> None:
+        """Shows the selected notes in the file browser."""
+        for note_title in self.notes_list_widget.selectedItems():
+            note = next(n for n in self.new_notes if n.title == note_title)
+            note.show()
+
+
 # def create_main_menu_window() -> sg.Window:
 #     """Creates the main menu window."""
 #     window = sg.Window(
