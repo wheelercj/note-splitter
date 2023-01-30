@@ -1,10 +1,9 @@
 """For splitting raw text into a list of tokens.
 
-The lexer categorizes lines of text first without looking at their
-context. For example, a markdown codeblock will become two code fence
-tokens surrounding one or more tokens of any type, possibly "incorrect"
-types such as header. Then the lexer makes a quick pass over the token
-list while looking at each token's context to ensure they have the
+The lexer categorizes lines of text first without looking at their context. For example,
+a markdown codeblock will become two code fence tokens surrounding one or more tokens of
+any type, possibly "incorrect" types such as header. Then the lexer makes a quick pass
+over the token list while looking at each token's context to ensure they have the
 correct type.
 """
 from note_splitter import patterns
@@ -67,9 +66,8 @@ class Lexer:
     def __check_token_types(self) -> None:
         """Changes the type of some tokens based on their context.
 
-        Changes are made to this class' token list. This function
-        assumes the tokens to change have a ``content`` attribute
-        that is of type ``str``.
+        Changes are made to this class' token list. This function assumes the tokens to
+        change have a ``content`` attribute that is of type ``str``.
         """
         type_tuples = [
             (tokens.Code, tokens.CodeFence),

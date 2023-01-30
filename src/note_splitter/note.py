@@ -380,8 +380,8 @@ def move_files(
 def make_file_paths_absolute(note_content: str, note_path: str) -> str:
     """Makes all file paths in a note's file links absolute.
 
-    Assumes that all the file paths that should be made absolute are
-    valid. Invalid paths are ignored.
+    Assumes that all the file paths that should be made absolute are valid. Invalid
+    paths are ignored.
 
     Parameters
     ----------

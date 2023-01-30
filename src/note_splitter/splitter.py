@@ -80,17 +80,15 @@ class Splitter:
     def __get_section(self) -> tokens.Section:
         """Groups some of the tokens into one new section token.
 
-        Assumes the first token in the tokens list is of the type that
-        was chosen to split by.
+        Assumes the first token in the tokens list is of the type that was chosen to
+        split by.
 
-        If the token type chosen as the section starter has
-        a ``level`` attribute, it must be an integer and lower
-        levels will take precedence over higher levels. E.g., each
-        header token has a level, and larger headers have smaller
-        levels (the largest header possible has a level of 1). When a
-        file is split by headers of level 2, each section (each new
-        file) will start with a header of level 2 and will not contain
-        any other headers of level 2 or any of level 1, but may contain
+        If the token type chosen as the section starter has a ``level`` attribute, it
+        must be an integer and lower levels will take precedence over higher levels.
+        E.g., each header token has a level, and larger headers have smaller levels (the
+        largest header possible has a level of 1). When a file is split by headers of
+        level 2, each section (each new file) will start with a header of level 2 and
+        will not contain any other headers of level 2 or any of level 1, but may contain
         headers of level 3 or greater.
         """
         section_tokens: list[tokens.Token] = []
@@ -109,18 +107,17 @@ class Splitter:
     def __should_split(self, token: tokens.Token, is_splitting: bool = True) -> bool:
         """Determines if a token has certain attributes and values.
 
-        Assumes the token is of the type that was chosen to split by,
-        and that the split attributes exist.
+        Assumes the token is of the type that was chosen to split by, and that the split
+        attributes exist.
 
         Parameters
         ----------
         token : tokens.Token
             A token that may be of the type chosen to split by.
         is_splitting : bool
-            A boolean for whether splitting is in progress. Used to
-            determine if the tokens should be split just before a token
-            of a lower level than the chosen split level. True by
-            default.
+            A boolean for whether splitting is in progress. Used to determine if the
+            tokens should be split just before a token of a lower level than the chosen
+            split level. True by default.
         """
         settings = QtCore.QSettings()
         if not isinstance(token, get_token_type(settings.value("split_type"))):

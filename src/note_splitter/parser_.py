@@ -30,10 +30,9 @@ class AST:
         tokens_ : list[tokens.Token]
             A list of tokens created from a Lexer object.
         parse_blocks : bool
-            If True, some of the tokens will be grouped together into
-            larger tokens in the resulting AST. Otherwise, the token
-            list will be put into the content attribute unchanged. The
-            AST's other attributes will still be created.
+            If True, some of the tokens will be grouped together into larger tokens in
+            the resulting AST. Otherwise, the token list will be put into the content
+            attribute unchanged. The AST's other attributes will still be created.
         """
         if not tokens_:
             return
@@ -57,15 +56,14 @@ class AST:
     def __get_frontmatter(self) -> object | None:
         """Gets frontmatter from the tokens list, if it has frontmatter.
 
-        If the tokens list does have frontmatter, those tokens are
-        removed from the list and not replaced. Empty lines at the top
-        of the tokens list are discarded.
+        If the tokens list does have frontmatter, those tokens are removed from the list
+        and not replaced. Empty lines at the top of the tokens list are discarded.
 
         Returns
         -------
         object | None
-            YAML frontmatter loaded as a Python object. If there is no
-            frontmatter, None will be returned.
+            YAML frontmatter loaded as a Python object. If there is no frontmatter, None
+            will be returned.
         """
         frontmatter_tokens: list[tokens.Text] = []
         in_frontmatter = False
@@ -93,9 +91,9 @@ class AST:
     def __parse_blocks(self) -> None:
         """Groups together all tokens that should be grouped together.
 
-        No tokens are changed, some are only put together into new
-        tokens. All the tokens will end up in the AST's content
-        attribute, and the __tokens list will be empty.
+        No tokens are changed, some are only put together into new tokens. All the
+        tokens will end up in the AST's content attribute, and the __tokens list will be
+        empty.
         """
         while self.__tokens:
             token = self.__tokens[0]
@@ -123,8 +121,7 @@ class AST:
         Parameters
         ----------
         indentation_level : int
-            The indentation level (in spaces) of the first item in the
-            list.
+            The indentation level (in spaces) of the first item in the list.
         """
         block_tokens: list[Union[tokens.TextList, tokens.TextListItem]] = []
         first_token = self.__tokens.pop(0)
@@ -154,9 +151,9 @@ class AST:
     ) -> tokens.Token:
         """Creates a token that is a block of specialized tokens.
 
-        This is for tokens that have only one purpose: to be part of a
-        block of related tokens. For example, Table tokens are made of
-        TablePart tokens which will never be used for anything else.
+        This is for tokens that have only one purpose: to be part of a block of related
+        tokens. For example, Table tokens are made of TablePart tokens which will never
+        be used for anything else.
 
         Parameters
         ----------

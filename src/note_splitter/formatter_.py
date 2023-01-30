@@ -1,8 +1,7 @@
 """For changing some important details in Section tokens before output.
 
-The Formatter class' callable normalizes header levels, adds frontmatter
-and global tags to each section, and then converts the section tokens to
-strings.
+The Formatter class' callable normalizes header levels, adds frontmatter and global tags
+to each section, and then converts the section tokens to strings.
 """
 import uuid
 
@@ -14,9 +13,8 @@ from PySide6 import QtCore
 class Formatter:
     """Creates a Callable that prepares sections for output.
 
-    The callable normalizes header levels, adds frontmatter and global
-    tags to each section, and then converts the section tokens to
-    strings.
+    The callable normalizes header levels, adds frontmatter and global tags to each
+    section, and then converts the section tokens to strings.
     """
 
     def __call__(
@@ -37,8 +35,7 @@ class Formatter:
         frontmatter : object | None, optional
             The frontmatter to add to each section.
         footnotes : list[tokens.Footnote] | None, optional
-            The footnotes to add to each section with the respective
-            footnote reference.
+            The footnotes to add to each section with the respective footnote reference.
         """
         split_contents: list[str] = []
         settings = QtCore.QSettings()
@@ -107,9 +104,8 @@ class Formatter:
     def get_section_title(self, section: tokens.Section) -> str:
         """Gets the title of a section.
 
-        The title is the body of the first header, or the first Text
-        token's content if there is no header, or a random string if the
-        section is empty.
+        The title is the body of the first header, or the first Text token's content if
+        there is no header, or a random string if the section is empty.
 
         Parameters
         ----------
@@ -156,9 +152,8 @@ class Formatter:
         Parameters
         ----------
         footnotes : list[tokens.Footnote]
-            The footnotes to add to the section if it contains
-            references to them, or to remove from the section if it does
-            not contain references to them.
+            The footnotes to add to the section if it contains references to them, or to
+            remove from the section if it does not contain references to them.
         section : tokens.Section
             The section to append/remove the footnotes to/from.
         """

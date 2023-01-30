@@ -3,12 +3,12 @@
 See the hierarchy of all the token types here:
 https://note-splitter.readthedocs.io/en/latest/token-hierarchy.html
 
-Each token class has a ``content`` property. If the token is not a combination
-of other tokens, that ``content`` property is a string of the original content
-of the raw line of text. Otherwise, the ``content`` property is the list of
-subtokens. Each token class also has a boolean class variable (not an instance
-variable) named ``HAS_PATTERN``. If ``HAS_PATTERN`` is True, the class has a
-corresponding regular expression in patterns.py.
+Each token class has a ``content`` property. If the token is not a combination of other
+tokens, that ``content`` property is a string of the original content of the raw line of
+text. Otherwise, the ``content`` property is the list of subtokens. Each token class
+also has a boolean class variable (not an instance variable) named ``HAS_PATTERN``. If
+``HAS_PATTERN`` is True, the class has a corresponding regular expression in
+patterns.py.
 """
 import inspect
 from abc import ABC
@@ -23,8 +23,8 @@ from note_splitter import patterns
 def _get_indentation_level(line: str) -> int:
     """Counts the spaces at the start of the line.
 
-    If there are tabs instead, each tab is counted as 4 spaces. This
-    function assumes tabs and spaces are not mixed.
+    If there are tabs instead, each tab is counted as 4 spaces. This function assumes
+    tabs and spaces are not mixed.
     """
     level = len(line) - len(line.lstrip(" "))
     if not level:
@@ -174,8 +174,8 @@ class Fenced(Line):
 class Text(CanHaveInlineElements):
     """Normal text.
 
-    This class is the catch-all for individual lines of text that don't fall
-    into any other category.
+    This class is the catch-all for individual lines of text that don't fall into any
+    other category.
 
     Attributes
     ----------
@@ -213,11 +213,10 @@ class Header(CanHaveInlineElements):
     content : str
         The content of the line of text.
     body : str
-        The content of the line of text not including the header
-        symbol(s) and their following whitespace character(s).
+        The content of the line of text not including the header symbol(s) and their
+        following whitespace character(s).
     level : int
-        The header level. A header level of 1 is the largest possible
-        header.
+        The header level. A header level of 1 is the largest possible header.
     """
 
     HAS_PATTERN = True
@@ -283,8 +282,7 @@ class Footnote(CanHaveInlineElements):
     content : str
         The content of the line of text.
     reference : str
-        The footnote's reference that may appear in other parts of the
-        document.
+        The footnote's reference that may appear in other parts of the document.
     """
 
     HAS_PATTERN = True
@@ -360,16 +358,15 @@ class OrderedListItem(TextListItem, CanHaveInlineElements):
 class TextList(Block):
     """A list that is numbered, bullet-pointed, and/or checkboxed.
 
-    A single text list may have any combination of ordered list items,
-    unordered list items, tasks, and other text lists with more indentation.
+    A single text list may have any combination of ordered list items, unordered list
+    items, tasks, and other text lists with more indentation.
 
     Attributes
     ----------
     content : list[Union[TextListItem, "TextList"]]
         The tokens that make up the list. Lists may have sublists.
     level : int
-        The number of spaces of indentation of the first item in the
-        list.
+        The number of spaces of indentation of the first item in the list.
     """
 
     def __init__(self, tokens_: list[Any] = None):
@@ -432,10 +429,9 @@ class CodeFence(Fence):
     content : str
         The content of the line of text.
     language : str
-        Any text that follows the triple backticks (or triple tildes).
-        Surrounding whitespace characters are removed. This will be an
-        empty string if there are no non-whitespace characters after the
-        triple backticks/tildes.
+        Any text that follows the triple backticks (or triple tildes). Surrounding
+        whitespace characters are removed. This will be an empty string if there are no
+        non-whitespace characters after the triple backticks/tildes.
     """
 
     HAS_PATTERN = True
@@ -466,9 +462,8 @@ class CodeBlock(Block):
     content : list[Union[CodeFence, Code]]
         The code block's code fence tokens surrounding code token(s).
     language : str
-        Any text that follows the triple backticks (or tildes) on the
-        line of the opening code fence. Surrounding whitespace
-        characters are removed.
+        Any text that follows the triple backticks (or tildes) on the line of the
+        opening code fence. Surrounding whitespace characters are removed.
     """
 
     def __init__(self, tokens_: list[Any] = None):
@@ -510,8 +505,8 @@ class Math(Fenced):
 class MathBlock(Block):
     """A multi-line mathblock.
 
-    Inline mathblocks are not supported (the opening and closing math
-    fences must be on different lines).
+    Inline mathblocks are not supported (the opening and closing math fences must be on
+    different lines).
 
     Attributes
     ----------
@@ -526,15 +521,13 @@ class MathBlock(Block):
 class Section(Block):
     """A file section starting with a token of the chosen split type.
 
-    The Splitter returns a list of Sections. Section tokens never
-    contain section tokens, but may contain tokens of any and all other
-    types.
+    The Splitter returns a list of Sections. Section tokens never contain section
+    tokens, but may contain tokens of any and all other types.
 
     Attributes
     ----------
     content : list[Token]
-        The tokens in this section, starting with a token of the chosen
-        split type.
+        The tokens in this section, starting with a token of the chosen split type.
     """
 
     def __init__(self, tokens_: list[Any] = None):
@@ -561,9 +554,9 @@ def get_all_token_types(tokens_module: ModuleType) -> list[type[Token]]:
     Parameters
     ----------
     tokens_module : ModuleType
-        The module containing the token types. There is only one correct
-        argument. The only reason why the argument is required is
-        because there doesn't seem to be any other way to automatically
-        get the list of token types from within the file they are in.
+        The module containing the token types. There is only one correct argument. The
+        only reason why the argument is required is because there doesn't seem to be any
+        other way to automatically get the list of token types from within the file they
+        are in.
     """
     return [c[1] for c in inspect.getmembers(tokens_module, __is_token_type)]
