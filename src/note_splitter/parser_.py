@@ -1,4 +1,4 @@
-"""For converting a list of tokens to an abstract syntax tree (AST)."""
+"""For converting a list of tokens to a syntax tree."""
 import re
 from typing import Any
 from typing import Callable
@@ -9,17 +9,17 @@ from note_splitter import patterns
 from note_splitter import tokens
 
 
-class AST:
-    """An entire file as an abstract syntax tree (AST).
+class SyntaxTree:
+    """An entire file as a syntax tree.
 
     Parameters
     ----------
     tokens_ : list[tokens.Token]
         A list of tokens created from a Lexer object.
     parse_blocks : bool
-        If True, some of the tokens will be grouped together into larger tokens in
-        the resulting AST. Otherwise, the token list will be put into the content
-        attribute unchanged. The AST's other attributes will still be created.
+        If True, some of the tokens will be grouped together into larger tokens in the
+        resulting syntax tree. Otherwise, the token list will be put into the content
+        attribute unchanged. The syntax tree's other attributes will still be created.
 
     Attributes
     ----------
@@ -45,7 +45,7 @@ class AST:
             self.content = self.__tokens
 
     def __str__(self) -> str:
-        """Returns the original content of the AST's raw text."""
+        """Returns the original content of the syntax tree's raw text."""
         raw_content = []
         for token in self.content:
             raw_content.append(str(token))
@@ -90,8 +90,8 @@ class AST:
         """Groups together all tokens that should be grouped together.
 
         No tokens are changed, some are only put together into new tokens. All the
-        tokens will end up in the AST's content attribute, and the __tokens list will be
-        empty.
+        tokens will end up in the syntax tree's content attribute, and the __tokens list
+        will be empty.
         """
         while self.__tokens:
             token = self.__tokens[0]

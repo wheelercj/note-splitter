@@ -5,13 +5,13 @@ from note_splitter import parser_
 from note_splitter import tokens
 
 
-#########
-#  AST  #
-#########
+################
+#  SyntaxTree  #
+################
 
 
-def test_AST_with_frontmatter():
-    ast = parser_.AST(
+def test_SyntaxTree_with_frontmatter():
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.Text("---"),
             tokens.Text("title: Hello, world!"),
@@ -20,19 +20,19 @@ def test_AST_with_frontmatter():
             tokens.Text("This is a test."),
         ]
     )
-    assert ast.frontmatter == {"title": "Hello, world!"}
-    assert str(ast) == dedent(
+    assert syntax_tree.frontmatter == {"title": "Hello, world!"}
+    assert str(syntax_tree) == dedent(
         """\
         # Hello, world!
         This is a test.
         """
     )
-    assert isinstance(ast.content[0], tokens.Header)
-    assert isinstance(ast.content[1], tokens.Text)
+    assert isinstance(syntax_tree.content[0], tokens.Header)
+    assert isinstance(syntax_tree.content[1], tokens.Text)
 
 
-def test_AST_with_code_block():
-    ast = parser_.AST(
+def test_SyntaxTree_with_code_block():
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.Header("# Hello, world!"),
             tokens.Text("This is a test."),
@@ -42,7 +42,7 @@ def test_AST_with_code_block():
             tokens.CodeFence("```"),
         ]
     )
-    assert str(ast) == dedent(
+    assert str(syntax_tree) == dedent(
         """\
         # Hello, world!
         This is a test.
@@ -52,14 +52,14 @@ def test_AST_with_code_block():
         ```
         """
     )
-    assert isinstance(ast.content[0], tokens.Header)
-    assert isinstance(ast.content[1], tokens.Text)
-    assert isinstance(ast.content[2], tokens.EmptyLine)
-    assert isinstance(ast.content[3], tokens.CodeBlock)
+    assert isinstance(syntax_tree.content[0], tokens.Header)
+    assert isinstance(syntax_tree.content[1], tokens.Text)
+    assert isinstance(syntax_tree.content[2], tokens.EmptyLine)
+    assert isinstance(syntax_tree.content[3], tokens.CodeBlock)
 
 
-def test_AST_with_table():
-    ast = parser_.AST(
+def test_SyntaxTree_with_table():
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.TableRow("| a | b | c |"),
             tokens.TableDivider("|---|---|---|"),
@@ -68,7 +68,7 @@ def test_AST_with_table():
             tokens.Header("# Hello, world!"),
         ]
     )
-    assert str(ast) == dedent(
+    assert str(syntax_tree) == dedent(
         """\
         | a | b | c |
         |---|---|---|
@@ -77,13 +77,13 @@ def test_AST_with_table():
         # Hello, world!
         """
     )
-    assert isinstance(ast.content[0], tokens.Table)
-    assert isinstance(ast.content[1], tokens.EmptyLine)
-    assert isinstance(ast.content[2], tokens.Header)
+    assert isinstance(syntax_tree.content[0], tokens.Table)
+    assert isinstance(syntax_tree.content[1], tokens.EmptyLine)
+    assert isinstance(syntax_tree.content[2], tokens.Header)
 
 
-def test_AST_with_text_list():
-    ast = parser_.AST(
+def test_SyntaxTree_with_text_list():
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.UnorderedListItem("* This is an unordered list item."),
             tokens.Task("- [ ] This is a task."),
@@ -93,7 +93,7 @@ def test_AST_with_text_list():
             tokens.Header("# Hello, world!"),
         ]
     )
-    assert str(ast) == dedent(
+    assert str(syntax_tree) == dedent(
         """\
         * This is an unordered list item.
         - [ ] This is a task.
@@ -103,9 +103,9 @@ def test_AST_with_text_list():
         # Hello, world!
         """
     )
-    assert isinstance(ast.content[0], tokens.TextList)
-    assert isinstance(ast.content[1], tokens.EmptyLine)
-    assert isinstance(ast.content[2], tokens.Header)
+    assert isinstance(syntax_tree.content[0], tokens.TextList)
+    assert isinstance(syntax_tree.content[1], tokens.EmptyLine)
+    assert isinstance(syntax_tree.content[2], tokens.Header)
 
 
 #####################
@@ -114,7 +114,7 @@ def test_AST_with_text_list():
 
 
 def test___get_text_list():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.UnorderedListItem("* This is an unordered list item."),
             tokens.OrderedListItem("1. This is an ordered list item."),
@@ -123,7 +123,7 @@ def test___get_text_list():
         ],
         parse_blocks=False,
     )
-    text_list = ast._AST__get_text_list(indentation_level=0)
+    text_list = syntax_tree._SyntaxTree__get_text_list(indentation_level=0)
     assert str(text_list) == dedent(
         """\
         * This is an unordered list item.
@@ -134,7 +134,7 @@ def test___get_text_list():
 
 
 def test___get_text_list_with_varying_indentation():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.OrderedListItem("1. This is an ordered list item."),
             tokens.OrderedListItem("    187. second list item."),
@@ -143,7 +143,7 @@ def test___get_text_list_with_varying_indentation():
         ],
         parse_blocks=False,
     )
-    text_list = ast._AST__get_text_list(indentation_level=0)
+    text_list = syntax_tree._SyntaxTree__get_text_list(indentation_level=0)
     assert str(text_list) == dedent(
         """\
         1. This is an ordered list item.
@@ -165,7 +165,7 @@ def test___get_text_list_with_varying_indentation():
 
 
 def test___get_block_of_unique_tokens_with_blockquotes():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.Blockquote("> This is a blockquote."),
             tokens.Blockquote("> This is another blockquote."),
@@ -174,7 +174,7 @@ def test___get_block_of_unique_tokens_with_blockquotes():
         ],
         parse_blocks=False,
     )
-    block = ast._AST__get_block_of_unique_tokens(
+    block = syntax_tree._SyntaxTree__get_block_of_unique_tokens(
         tokens.BlockquoteBlock, tokens.Blockquote
     )
     assert str(block) == dedent(
@@ -186,7 +186,7 @@ def test___get_block_of_unique_tokens_with_blockquotes():
 
 
 def test___get_block_of_unique_tokens_with_table_parts():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.TableRow("| a | b | c |"),
             tokens.TableDivider("|---|---|---|"),
@@ -196,7 +196,9 @@ def test___get_block_of_unique_tokens_with_table_parts():
         ],
         parse_blocks=False,
     )
-    block = ast._AST__get_block_of_unique_tokens(tokens.Table, tokens.TablePart)
+    block = syntax_tree._SyntaxTree__get_block_of_unique_tokens(
+        tokens.Table, tokens.TablePart
+    )
     assert str(block) == dedent(
         """\
         | a | b | c |
@@ -212,7 +214,7 @@ def test___get_block_of_unique_tokens_with_table_parts():
 
 
 def test___get_fenced_block_with_code_block():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.CodeFence("```python"),
             tokens.Code('print("hey")'),
@@ -222,7 +224,7 @@ def test___get_fenced_block_with_code_block():
         ],
         parse_blocks=False,
     )
-    block = ast._AST__get_fenced_block()
+    block = syntax_tree._SyntaxTree__get_fenced_block()
     assert str(block) == dedent(
         """\
         ```python
@@ -233,7 +235,7 @@ def test___get_fenced_block_with_code_block():
 
 
 def test___get_fenced_block_with_math_block():
-    ast = parser_.AST(
+    syntax_tree = parser_.SyntaxTree(
         [
             tokens.MathFence("$$"),
             tokens.Math("x^2"),
@@ -243,7 +245,7 @@ def test___get_fenced_block_with_math_block():
         ],
         parse_blocks=False,
     )
-    block = ast._AST__get_fenced_block()
+    block = syntax_tree._SyntaxTree__get_fenced_block()
     assert str(block) == dedent(
         """\
         $$
@@ -263,7 +265,7 @@ def test___load_frontmatter():
         tokens.Text("title: Hello, world!"),
         tokens.Text("date: 2020-01-01"),
     ]
-    assert parser_.AST([])._AST__load_frontmatter(text_tokens) == {
+    assert parser_.SyntaxTree([])._SyntaxTree__load_frontmatter(text_tokens) == {
         "title": "Hello, world!",
         "date": datetime.date(2020, 1, 1),
     }

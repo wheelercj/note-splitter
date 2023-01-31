@@ -6,7 +6,7 @@ from typing import Callable
 from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
-from note_splitter.parser_ import AST
+from note_splitter.parser_ import SyntaxTree
 from note_splitter.settings import init_settings
 from note_splitter.splitter import Splitter
 from PySide6 import QtCore
@@ -61,18 +61,18 @@ def __manual_test() -> None:
     __print_lexer_output(tokens_)
     settings = QtCore.QSettings()
     settings.setValue("parse_blocks", True)
-    ast = AST(tokens_, settings.value("parse_blocks"))
-    __print_parser_output(ast)
+    syntax_tree = SyntaxTree(tokens_, settings.value("parse_blocks"))
+    __print_parser_output(syntax_tree)
 
     settings.setValue("split_type", "header")
     settings.setValue("split_attrs", dict())
     split: Callable = Splitter()
-    sections, global_tags = split(ast.content)
+    sections, global_tags = split(syntax_tree.content)
     __print_splitter_output(sections, global_tags)
 
     format_: Callable = Formatter()
     split_contents: list[str] = format_(
-        sections, global_tags, ast.frontmatter, ast.footnotes
+        sections, global_tags, syntax_tree.frontmatter, syntax_tree.footnotes
     )
     __print_formatter_output(split_contents)
 
@@ -136,23 +136,23 @@ def __print_lexer_output(tokens_: list[tokens.Token]) -> None:
     input("**Press enter to continue**")
 
 
-def __print_parser_output(ast: AST) -> None:
+def __print_parser_output(syntax_tree: SyntaxTree) -> None:
     """Displays the parser's output.
 
     Parameters
     ----------
-    ast : AST
-        The AST to print.
+    syntax_tree : SyntaxTree
+        The syntax tree to print.
     """
     print("\n**Parser output:**\n")
-    if ast.frontmatter:
-        print(f"frontmatter: {ast.frontmatter}\n")
-    if ast.footnotes:
+    if syntax_tree.frontmatter:
+        print(f"frontmatter: {syntax_tree.frontmatter}\n")
+    if syntax_tree.footnotes:
         print("footnotes:")
-        for footnote in ast.footnotes:
+        for footnote in syntax_tree.footnotes:
             print(f"  {footnote}")
         print()
-    __print_tokens(ast.content)
+    __print_tokens(syntax_tree.content)
     input("**Press enter to continue**")
 
 

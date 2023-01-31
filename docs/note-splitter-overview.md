@@ -72,7 +72,7 @@ Continuing from the previous example, here is the result of parsing:
 
 Now we have a syntax tree. This data structure can simplify many operations such as splitting a file, merging multiple files, moving parts of a file around, etc.
 
-Parsing occurs in the constructor of the AST (abstract syntax tree) class, which is in [parser_.py](https://github.com/wheelercj/note-splitter/blob/main/note_splitter/parser_.py).
+Parsing occurs in the SyntaxTree constructor, which is in [parser_.py](https://github.com/wheelercj/note-splitter/blob/main/note_splitter/parser_.py).
 
 ## splitting
 

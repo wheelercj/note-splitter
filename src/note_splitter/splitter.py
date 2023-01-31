@@ -1,4 +1,4 @@
-"""For splitting an AST's tokens into Sections tokens."""
+"""For splitting a syntax tree's tokens into Sections tokens."""
 from note_splitter import patterns
 from note_splitter import tokens
 from note_splitter.settings import get_token_type
@@ -22,7 +22,7 @@ class Splitter:
         -------
         sections : list[tokens.Section]
             A list of the sections created by splitting. These are like
-            smaller ASTs.
+            smaller syntax trees.
         global_tags : list[str]
             A list of the tags that are not in any of the sections.
         """
@@ -37,7 +37,7 @@ class Splitter:
         -------
         sections : list[tokens.Section]
             A list of the sections created by splitting. These are like
-            smaller ASTs.
+            smaller syntax trees.
         global_tags : list[str]
             A list of the tags that are not in any of the sections.
         """

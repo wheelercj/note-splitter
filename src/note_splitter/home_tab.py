@@ -16,7 +16,7 @@ from note_splitter.note import ensure_file_path_uniqueness
 from note_splitter.note import make_file_paths_absolute
 from note_splitter.note import Note
 from note_splitter.note import validate_file_name
-from note_splitter.parser_ import AST
+from note_splitter.parser_ import SyntaxTree
 from note_splitter.settings import get_token_type
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
@@ -327,10 +327,10 @@ def split_text(
         A list of strings that are the sections of the original string.
     """
     tokens_: list[tokens.Token] = tokenize(content)
-    ast = AST(tokens_, QtCore.QSettings().value("parse_blocks"))
-    sections, global_tags = split(ast.content)
+    syntax_tree = SyntaxTree(tokens_, QtCore.QSettings().value("parse_blocks"))
+    sections, global_tags = split(syntax_tree.content)
     split_contents: list[str] = format_(
-        sections, global_tags, ast.frontmatter, ast.footnotes
+        sections, global_tags, syntax_tree.frontmatter, syntax_tree.footnotes
     )
     return split_contents
 
