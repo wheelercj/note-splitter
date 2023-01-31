@@ -17,6 +17,17 @@ from PySide6 import QtCore
 class Note:
     """Info about one of the user's note files.
 
+    Parameters
+    ----------
+    path : str
+        The absolute path to the file. The file must already exist.
+    folder_path : str, optional
+        The absolute path to the folder that the file is in. If not provided, it will be
+        retrieved from the path.
+    name : str, optional
+        The name of the file, including the file extension. If not provided, it will be
+        retrieved from the path.
+
     Attributes
     ----------
     title : str
@@ -33,21 +44,6 @@ class Note:
     """
 
     def __init__(self, path: str, folder_path: str = None, name: str = None):
-        """Creates a new Note object.
-
-        Assumes that the file already exists and has its content.
-
-        Parameters
-        ----------
-        path : str
-            The absolute path to the file.
-        folder_path : str, optional
-            The absolute path to the folder that the file is in. If not provided, it
-            will be retrieved from the path.
-        name : str, optional
-            The name of the file, including the file extension. If not provided, it will
-            be retrieved from the path.
-        """
         self.path = path
         if folder_path is None:
             self.folder_path = os.path.dirname(path)

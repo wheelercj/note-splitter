@@ -12,6 +12,15 @@ from note_splitter import tokens
 class AST:
     """An entire file as an abstract syntax tree (AST).
 
+    Parameters
+    ----------
+    tokens_ : list[tokens.Token]
+        A list of tokens created from a Lexer object.
+    parse_blocks : bool
+        If True, some of the tokens will be grouped together into larger tokens in
+        the resulting AST. Otherwise, the token list will be put into the content
+        attribute unchanged. The AST's other attributes will still be created.
+
     Attributes
     ----------
     frontmatter : object | None
@@ -23,17 +32,6 @@ class AST:
     """
 
     def __init__(self, tokens_: list[tokens.Token], parse_blocks: bool = True):
-        """Creates an AST from a list of tokens.
-
-        Parameters
-        ----------
-        tokens_ : list[tokens.Token]
-            A list of tokens created from a Lexer object.
-        parse_blocks : bool
-            If True, some of the tokens will be grouped together into larger tokens in
-            the resulting AST. Otherwise, the token list will be put into the content
-            attribute unchanged. The AST's other attributes will still be created.
-        """
         if not tokens_:
             return
         self.__tokens = tokens_  # This attribute empties into self.content.
