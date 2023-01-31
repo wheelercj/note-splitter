@@ -22,6 +22,8 @@ class AboutTab(QtWidgets.QWidget):
                         <li><a href="%(url)s/issues">report a bug or request a feature</a></li>
                         <li><a href="%(url)s">source code</a></li>
                     </ul>
+
+                    <p>App icon provided by <a href="https://icons8.com">Icons8</a>.</p>
                     """  # noqa: E501
                     % {"url": "https://github.com/wheelercj/note-splitter"}
                 )
