@@ -25,6 +25,9 @@ Now you can use these commands:
 * when the dependencies change
   * update the appropriate requirements file
   * if the new dependency is for Note Splitter itself and not just a development dependency, add it to docs/environment.yaml
+* when a new Python module is added
+  * add its name to the list in docs/modules.rst
+  * while in the project’s root folder, use this command to automatically generate an rst file for the new module: `sphinx-apidoc -o docs src/note_splitter -e`
 
 ## distribution
 
