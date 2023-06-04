@@ -4,7 +4,7 @@ how to maintain this documentation
 
 You can see `the documentation build status here <https://readthedocs.org/projects/note-splitter/builds/>`_. Click on a build for more details.
 
-Most of the documentation is automatically generated directly from the code and docstrings whenever commit(s) are added to the main branch on GitHub, but sometimes manual changes are needed as explained in [maintenance](https://github.com/wheelercj/note-splitter/blob/main/docs/dev-setup.md#maintenance).
+Most of the documentation is automatically generated directly from the code and docstrings whenever commit(s) are added to the main branch on GitHub, but sometimes manual changes are needed as explained in [maintenance](https://github.com/wheelercj/note-splitter/blob/main/docs/dev-env.md#maintenance).
 
 We can also add our own custom documentation files. Read The Docs supports both markdown (`MyST's version <https://myst-parser.readthedocs.io/en/latest/>`_) and `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ (rst) files. Just put the files in the docs folder and add the file's name to the list in docs/index.rst. `Here's <http://rst.ninjs.org/#>`_ a reStructuredText renderer for previewing rst files.
 
