@@ -46,9 +46,11 @@ Here are descriptions of what each of Note Splitter's folders are for:
 │   └── workflows       # GitHub Actions configuration files for automated testing.
 ├── docs                # Files for documentation (.md and .rst) and for configuration.
 │   └── images          # Images used in the documentation and/or the README.
-├── note_splitter       # Source code for Note Splitter.
-└── tests               # Automated tests.
-    └── assets          # Files used in automated and manual tests.
+└── src
+    ├── note_splitter   # Source code for Note Splitter.
+    │   └── resources   # Note Splitter's icon files.
+    └── tests           # Automated tests.
+        └── assets      # Files used in automated and manual tests.
 ```
 
 ## automated testing
