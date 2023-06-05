@@ -10,8 +10,13 @@ from datetime import datetime
 from datetime import timedelta
 
 from note_splitter import patterns
-from note_splitter.gui import show_message
 from PySide6 import QtCore
+from PySide6 import QtWidgets
+
+
+def show_message(text: str) -> None:
+    """Shows the user a message dialog and waits for the user to close it."""
+    QtWidgets.QMessageBox(text=text).exec()
 
 
 class Note:

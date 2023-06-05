@@ -5,11 +5,6 @@ from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
-def show_message(text: str) -> None:
-    """Shows the user a message dialog and waits for the user to close it."""
-    QtWidgets.QMessageBox(text=text).exec()
-
-
 def folder_browse(
     parent: QtWidgets.QWidget, line_edit: QtWidgets.QLineEdit, title: str
 ) -> str:

@@ -7,7 +7,6 @@ from note_splitter.formatter_ import Formatter
 from note_splitter.gui import files_browse
 from note_splitter.gui import request_folder_path
 from note_splitter.gui import require_folder_path
-from note_splitter.gui import show_message
 from note_splitter.gui import SplitSummaryDialog
 from note_splitter.lexer import Lexer
 from note_splitter.note import create_file_names
@@ -15,6 +14,7 @@ from note_splitter.note import create_notes
 from note_splitter.note import ensure_file_path_uniqueness
 from note_splitter.note import make_file_paths_absolute
 from note_splitter.note import Note
+from note_splitter.note import show_message
 from note_splitter.note import validate_file_name
 from note_splitter.parser_ import SyntaxTree
 from note_splitter.settings import get_token_type
