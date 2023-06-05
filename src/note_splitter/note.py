@@ -222,6 +222,8 @@ def __create_file_name(
         The date and time to use for the file name if the file name format contains any
         date and/or time variables.
     """
+    if not file_name_format:
+        file_name_format = r"%uuid4"
     variables = __get_variables(file_contents, dt)
     variables.append((r"%id", create_file_id(file_id_format, file_contents, dt)))
     for name, value in variables:

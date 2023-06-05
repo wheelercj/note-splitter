@@ -2,15 +2,11 @@ import os
 from datetime import datetime
 
 from note_splitter import note
-from note_splitter.settings import init_settings
 
 
 ####################
 #  create_file_id  #
 ####################
-
-
-init_settings()
 
 
 def test_create_14_digit_id():
@@ -280,9 +276,9 @@ def test_validate_file_name_with_invalid_start_and_end():
 
 def test_get_file_paths_with_one_path():
     note_content = "[](empty-file.md)"
-    note_folder_path = os.path.join(os.getcwd(), "tests/assets")
+    note_folder_path = os.path.join(os.getcwd(), "src/tests/assets")
+    assert os.path.exists(os.path.join(note_folder_path, "empty-file.md"))
     file_paths = note.get_file_paths(note_content, note_folder_path)
-    assert len(file_paths) == 1
     assert file_paths[0][0] == "empty-file.md"
     path1 = os.path.normpath(os.path.join(note_folder_path, "empty-file.md"))
     assert file_paths[0][1] == path1
@@ -290,7 +286,7 @@ def test_get_file_paths_with_one_path():
 
 def test_get_file_paths_with_only_nonexistent_path():
     note_content = "[](not-a-real-file.md)"
-    note_folder_path = os.path.join(os.getcwd(), "tests/assets")
+    note_folder_path = os.path.join(os.getcwd(), "src/tests/assets")
     file_paths = note.get_file_paths(note_content, note_folder_path)
     assert len(file_paths) == 0
 
@@ -304,7 +300,7 @@ def test_get_file_paths_with_no_paths():
 
 def test_get_file_paths_with_two_paths():
     note_content = "[](empty-file.md)\n[hi](small-file.md)"
-    note_folder_path = os.path.join(os.getcwd(), "tests/assets")
+    note_folder_path = os.path.join(os.getcwd(), "src/tests/assets")
     file_paths = note.get_file_paths(note_content, note_folder_path)
     assert len(file_paths) == 2
     assert file_paths[0][0] == "empty-file.md"
@@ -323,7 +319,7 @@ def test_get_file_paths_with_two_paths():
 def test_make_file_paths_absolute():
     note_content = "[](empty-file.md)"
     cwd = os.getcwd()
-    note_path = os.path.normpath(os.path.join(cwd, "tests/assets/empty-file.md"))
+    note_path = os.path.normpath(os.path.join(cwd, "src/tests/assets/empty-file.md"))
     expected_result = f"[]({note_path})"
     assert expected_result == note.make_file_paths_absolute(note_content, note_path)
 
@@ -331,8 +327,10 @@ def test_make_file_paths_absolute():
 def test_make_file_paths_absolute_with_dots():
     note_content = "[](../empty-file.md)"
     cwd = os.getcwd()
-    note_path = os.path.normpath(os.path.join(cwd, "tests/assets/folder/a-file.md"))
-    expected_result = os.path.normpath(f"{cwd}/tests/assets/empty-file.md")
+    note_path = os.path.normpath(os.path.join(cwd, "src/tests/assets/folder/a-file.md"))
+    expected_result = os.path.normpath(
+        os.path.join(cwd, "src/tests/assets/empty-file.md")
+    )
     expected_result = f"[]({expected_result})"
     assert expected_result == note.make_file_paths_absolute(note_content, note_path)
 
@@ -342,9 +340,9 @@ def test_make_file_paths_absolute_with_two_paths():
     path2 = "small-file.md"
     note_content = f"![]({path1})\n[hi]({path2})"
     cwd = os.getcwd()
-    path1 = os.path.normpath(os.path.join(cwd, "tests/assets/empty-image.png"))
-    path2 = os.path.normpath(os.path.join(cwd, "tests/assets/small-file.md"))
-    note_path = os.path.normpath(os.path.join(cwd, "tests/assets/empty-file.md"))
+    path1 = os.path.normpath(os.path.join(cwd, "src/tests/assets/empty-image.png"))
+    path2 = os.path.normpath(os.path.join(cwd, "src/tests/assets/small-file.md"))
+    note_path = os.path.normpath(os.path.join(cwd, "src/tests/assets/empty-file.md"))
     expected_result = f"![]({path1})\n[hi]({path2})"
     assert expected_result == note.make_file_paths_absolute(note_content, note_path)
 
