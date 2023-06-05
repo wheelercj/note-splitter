@@ -46,6 +46,9 @@ class Splitter:
         sections: list[tokens.Section] = []
         global_tags: list[str] = []
         settings = QtCore.QSettings()
+        split_type: type[tokens.Token] = get_token_type(settings.value("split_type"))
+        split_attrs: dict = settings.value("split_attrs")
+
         while self.__tokens:
             token = self.__tokens[0]
             if (
@@ -60,7 +63,7 @@ class Splitter:
                 if not token.content:
                     self.__tokens.pop(0)
                     continue
-            if self.__should_split(token, is_splitting=False):
+            if self.__should_split(token, split_type, split_attrs, is_splitting=False):
                 new_section = self.__get_section()
                 sections.append(new_section)
             elif isinstance(token.content, list):
@@ -91,12 +94,15 @@ class Splitter:
         will not contain any other headers of level 2 or any of level 1, but may contain
         headers of level 3 or greater.
         """
+        settings = QtCore.QSettings()
+        split_type: type[tokens.Token] = get_token_type(settings.value("split_type"))
+        split_attrs: dict = settings.value("split_attrs")
         section_tokens: list[tokens.Token] = []
         section_tokens.append(self.__tokens.pop(0))
 
         while self.__tokens:
             token = self.__tokens[0]
-            if self.__should_split(token):
+            if self.__should_split(token, split_type, split_attrs):
                 return tokens.Section(section_tokens)
             else:
                 section_tokens.append(token)
@@ -104,33 +110,39 @@ class Splitter:
 
         return tokens.Section(section_tokens)
 
-    def __should_split(self, token: tokens.Token, is_splitting: bool = True) -> bool:
-        """Determines if a token has certain attributes and values.
+    def __should_split(
+        self,
+        token: tokens.Token,
+        split_type: type[tokens.Token],
+        split_attrs: dict,
+        is_splitting: bool = True,
+    ) -> bool:
+        """Determines if a token has a certain type, attributes, and attribute values.
 
-        Assumes the token is of the type that was chosen to split by, and that the split
-        attributes exist.
+        Assumes the split attributes exist.
 
         Parameters
         ----------
         token : tokens.Token
             A token that may be of the type chosen to split by.
+        split_type : type[tokens.Token]
+            The type of token chosen to split by.
+        split_attrs : dict
+            A dictionary of the attributes and values that the token must have to be
+            split by.
         is_splitting : bool
             A boolean for whether splitting is in progress. Used to determine if the
             tokens should be split just before a token of a lower level than the chosen
             split level. True by default.
         """
-        settings = QtCore.QSettings()
-        if not isinstance(token, get_token_type(settings.value("split_type"))):
+        if not isinstance(token, split_type):
             return False
         if (
-            settings.value("split_attrs")
-            and list(settings.value("split_attrs"))
-            and (
-                list(settings.value("split_attrs").values())[0]
-                or list(settings.value("split_attrs").values())[0] == 0
-            )
+            split_attrs
+            and list(split_attrs)
+            and (list(split_attrs.values())[0] or list(split_attrs.values())[0] == 0)
         ):
-            for key, value in settings.value("split_attrs").items():
+            for key, value in split_attrs.items():
                 if isinstance(value, str) and value.isnumeric():
                     value = int(value)
                 if is_splitting and key == "level" and hasattr(token, "level"):
