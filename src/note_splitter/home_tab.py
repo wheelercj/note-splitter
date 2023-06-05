@@ -228,6 +228,8 @@ class HomeTab(QtWidgets.QWidget):
         notes = notes or self.__get_notes_with_keyword()
         all_new_notes: list[Note] = []
         settings = QtCore.QSettings()
+        file_id_format: str = settings.value("file_id_format")
+        file_name_format: str = settings.value("file_name_format")
         progress = QtWidgets.QProgressDialog(
             "splitting...", "", 0, 100, self, modal=True
         )
@@ -240,7 +242,7 @@ class HomeTab(QtWidgets.QWidget):
             split_contents: list[str] = split_text(content, tokenize, split, format_)
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
-                source_note.ext, split_contents
+                file_id_format, file_name_format, source_note.ext, split_contents
             )
             progress.setValue((i + 4) / (note_count + 5) * 100)
             new_notes = self.save_new_notes(split_contents, new_file_names)

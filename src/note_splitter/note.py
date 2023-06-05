@@ -5,7 +5,6 @@ import re
 import subprocess
 import uuid
 import webbrowser
-from copy import copy
 from datetime import datetime
 from datetime import timedelta
 
@@ -159,7 +158,9 @@ def create_notes(file_paths: list[str]) -> list[Note]:
     return notes
 
 
-def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
+def create_file_names(
+    file_ext: str, file_id_format: str, file_name_format: str, files_contents: list[str]
+) -> list[str]:
     """Creates names for new files.
 
     The returned file names are in the format specified in the file_name_format setting.
@@ -170,20 +171,20 @@ def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
     ----------
     file_ext : str
         The file extension, including the leading period.
+    file_id_format : str
+        The format of the file ID.
+    file_name_format : str
+        The format of the file name.
     files_contents : list[str]
         The contents of the files to be named.
     """
     file_names = []
-    settings = QtCore.QSettings()
     now = datetime.now()
     for file_contents in files_contents:
-        file_name_format = copy(settings.value("file_name_format"))
         if r"%id" in file_name_format:
-            file_name_format = file_name_format.replace(
-                r"%id", settings.value("file_id_format")
-            )
+            file_name_format = file_name_format.replace(r"%id", file_id_format)
         new_file_name = __create_file_name(
-            file_ext, file_name_format, file_contents, now
+            file_ext, file_id_format, file_name_format, file_contents, now
         )
         new_file_name = validate_file_name(new_file_name)
         file_names.append(new_file_name)
@@ -199,7 +200,11 @@ def create_file_names(file_ext: str, files_contents: list[str]) -> list[str]:
 
 
 def __create_file_name(
-    file_ext: str, file_name_format: str, file_contents: str, dt: datetime
+    file_ext: str,
+    file_id_format: str,
+    file_name_format: str,
+    file_contents: str,
+    dt: datetime,
 ) -> str:
     """Creates a name for a new file.
 
@@ -207,6 +212,8 @@ def __create_file_name(
     ----------
     file_ext : str
         The file extension, including the leading period.
+    file_id_format : str
+        The format of the file ID.
     file_name_format : str
         The format of the file name.
     file_contents : str
@@ -215,22 +222,20 @@ def __create_file_name(
         The date and time to use for the file name if the file name format contains any
         date and/or time variables.
     """
-    if not file_name_format:
-        file_name_format = r"%uuid4"
     variables = __get_variables(file_contents, dt)
-    variables.append((r"%id", create_file_id(file_contents, dt)))
+    variables.append((r"%id", create_file_id(file_id_format, file_contents, dt)))
     for name, value in variables:
         file_name_format = file_name_format.replace(name, value)
     return f"{file_name_format}{file_ext}"
 
 
-def create_file_id(file_contents: str, dt: datetime = None) -> str:
+def create_file_id(file_id_format: str, file_contents: str, dt: datetime = None) -> str:
     """Creates an ID for a file.
-
-    This function depends on the file_id_format setting.
 
     Parameters
     ----------
+    file_id_format : str
+        The format of the file ID.
     file_contents : str
         The contents of the file to be IDed.
     dt : datetime, optional
@@ -239,11 +244,10 @@ def create_file_id(file_contents: str, dt: datetime = None) -> str:
     """
     if dt is None:
         dt = datetime.now()
-    file_id = copy(QtCore.QSettings().value("file_id_format"))
     variables = __get_variables(file_contents, dt)
     for name, value in variables:
-        file_id = file_id.replace(name, value)
-    return file_id
+        file_id_format = file_id_format.replace(name, value)
+    return file_id_format
 
 
 def __get_variables(file_contents: str, dt: datetime) -> list[tuple[str, str]]:
