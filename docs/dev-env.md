@@ -59,22 +59,6 @@ Here are descriptions of what each of Note Splitter's folders are for:
         └── assets      # Files used in automated and manual tests.
 ```
 
-## dependency docs
-
-
-* [Python](https://docs.python.org/3/)
-* [pytest](https://docs.pytest.org/en/)
-* [tox](https://tox.wiki/en/latest/)
-* [PySide](https://doc.qt.io/qtforpython/index.html)
-* [BeeWare Briefcase](https://briefcase.readthedocs.io/en/latest/)
-* [pre-commit](https://pre-commit.com/)
-* [Black](https://black.readthedocs.io/en/stable/)
-* [mypy](https://mypy.readthedocs.io/en/stable/)
-* [flake8](https://flake8.pycqa.org/en/latest/)
-* [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
-* [Sphinx](https://www.sphinx-doc.org/en/master/)
-* [MyST](https://myst-parser.readthedocs.io/en/latest/index.html)
-
 ## further reading
 
 You can learn more about how this program was made from our [references](references.md).
