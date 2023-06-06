@@ -64,10 +64,15 @@ def __manual_test() -> None:
     syntax_tree = SyntaxTree(tokens_, settings.value("parse_blocks"))
     __print_parser_output(syntax_tree)
 
-    settings.setValue("split_type", "header")
-    settings.setValue("split_attrs", dict())
     split: Callable = Splitter()
-    sections, global_tags = split(syntax_tree.content)
+    sections, global_tags = split(
+        tokens_=syntax_tree.content,
+        split_type=tokens.Header,
+        split_attrs={},
+        using_split_keyword=False,
+        remove_split_keyword=False,
+        split_keyword="",
+    )
     __print_splitter_output(sections, global_tags)
 
     format_: Callable = Formatter()

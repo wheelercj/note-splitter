@@ -9,7 +9,13 @@ class Splitter:
     """Creates a Callable that splits a token list into Sections."""
 
     def __call__(
-        self, tokens_: list[tokens.Token]
+        self,
+        tokens_: list[tokens.Token],
+        split_type: type[tokens.Token],
+        split_attrs: dict,
+        using_split_keyword: bool,
+        remove_split_keyword: bool,
+        split_keyword: str,
     ) -> tuple[list[tokens.Section], list[str]]:
         """Splits a tokens list into Sections.
 
@@ -17,6 +23,16 @@ class Splitter:
         ----------
         tokens_ : list[tokens.Token]
             A list of tokens to split.
+        split_type : type[tokens.Token]
+            The type of token to split by.
+        split_attrs : dict
+            The attributes of the token to split by.
+        using_split_keyword : bool
+            Whether to use a keyword to decide which files to split.
+        remove_split_keyword : bool
+            Whether to remove the keyword from the content of the token.
+        split_keyword : str
+            The keyword for deciding which files to split.
 
         Returns
         -------
@@ -27,11 +43,37 @@ class Splitter:
             A list of the tags that are not in any of the sections.
         """
         self.__tokens = tokens_
-        sections, global_tags = self.__get_sections()
+        sections, global_tags = self.__get_sections(
+            split_type,
+            split_attrs,
+            using_split_keyword,
+            remove_split_keyword,
+            split_keyword,
+        )
         return sections, global_tags
 
-    def __get_sections(self) -> tuple[list[tokens.Section], list[str]]:
+    def __get_sections(
+        self,
+        split_type: type[tokens.Token],
+        split_attrs: dict,
+        using_split_keyword: bool,
+        remove_split_keyword: bool,
+        split_keyword: str,
+    ) -> tuple[list[tokens.Section], list[str]]:
         """Groups the tokens into section tokens.
+
+        Parameters
+        ----------
+        split_type : type[tokens.Token]
+            The type of token to split by.
+        split_attrs : dict
+            The attributes of the token to split by.
+        using_split_keyword : bool
+            Whether to use a keyword to decide which files to split.
+        remove_split_keyword : bool
+            Whether to remove the keyword from the content of the token.
+        split_keyword : str
+            The keyword for deciding which files to split.
 
         Returns
         -------
@@ -45,21 +87,16 @@ class Splitter:
         # Irrelevant tokens are deleted as the loop iterates.
         sections: list[tokens.Section] = []
         global_tags: list[str] = []
-        settings = QtCore.QSettings()
-        split_type: type[tokens.Token] = get_token_type(settings.value("split_type"))
-        split_attrs: dict = settings.value("split_attrs")
 
         while self.__tokens:
             token = self.__tokens[0]
             if (
-                settings.value("using_split_keyword")
-                and settings.value("remove_split_keyword")
+                using_split_keyword
+                and remove_split_keyword
                 and isinstance(token, tokens.CanHaveInlineElements)
-                and settings.value("split_keyword") in token.content
+                and split_keyword in token.content
             ):
-                token.content = token.content.replace(
-                    settings.value("split_keyword"), ""
-                )
+                token.content = token.content.replace(split_keyword, "")
                 if not token.content:
                     self.__tokens.pop(0)
                     continue
@@ -68,7 +105,14 @@ class Splitter:
                 sections.append(new_section)
             elif isinstance(token.content, list):
                 split = Splitter()
-                new_sections, new_global_tags = split(token.content)
+                new_sections, new_global_tags = split(
+                    token.content,
+                    split_type,
+                    split_attrs,
+                    using_split_keyword,
+                    remove_split_keyword,
+                    split_keyword,
+                )
                 sections.extend(new_sections)
                 global_tags.extend(new_global_tags)
                 self.__tokens.pop(0)

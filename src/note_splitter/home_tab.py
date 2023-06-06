@@ -115,7 +115,8 @@ class HomeTab(QtWidgets.QWidget):
         if not keyword:
             show_message("No keyword entered.")
             return
-        QtCore.QSettings().setValue("using_split_keyword", True)
+        QtCore.QSettings().setValue("using_split_keyword", 1)
+        # Qt cannot correctly save booleans.
         self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return
@@ -239,7 +240,18 @@ class HomeTab(QtWidgets.QWidget):
             with open(source_note.path, "r", encoding="utf8") as file:
                 content: str = file.read()
             progress.setValue((i + 2) / (note_count + 5) * 100)
-            split_contents: list[str] = split_text(content, tokenize, split, format_)
+            split_contents: list[str] = split_text(
+                content,
+                tokenize,
+                split,
+                format_,
+                get_token_type(settings.value("split_type")),
+                settings.value("split_attrs"),
+                bool(settings.value("using_split_keyword")),
+                bool(settings.value("remove_split_keyword")),
+                settings.value("split_keyword"),
+                bool(settings.value("parse_blocks")),
+            )
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
                 file_id_format, file_name_format, source_note.ext, split_contents
@@ -306,7 +318,16 @@ class HomeTab(QtWidgets.QWidget):
 
 
 def split_text(
-    content: str, tokenize: Callable, split: Callable, format_: Callable
+    content: str,
+    tokenize: Callable,
+    split: Callable,
+    format_: Callable,
+    split_type: type[tokens.Token],
+    split_attrs: dict,
+    using_split_keyword: bool,
+    remove_split_keyword: bool,
+    split_keyword: str,
+    parse_blocks: bool,
 ) -> list[str]:
     """Splits a string into multiple strings based on several factors.
 
@@ -322,6 +343,18 @@ def split_text(
     format_ : Callable
         A function created from the Formatter class that adjusts the formatting of each
         section and converts them to strings.
+    split_type : type[tokens.Token]
+        The type of token to split by.
+    split_attrs : dict
+        The attributes of the token to split by.
+    using_split_keyword : bool
+        Whether to use a keyword to decide which files to split.
+    remove_split_keyword : bool
+        Whether to remove the keyword from the content of the token.
+    split_keyword : str
+        The keyword for deciding which files to split.
+    parse_blocks : bool
+        Whether to parse blocks.
 
     Returns
     -------
@@ -329,8 +362,15 @@ def split_text(
         A list of strings that are the sections of the original string.
     """
     tokens_: list[tokens.Token] = tokenize(content)
-    syntax_tree = SyntaxTree(tokens_, QtCore.QSettings().value("parse_blocks"))
-    sections, global_tags = split(syntax_tree.content)
+    syntax_tree = SyntaxTree(tokens_, parse_blocks)
+    sections, global_tags = split(
+        syntax_tree.content,
+        split_type,
+        split_attrs,
+        using_split_keyword,
+        remove_split_keyword,
+        split_keyword,
+    )
     split_contents: list[str] = format_(
         sections, global_tags, syntax_tree.frontmatter, syntax_tree.footnotes
     )
