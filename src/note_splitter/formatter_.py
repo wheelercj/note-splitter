@@ -5,7 +5,7 @@ to each section, and then converts the section tokens to strings.
 """
 import uuid
 
-import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
+import yaml
 from note_splitter import tokens
 
 

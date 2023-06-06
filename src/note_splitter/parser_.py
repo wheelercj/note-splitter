@@ -4,7 +4,7 @@ from typing import Any
 from typing import Callable
 from typing import Union
 
-import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
+import yaml
 from note_splitter import patterns
 from note_splitter import tokens
 
