@@ -7,7 +7,6 @@ from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
 from note_splitter.splitter import Splitter
-from PySide6 import QtCore
 
 
 ################
@@ -302,11 +301,9 @@ def test_split_text_with_custom_pattern():
             1. third subitem
         """
     )
-    settings = QtCore.QSettings()
-    settings.setValue("ordered_list_item_pattern", r"^\s*\d+[.)]\s*.*$")
-    patterns.__dict__["ordered_list_item"] = re.compile(
-        settings.value("ordered_list_item_pattern")
-    )
+    ordered_list_item_pattern = patterns.ordered_list_item
+    patterns.__dict__["ordered_list_item"] = re.compile(r"^\s*\d+[.)]\s*.*$")
+    assert patterns.ordered_list_item != ordered_list_item_pattern
     result: list[str] = home_tab.split_text(
         content=content,
         tokenize=Lexer(),
@@ -322,6 +319,7 @@ def test_split_text_with_custom_pattern():
         copy_frontmatter=False,
         move_footnotes=False,
     )
+    patterns.__dict__["ordered_list_item"] = ordered_list_item_pattern
     expected = [
         dedent(
             """\
