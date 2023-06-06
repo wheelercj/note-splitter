@@ -16,12 +16,11 @@ from PySide6 import QtCore
 
 
 def test_split_text_with_nothing():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
-    result: list[str] = home_tab.split_text(
+    assert [] == home_tab.split_text(
         content="",
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.Header,
         split_attrs={},
         using_split_keyword=False,
@@ -32,11 +31,9 @@ def test_split_text_with_nothing():
         copy_frontmatter=False,
         move_footnotes=False,
     )
-    assert result == []
 
 
 def test_split_text_with_headers():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -47,9 +44,9 @@ def test_split_text_with_headers():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.Header,
         split_attrs={},
         using_split_keyword=False,
@@ -79,7 +76,6 @@ def test_split_text_with_headers():
 
 
 def test_split_text_with_blocks():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -98,9 +94,9 @@ def test_split_text_with_blocks():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.Header,
         split_attrs={},
         using_split_keyword=False,
@@ -138,7 +134,6 @@ def test_split_text_with_blocks():
 
 
 def test_split_text_with_elements_to_copy():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         ---
@@ -167,9 +162,9 @@ def test_split_text_with_elements_to_copy():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.Header,
         split_attrs={"level": 2},
         using_split_keyword=False,
@@ -205,7 +200,6 @@ def test_split_text_with_elements_to_copy():
 
 
 def test_split_text_with_top_ordered_list_items():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -220,9 +214,9 @@ def test_split_text_with_top_ordered_list_items():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.OrderedListItem,
         split_attrs={"level": 0},
         using_split_keyword=False,
@@ -257,7 +251,6 @@ def test_split_text_with_top_ordered_list_items():
 
 
 def test_split_text_with_all_ordered_list_items():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -272,9 +265,9 @@ def test_split_text_with_all_ordered_list_items():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.OrderedListItem,
         split_attrs={},
         using_split_keyword=False,
@@ -297,7 +290,6 @@ def test_split_text_with_all_ordered_list_items():
 
 
 def test_split_text_with_custom_pattern():
-    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -317,9 +309,9 @@ def test_split_text_with_custom_pattern():
     )
     result: list[str] = home_tab.split_text(
         content=content,
-        tokenize=tokenize,
-        split=split,
-        format_=format_,
+        tokenize=Lexer(),
+        split=Splitter(),
+        format_=Formatter(),
         split_type=tokens.OrderedListItem,
         split_attrs={"level": 0},
         using_split_keyword=False,
