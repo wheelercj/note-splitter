@@ -1,8 +1,6 @@
 """For splitting a syntax tree's tokens into Sections tokens."""
 from note_splitter import patterns
 from note_splitter import tokens
-from note_splitter.settings import get_token_type
-from PySide6 import QtCore
 
 
 class Splitter:
@@ -101,7 +99,7 @@ class Splitter:
                     self.__tokens.pop(0)
                     continue
             if self.__should_split(token, split_type, split_attrs, is_splitting=False):
-                new_section = self.__get_section()
+                new_section = self.__get_section(split_type, split_attrs)
                 sections.append(new_section)
             elif isinstance(token.content, list):
                 split = Splitter()
@@ -124,7 +122,9 @@ class Splitter:
 
         return sections, global_tags
 
-    def __get_section(self) -> tokens.Section:
+    def __get_section(
+        self, split_type: type[tokens.Token], split_attrs: dict
+    ) -> tokens.Section:
         """Groups some of the tokens into one new section token.
 
         Assumes the first token in the tokens list is of the type that was chosen to
@@ -137,10 +137,14 @@ class Splitter:
         level 2, each section (each new file) will start with a header of level 2 and
         will not contain any other headers of level 2 or any of level 1, but may contain
         headers of level 3 or greater.
+
+        Parameters
+        ----------
+        split_type : type[tokens.Token]
+            The type of token to split by.
+        split_attrs : dict
+            The attributes of the token to split by.
         """
-        settings = QtCore.QSettings()
-        split_type: type[tokens.Token] = get_token_type(settings.value("split_type"))
-        split_attrs: dict = settings.value("split_attrs")
         section_tokens: list[tokens.Token] = []
         section_tokens.append(self.__tokens.pop(0))
 
