@@ -1,8 +1,6 @@
 import re
 from textwrap import dedent
-from typing import Callable
 
-import pytest
 from note_splitter import home_tab
 from note_splitter import patterns
 from note_splitter import tokens
@@ -12,26 +10,13 @@ from note_splitter.splitter import Splitter
 from PySide6 import QtCore
 
 
-@pytest.fixture
-def callables() -> tuple[Lexer, Splitter, Formatter]:
-    tokenize = Lexer()
-    split = Splitter()
-    format_ = Formatter()
-    settings = QtCore.QSettings()
-    settings.setValue("using_split_keyword", 0)
-    settings.setValue("copy_global_tags", 0)
-    settings.setValue("copy_frontmatter", 0)
-    settings.setValue("move_footnotes", 0)
-    return tokenize, split, format_
-
-
 ################
 #  split_text  #
 ################
 
 
-def test_split_text_with_nothing(callables: tuple[Callable, Callable, Callable]):
-    tokenize, split, format_ = callables
+def test_split_text_with_nothing():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     result: list[str] = home_tab.split_text(
         content="",
         tokenize=tokenize,
@@ -43,12 +28,15 @@ def test_split_text_with_nothing(callables: tuple[Callable, Callable, Callable])
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=False,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     assert result == []
 
 
-def test_split_text_with_headers(callables: tuple[Callable, Callable, Callable]):
-    tokenize, split, format_ = callables
+def test_split_text_with_headers():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -68,6 +56,9 @@ def test_split_text_with_headers(callables: tuple[Callable, Callable, Callable])
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=False,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     expected = [
         dedent(
@@ -87,8 +78,8 @@ def test_split_text_with_headers(callables: tuple[Callable, Callable, Callable])
     assert result == expected
 
 
-def test_split_text_with_blocks(callables: tuple[Callable, Callable, Callable]):
-    tokenize, split, format_ = callables
+def test_split_text_with_blocks():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -116,6 +107,9 @@ def test_split_text_with_blocks(callables: tuple[Callable, Callable, Callable]):
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=True,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     expected = [
         dedent(
@@ -143,10 +137,8 @@ def test_split_text_with_blocks(callables: tuple[Callable, Callable, Callable]):
     assert result == expected
 
 
-def test_split_text_with_elements_to_copy(
-    callables: tuple[Callable, Callable, Callable]
-):
-    tokenize, split, format_ = callables
+def test_split_text_with_elements_to_copy():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         ---
@@ -173,10 +165,6 @@ def test_split_text_with_elements_to_copy(
         Here[^1] is a sentence.
         """
     )
-    settings = QtCore.QSettings()
-    settings.setValue("copy_global_tags", 1)
-    settings.setValue("copy_frontmatter", 1)
-    settings.setValue("move_footnotes", 1)
     result: list[str] = home_tab.split_text(
         content=content,
         tokenize=tokenize,
@@ -188,6 +176,9 @@ def test_split_text_with_elements_to_copy(
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=True,
+        copy_global_tags=True,
+        copy_frontmatter=True,
+        move_footnotes=True,
     )
     expected = [
         dedent(
@@ -213,10 +204,8 @@ def test_split_text_with_elements_to_copy(
     assert result == expected
 
 
-def test_split_text_with_top_ordered_list_items(
-    callables: tuple[Callable, Callable, Callable]
-):
-    tokenize, split, format_ = callables
+def test_split_text_with_top_ordered_list_items():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -240,6 +229,9 @@ def test_split_text_with_top_ordered_list_items(
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=True,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     expected = [
         dedent(
@@ -264,10 +256,8 @@ def test_split_text_with_top_ordered_list_items(
     assert result == expected
 
 
-def test_split_text_with_all_ordered_list_items(
-    callables: tuple[Callable, Callable, Callable]
-):
-    tokenize, split, format_ = callables
+def test_split_text_with_all_ordered_list_items():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -291,6 +281,9 @@ def test_split_text_with_all_ordered_list_items(
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=False,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     expected = [
         "1. first item\n",
@@ -303,8 +296,8 @@ def test_split_text_with_all_ordered_list_items(
     assert result == expected
 
 
-def test_split_text_with_custom_pattern(callables: tuple[Callable, Callable, Callable]):
-    tokenize, split, format_ = callables
+def test_split_text_with_custom_pattern():
+    tokenize, split, format_ = Lexer(), Splitter(), Formatter()
     content = dedent(
         """\
         # first header
@@ -333,6 +326,9 @@ def test_split_text_with_custom_pattern(callables: tuple[Callable, Callable, Cal
         remove_split_keyword=False,
         split_keyword="",
         parse_blocks=False,
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
     )
     expected = [
         dedent(

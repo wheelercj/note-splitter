@@ -77,7 +77,13 @@ def __manual_test() -> None:
 
     format_: Callable = Formatter()
     split_contents: list[str] = format_(
-        sections, global_tags, syntax_tree.frontmatter, syntax_tree.footnotes
+        sections=sections,
+        global_tags=global_tags,
+        copy_global_tags=True,
+        copy_frontmatter=True,
+        move_footnotes=True,
+        frontmatter=syntax_tree.frontmatter,
+        footnotes=syntax_tree.footnotes,
     )
     __print_formatter_output(split_contents)
 

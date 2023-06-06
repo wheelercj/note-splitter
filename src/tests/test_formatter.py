@@ -3,7 +3,6 @@ from textwrap import dedent
 import pytest
 from note_splitter import formatter_
 from note_splitter import tokens
-from PySide6 import QtCore
 
 
 ##############
@@ -14,14 +13,18 @@ from PySide6 import QtCore
 def test_format_section_with_empty_section():
     format = formatter_.Formatter()
     section = tokens.Section()
-    assert [] == format([section], [])
+    assert [] == format(
+        sections=[section],
+        global_tags=[],
+        copy_global_tags=False,
+        copy_frontmatter=False,
+        move_footnotes=False,
+        frontmatter=None,
+        footnotes=None,
+    )
 
 
 def test_format():
-    settings = QtCore.QSettings()
-    settings.setValue("copy_global_tags", True)
-    settings.setValue("move_footnotes", True)
-    settings.setValue("copy_frontmatter", True)
     format = formatter_.Formatter()
     sections = [
         tokens.Section(
@@ -47,7 +50,15 @@ def test_format():
         "author": "This is the author",
     }
     footnotes = [tokens.Footnote("[^1]: This is a footnote.")]
-    result = format(sections, global_tags, frontmatter, footnotes)
+    result = format(
+        sections=sections,
+        global_tags=global_tags,
+        copy_global_tags=True,
+        copy_frontmatter=True,
+        move_footnotes=True,
+        frontmatter=frontmatter,
+        footnotes=footnotes,
+    )
     expected = [
         dedent(
             """\

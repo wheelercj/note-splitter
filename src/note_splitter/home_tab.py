@@ -251,6 +251,9 @@ class HomeTab(QtWidgets.QWidget):
                 bool(settings.value("remove_split_keyword")),
                 settings.value("split_keyword"),
                 bool(settings.value("parse_blocks")),
+                bool(settings.value("copy_global_tags")),
+                bool(settings.value("copy_frontmatter")),
+                bool(settings.value("move_footnotes")),
             )
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
@@ -328,6 +331,9 @@ def split_text(
     remove_split_keyword: bool,
     split_keyword: str,
     parse_blocks: bool,
+    copy_global_tags: bool,
+    copy_frontmatter: bool,
+    move_footnotes: bool,
 ) -> list[str]:
     """Splits a string into multiple strings based on several factors.
 
@@ -355,6 +361,12 @@ def split_text(
         The keyword for deciding which files to split.
     parse_blocks : bool
         Whether to parse blocks.
+    copy_global_tags : bool
+        Whether to copy global tags to each new file.
+    copy_frontmatter : bool
+        Whether to copy frontmatter to each new file.
+    move_footnotes : bool
+        Whether to move footnotes into the new files.
 
     Returns
     -------
@@ -372,7 +384,13 @@ def split_text(
         split_keyword,
     )
     split_contents: list[str] = format_(
-        sections, global_tags, syntax_tree.frontmatter, syntax_tree.footnotes
+        sections=sections,
+        global_tags=global_tags,
+        copy_global_tags=copy_global_tags,
+        copy_frontmatter=copy_frontmatter,
+        move_footnotes=move_footnotes,
+        frontmatter=syntax_tree.frontmatter,
+        footnotes=syntax_tree.footnotes,
     )
     return split_contents
 

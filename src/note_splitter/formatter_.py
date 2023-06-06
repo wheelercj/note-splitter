@@ -7,7 +7,6 @@ import uuid
 
 import yaml  # https://pyyaml.org/wiki/PyYAMLDocumentation
 from note_splitter import tokens
-from PySide6 import QtCore
 
 
 class Formatter:
@@ -21,6 +20,9 @@ class Formatter:
         self,
         sections: list[tokens.Section],
         global_tags: list[str],
+        copy_global_tags: bool,
+        copy_frontmatter: bool,
+        move_footnotes: bool,
         frontmatter: object | None = None,
         footnotes: list[tokens.Footnote] | None = None,
     ) -> list[str]:
@@ -38,20 +40,19 @@ class Formatter:
             The footnotes to add to each section with the respective footnote reference.
         """
         split_contents: list[str] = []
-        settings = QtCore.QSettings()
         for section in sections:
             if not section:
                 continue
             section_title = None
             if isinstance(section[0], tokens.Header):
                 section_title = self.normalize_headers(section)
-            if settings.value("copy_global_tags") and global_tags:
+            if copy_global_tags and global_tags:
                 self.insert_global_tags(global_tags, section)
-            if settings.value("copy_frontmatter"):
+            if copy_frontmatter:
                 if not section_title:
                     section_title = self.get_section_title(section)
                 self.prepend_frontmatter(frontmatter, section_title, section)
-            if settings.value("move_footnotes") and footnotes:
+            if move_footnotes and footnotes:
                 self.move_footnotes(footnotes, section)
             split_contents.append(str(section))
         return split_contents
