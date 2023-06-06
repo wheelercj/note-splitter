@@ -29,23 +29,21 @@ class Lexer:
         self.__check_token_types()
         return self.__tokens
 
-    def __create_token(self, line: str, all_token_types: list[type]) -> tokens.Token:
+    def __create_token(
+        self, line: str, all_token_types: list[type[tokens.Token]]
+    ) -> tokens.Token:
         """Lexes the text, creates a token, and returns it.
 
         Parameters
         ----------
         line : str
             The line of text to parse.
-        all_token_types : list[type]
+        all_token_types : list[type[tokens.Token]]
             A list of all token types.
         """
         for type_ in all_token_types:
-            if (
-                not isinstance(type_, type)
-                and type_.HAS_PATTERN
-                and self.__matches(line, type_)
-            ):
-                return type_(line)
+            if type_.HAS_PATTERN and self.__matches(line, type_):
+                return type_(line)  # type: ignore
         return tokens.Text(line)
 
     def __matches(self, line: str, type_: type[tokens.Token]) -> bool:

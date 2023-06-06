@@ -542,7 +542,7 @@ def __is_token_type(obj: Any) -> bool:
     obj : Any
         The object to test.
     """
-    return inspect.isclass(obj) and obj.__name__ not in ("ABC", "module")
+    return inspect.isclass(obj) and obj.__name__ not in ("ABC", "Any", "module")
 
 
 @lru_cache(maxsize=1)
@@ -559,4 +559,9 @@ def get_all_token_types(tokens_module: ModuleType) -> list[type[Token]]:
         other way to automatically get the list of token types from within the file they
         are in.
     """
-    return [c[1] for c in inspect.getmembers(tokens_module, __is_token_type)]
+    token_types: list[type] = [
+        c[1] for c in inspect.getmembers(tokens_module, __is_token_type)
+    ]
+    for type_ in token_types:
+        assert issubclass(type_, Token), f"{type_} is not a token type"
+    return token_types
