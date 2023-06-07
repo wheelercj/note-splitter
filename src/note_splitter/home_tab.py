@@ -87,7 +87,7 @@ class HomeTab(QtWidgets.QWidget):
         self.parse_blocks_layout = QtWidgets.QHBoxLayout()
         self.layout.addLayout(self.parse_blocks_layout)
         self.parse_blocks_checkbox = QtWidgets.QCheckBox()
-        self.parse_blocks_checkbox.changeEvent.connect(
+        self.parse_blocks_checkbox.stateChanged.connect(
             lambda: update_from_checkbox("parse_blocks", self.parse_blocks_checkbox)
         )
         self.parse_blocks_layout.addWidget(self.parse_blocks_checkbox)
