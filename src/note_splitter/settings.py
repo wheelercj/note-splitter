@@ -127,7 +127,7 @@ DEFAULT_SETTINGS = {
     "note_types": [".md", ".markdown", ".txt"],
     "ordered_list_item_pattern": patterns.ordered_list_item.pattern,
     "parse_blocks": True,
-    "remove_split_keyword": True,
+    "remove_split_keyword": False,
     "replace_split_contents": False,
     "source_folder_path": "",
     "split_attrs": {"level": 2},
