@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Briefcase-Version: 0.3.11
+Name: note_splitter
+Formal-Name: Note Splitter
+App-ID: wheelercj.note-splitter.note_splitter
+Version: 0.0.1
+Home-page: https://github.com/wheelercj/note-splitter
+Download-URL: https://github.com/wheelercj/note-splitter
+Author: Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan
+Author-email: christopher.wheeler.320@my.csun.edu
+Summary: Split markdown files into multiple smaller files.
