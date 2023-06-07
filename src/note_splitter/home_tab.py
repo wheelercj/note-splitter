@@ -174,6 +174,8 @@ class HomeTab(QtWidgets.QWidget):
         settings = QtCore.QSettings()
         source_folder_path: str | None = settings.value("source_folder_path")
         try:
+            if not source_folder_path:
+                raise FileNotFoundError
             folder_list = os.listdir(source_folder_path)
         except FileNotFoundError:
             source_folder_path = request_folder_path("source")
