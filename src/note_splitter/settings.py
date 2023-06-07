@@ -142,11 +142,16 @@ __DEFAULT_SETTINGS = {
 }
 
 
-def init_settings() -> None:
-    """Save the default settings to the registry."""
+def reset_settings() -> None:
+    """Clears all settings and saves the default settings to the registry."""
+    # TODO: call this function somewhere.
     settings = QtCore.QSettings()
+    settings.clear()
     for key, value in __DEFAULT_SETTINGS.items():
-        settings.setValue(key, value)
+        if isinstance(value, bool):
+            settings.setValue(key, int(value))
+        else:
+            settings.setValue(key, value)
 
 
 def export_settings() -> None:
@@ -184,7 +189,10 @@ def import_settings() -> None:
             settings_dict["split_attrs"] = {None: ""}
         settings = QtCore.QSettings()
         for key, value in settings_dict.items():
-            settings.setValue(key, value)
+            if isinstance(value, bool):
+                settings.setValue(key, int(value))
+            else:
+                settings.setValue(key, value)
         add_new_settings(settings)
 
 
@@ -192,19 +200,18 @@ def add_new_settings(settings: QtCore.QSettings) -> None:
     """Add any new settings to the registry without overwriting existing ones."""
     for key, value in __DEFAULT_SETTINGS.items():
         if not settings.contains(key):
-            settings.setValue(key, value)
-
-
-def reset_settings() -> None:
-    """Reset the settings to their defaults."""
-    settings = QtCore.QSettings()
-    for key, value in __DEFAULT_SETTINGS.items():
-        settings.setValue(key, value)
+            if isinstance(value, bool):
+                settings.setValue(key, int(value))
+            else:
+                settings.setValue(key, value)
 
 
 def update_setting(setting_name: str, value: Any) -> None:
     """Updates a setting in the registry."""
-    QtCore.QSettings().setValue(setting_name, value)
+    if isinstance(value, bool):
+        QtCore.QSettings().setValue(setting_name, int(value))
+    else:
+        QtCore.QSettings().setValue(setting_name, value)
 
 
 def update_from_line_edit(setting_name: str, line_edit: QtWidgets.QLineEdit) -> None:
@@ -214,7 +221,7 @@ def update_from_line_edit(setting_name: str, line_edit: QtWidgets.QLineEdit) -> 
 
 def update_from_checkbox(setting_name: str, check_box: QtWidgets.QCheckBox) -> None:
     """Updates a setting in the registry with a check box's state."""
-    QtCore.QSettings().setValue(setting_name, check_box.isChecked())
+    QtCore.QSettings().setValue(setting_name, int(check_box.isChecked()))
 
 
 def update_from_combo_box(setting_name: str, combo_box: QtWidgets.QComboBox) -> None:

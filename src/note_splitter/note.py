@@ -149,7 +149,9 @@ def create_notes(file_paths: list[str]) -> list[Note]:
         the list of note types will be ignored.
     """
     notes: list[Note] = []
-    note_types: list[str] = QtCore.QSettings().value("note_types")
+    note_types: list[str] = QtCore.QSettings().value(
+        "note_types", [".md", ".markdown", ".txt"]
+    )
     for file_path in file_paths:
         if os.path.isfile(file_path):
             _, file_ext = os.path.splitext(file_path)
@@ -377,7 +379,9 @@ def move_files(
         path = os.path.normpath(path)
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
-        if file_ext in QtCore.QSettings().value("note_types"):
+        if file_ext in QtCore.QSettings().value(
+            "note_types", [".md", ".markdown", ".txt"]
+        ):
             _make_file_paths_absolute(note_path=path)
         new_path = os.path.normpath(os.path.join(destination_path, file_name_with_ext))
         __change_all_links_to_file(path, new_path, all_notes)
