@@ -116,7 +116,6 @@ class HomeTab(QtWidgets.QWidget):
             show_message("No keyword entered.")
             return
         QtCore.QSettings().setValue("using_split_keyword", 1)
-        # Qt cannot correctly save booleans.
         self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return

@@ -1,7 +1,6 @@
 """The user's application settings and related functions.
 
-The settings are stored in a dictionary named ``settings`` with the following keys. Some
-of these settings may be hidden from the user.
+QtCore.QSettings cannot correctly save booleans, so booleans are saved as integers.
 
 create_backlinks : bool
     Whether or not to append a backlink to the source file in each new file.
