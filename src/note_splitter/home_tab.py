@@ -17,6 +17,7 @@ from note_splitter.note import Note
 from note_splitter.note import show_message
 from note_splitter.note import validate_file_name
 from note_splitter.parser_ import SyntaxTree
+from note_splitter.settings import DEFAULT_SETTINGS
 from note_splitter.settings import get_token_type
 from note_splitter.settings import get_token_type_names
 from note_splitter.settings import update_from_checkbox
@@ -45,7 +46,7 @@ class HomeTab(QtWidgets.QWidget):
         self.keyword_search_button.clicked.connect(self.__on_keyword_search)
         files_choosing_layout.addWidget(self.keyword_search_button)
         self.keyword_line_edit = QtWidgets.QLineEdit(
-            settings.value("split_keyword", "#split")
+            settings.value("split_keyword", DEFAULT_SETTINGS["split_keyword"])
         )
         self.keyword_line_edit.editingFinished.connect(
             lambda: update_from_line_edit("split_keyword", self.keyword_line_edit)
@@ -67,7 +68,9 @@ class HomeTab(QtWidgets.QWidget):
         token_type_names = get_token_type_names()
         token_type_names.remove("section")
         self.type_combo_box.addItems(token_type_names)
-        self.type_combo_box.setCurrentText(settings.value("split_type", "header"))
+        self.type_combo_box.setCurrentText(
+            settings.value("split_type", DEFAULT_SETTINGS["split_type"])
+        )
         self.type_combo_box.currentTextChanged.connect(self.__on_split_type_change)
         self.type_layout.addWidget(self.type_combo_box)
         self.attribute_layout = QtWidgets.QVBoxLayout()
@@ -146,7 +149,7 @@ class HomeTab(QtWidgets.QWidget):
     def __get_split_type_attr_names(self) -> list[str]:
         """Returns a list of attribute names of the split type."""
         split_type: type[tokens.Token] = get_token_type(
-            QtCore.QSettings().value("split_type", "header")
+            QtCore.QSettings().value("split_type", DEFAULT_SETTINGS["split_type"])
         )
         if inspect.isabstract(split_type):
             attr_names: list[str] = []
@@ -201,7 +204,9 @@ class HomeTab(QtWidgets.QWidget):
             self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return []
-        split_keyword: str = QtCore.QSettings().value("split_keyword", "#split")
+        split_keyword: str = QtCore.QSettings().value(
+            "split_keyword", DEFAULT_SETTINGS["split_keyword"]
+        )
         chosen_notes: list[Note] = []
         for note in self.all_notes:
             with open(note.path, "r", encoding="utf8") as file:
@@ -232,8 +237,12 @@ class HomeTab(QtWidgets.QWidget):
         notes = notes or self.__get_notes_with_keyword()
         all_new_notes: list[Note] = []
         settings = QtCore.QSettings()
-        file_id_format: str = settings.value("file_id_format", r"%Y%M%D%h%m%s")
-        file_name_format: str = settings.value("file_name_format", r"%id")
+        file_id_format: str = settings.value(
+            "file_id_format", DEFAULT_SETTINGS["file_id_format"]
+        )
+        file_name_format: str = settings.value(
+            "file_name_format", DEFAULT_SETTINGS["file_name_format"]
+        )
         progress = QtWidgets.QProgressDialog(
             "splitting...", "", 0, 100, self, modal=True
         )
@@ -248,15 +257,43 @@ class HomeTab(QtWidgets.QWidget):
                 tokenize,
                 split,
                 format_,
-                get_token_type(settings.value("split_type", "header")),
-                settings.value("split_attrs", {}),
-                bool(settings.value("using_split_keyword", True)),
-                bool(settings.value("remove_split_keyword", True)),
-                settings.value("split_keyword", "#split"),
-                bool(settings.value("parse_blocks", True)),
-                bool(settings.value("copy_global_tags", True)),
-                bool(settings.value("copy_frontmatter", True)),
-                bool(settings.value("move_footnotes", True)),
+                get_token_type(
+                    settings.value("split_type", DEFAULT_SETTINGS["split_type"])
+                ),
+                settings.value("split_attrs", DEFAULT_SETTINGS["split_attrs"]),
+                bool(
+                    settings.value(
+                        "using_split_keyword",
+                        bool(DEFAULT_SETTINGS["using_split_keyword"]),
+                    )
+                ),
+                bool(
+                    settings.value(
+                        "remove_split_keyword",
+                        bool(DEFAULT_SETTINGS["remove_split_keyword"]),
+                    )
+                ),
+                settings.value("split_keyword", DEFAULT_SETTINGS["split_keyword"]),
+                bool(
+                    settings.value(
+                        "parse_blocks", bool(DEFAULT_SETTINGS["parse_blocks"])
+                    )
+                ),
+                bool(
+                    settings.value(
+                        "copy_global_tags", bool(DEFAULT_SETTINGS["copy_global_tags"])
+                    )
+                ),
+                bool(
+                    settings.value(
+                        "copy_frontmatter", bool(DEFAULT_SETTINGS["copy_frontmatter"])
+                    )
+                ),
+                bool(
+                    settings.value(
+                        "move_footnotes", bool(DEFAULT_SETTINGS["move_footnotes"])
+                    )
+                ),
             )
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
@@ -268,13 +305,19 @@ class HomeTab(QtWidgets.QWidget):
             progress.setValue((i + 5) / (note_count + 5) * 100)
             print(f"Created {len(new_notes)} new files.")
             if new_notes:
-                if settings.value("create_index_file", True):
+                if settings.value(
+                    "create_index_file", DEFAULT_SETTINGS["create_index_file"]
+                ):
                     index_note: Note = create_index_file_(source_note, new_notes)
                     print(f"Created index file at {index_note.path}")
                     all_new_notes.append(index_note)
-                    if settings.value("create_backlinks", True):
+                    if settings.value(
+                        "create_backlinks", DEFAULT_SETTINGS["create_backlinks"]
+                    ):
                         append_backlinks(index_note, new_notes)
-                elif settings.value("create_backlinks", True):
+                elif settings.value(
+                    "create_backlinks", DEFAULT_SETTINGS["create_backlinks"]
+                ):
                     append_backlinks(source_note, new_notes)
         return all_new_notes
 

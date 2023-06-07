@@ -104,7 +104,7 @@ from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
-__DEFAULT_SETTINGS = {
+DEFAULT_SETTINGS = {
     "create_backlinks": False,
     "blockquote_pattern": patterns.blockquote.pattern,
     "code_fence_pattern": patterns.code_fence.pattern,
@@ -147,7 +147,7 @@ def reset_settings() -> None:
     # TODO: call this function somewhere.
     settings = QtCore.QSettings()
     settings.clear()
-    for key, value in __DEFAULT_SETTINGS.items():
+    for key, value in DEFAULT_SETTINGS.items():
         if isinstance(value, bool):
             settings.setValue(key, int(value))
         else:
@@ -159,7 +159,7 @@ def export_settings() -> None:
     # TODO: call this function somewhere.
     settings = QtCore.QSettings()
     settings_dict: dict[str, Any] = {}
-    for key in __DEFAULT_SETTINGS.keys():
+    for key in DEFAULT_SETTINGS.keys():
         settings_dict[key] = settings.value(key)
     try:
         with open("settings.json", "x") as file:
@@ -198,7 +198,7 @@ def import_settings() -> None:
 
 def add_new_settings(settings: QtCore.QSettings) -> None:
     """Add any new settings to the registry without overwriting existing ones."""
-    for key, value in __DEFAULT_SETTINGS.items():
+    for key, value in DEFAULT_SETTINGS.items():
         if not settings.contains(key):
             if isinstance(value, bool):
                 settings.setValue(key, int(value))

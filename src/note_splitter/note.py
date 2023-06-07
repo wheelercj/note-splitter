@@ -9,6 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from note_splitter import patterns
+from note_splitter.settings import DEFAULT_SETTINGS
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -150,7 +151,7 @@ def create_notes(file_paths: list[str]) -> list[Note]:
     """
     notes: list[Note] = []
     note_types: list[str] = QtCore.QSettings().value(
-        "note_types", [".md", ".markdown", ".txt"]
+        "note_types", DEFAULT_SETTINGS["note_types"]
     )
     for file_path in file_paths:
         if os.path.isfile(file_path):
@@ -380,7 +381,7 @@ def move_files(
         file_name_with_ext = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
         if file_ext in QtCore.QSettings().value(
-            "note_types", [".md", ".markdown", ".txt"]
+            "note_types", DEFAULT_SETTINGS["note_types"]
         ):
             _make_file_paths_absolute(note_path=path)
         new_path = os.path.normpath(os.path.join(destination_path, file_name_with_ext))
