@@ -1,15 +1,18 @@
 """Run this file to see the main steps this program goes through."""
+# flake8: noqa: E402
+import os
+import sys
 from textwrap import dedent
 from typing import Any
 from typing import Callable
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
 from note_splitter.parser_ import SyntaxTree
-from note_splitter.settings import init_settings
 from note_splitter.splitter import Splitter
-from PySide6 import QtCore
 
 
 def __manual_test() -> None:
@@ -55,13 +58,10 @@ def __manual_test() -> None:
         """
     )
 
-    init_settings()
     tokenize: Callable = Lexer()
     tokens_: list[tokens.Token] = tokenize(sample_markdown)
     __print_lexer_output(tokens_)
-    settings = QtCore.QSettings()
-    settings.setValue("parse_blocks", True)
-    syntax_tree = SyntaxTree(tokens_, settings.value("parse_blocks"))
+    syntax_tree = SyntaxTree(tokens_)
     __print_parser_output(syntax_tree)
 
     split: Callable = Splitter()

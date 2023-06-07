@@ -15,10 +15,11 @@
 Now you can use these commands:
 
 * `briefcase dev` to run the app in dev mode (see [BeeWare Briefcase's docs](https://docs.beeware.org/en/latest/tutorial/tutorial-3.html) for more info if needed).
-* `pytest` to run the unit tests in the current environment.
+* `pytest` to run the automated tests.
+* `py src/tests/manual_test.py` or `python3 src/tests/manual_test.py` to run the manual test.
 * `pre-commit run --all-files` to run all the pre-commit hooks without committing.
 * `pre-commit run hook-id-here --file file-path-here.py` to run one pre-commit hook on one file without committing.
-* If you're looking for how to locally build the documentation to test it, see [how to maintain this documentation](how-to-doc.rst).
+* To locally build the documentation to test it, see [how to maintain this documentation](how-to-doc.rst).
 
 ## maintenance
 
