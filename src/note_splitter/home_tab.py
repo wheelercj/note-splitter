@@ -156,7 +156,7 @@ class HomeTab(QtWidgets.QWidget):
         else:
             attr_names = sorted(list(split_type().__dict__.keys()))
             if issubclass(split_type, tokens.Block):
-                attr_names.remove("content")
+                attr_names.remove("_content")
         return attr_names
 
     def __on_split_button_click(self) -> None:
