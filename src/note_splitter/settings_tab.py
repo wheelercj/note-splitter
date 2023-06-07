@@ -68,6 +68,9 @@ class SettingsTab(QtWidgets.QWidget):
         self.checkboxes_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(self.checkboxes_layout)
         self.create_index_file_checkbox = QtWidgets.QCheckBox()
+        self.create_index_file_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.create_index_file_checkbox.stateChanged.connect(
             lambda: update_from_checkbox(
                 "create_index_file", self.create_index_file_checkbox
@@ -78,6 +81,9 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.create_index_file_checkbox.setChecked(True)
         self.remove_split_keyword_checkbox = QtWidgets.QCheckBox()
+        self.remove_split_keyword_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.remove_split_keyword_checkbox.stateChanged.connect(
             lambda: update_from_checkbox(
                 "remove_split_keyword", self.remove_split_keyword_checkbox
@@ -88,12 +94,18 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.remove_split_keyword_checkbox.setChecked(True)
         self.move_footnotes_checkbox = QtWidgets.QCheckBox()
+        self.move_footnotes_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.move_footnotes_checkbox.stateChanged.connect(
             lambda: update_from_checkbox("move_footnotes", self.move_footnotes_checkbox)
         )
         self.checkboxes_layout.addRow("move footnotes:", self.move_footnotes_checkbox)
         self.move_footnotes_checkbox.setChecked(True)
         self.copy_frontmatter_checkbox = QtWidgets.QCheckBox()
+        self.copy_frontmatter_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.copy_frontmatter_checkbox.stateChanged.connect(
             lambda: update_from_checkbox(
                 "copy_frontmatter", self.copy_frontmatter_checkbox
@@ -104,6 +116,9 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.copy_frontmatter_checkbox.setChecked(False)
         self.copy_global_tags_checkbox = QtWidgets.QCheckBox()
+        self.copy_global_tags_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.copy_global_tags_checkbox.stateChanged.connect(
             lambda: update_from_checkbox(
                 "copy_global_tags", self.copy_global_tags_checkbox
@@ -114,6 +129,9 @@ class SettingsTab(QtWidgets.QWidget):
         )
         self.copy_global_tags_checkbox.setChecked(True)
         self.create_backlinks_checkbox = QtWidgets.QCheckBox()
+        self.create_backlinks_checkbox.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.create_backlinks_checkbox.stateChanged.connect(
             lambda: update_from_checkbox(
                 "create_backlinks", self.create_backlinks_checkbox

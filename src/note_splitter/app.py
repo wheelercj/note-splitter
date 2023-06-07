@@ -33,6 +33,9 @@ def main():
         QWidget {
             font-size: 14px;
         }
+        QCheckBox {
+            background-color: #2d2d2d;
+        }
         """
     )
     main_window = MainWindow()  # noqa: F841
