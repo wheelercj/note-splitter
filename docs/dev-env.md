@@ -32,6 +32,7 @@ Now you can use these commands:
 * when a new Python module is added
   * add its name to the list in docs/modules.rst
   * while in the project’s root folder, use this command to automatically generate an rst file for the new module: `sphinx-apidoc -o docs src/note_splitter -e`
+* when bumping the app's version: search the entire project for the version to change because it is in multiple places
 
 ## distribution
 
@@ -57,10 +58,10 @@ Here are descriptions of what each of Note Splitter's folders are for:
 ├── docs                # Files for documentation (.md and .rst) and for configuration.
 │   └── images          # Images used in the documentation and/or the README.
 └── src
-    ├── note_splitter   # Source code for Note Splitter.
+    ├── note_splitter   # Note Splitter's source code.
     │   └── resources   # Note Splitter's icon files.
-    └── tests           # Automated tests.
-        └── assets      # Files used in automated and manual tests.
+    └── tests           # Automated and manual tests.
+        └── assets      # Files used by automated and manual tests.
 ```
 
 ## further reading

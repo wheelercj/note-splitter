@@ -4,13 +4,16 @@ Split markdown files into multiple smaller files.
 
 ![Tests](https://github.com/wheelercj/note-splitter/actions/workflows/tests.yml/badge.svg)
 
+## download
+
+You can [download Note Splitter here (Windows only)](https://github.com/wheelercj/note-splitter/releases) or [install Note Splitter from source (all platforms)](https://github.com/wheelercj/note-splitter/blob/main/docs/dev-env.md).
+
 ## features
 
 * Split by almost any feature of text you can describe.
 * Split multiple files at the same time.
-* The user interface makes Note Splitter easy to use.
 * Select files to split by typing a keyword that appears in those files, or by using a file browser.
-* Optionally copy some parts of a file into multiple new files when splitting (e.g. tags, frontmatter, footnotes, etc.).
+* Optionally copy other parts of a split file into the new files when splitting (e.g. tags, frontmatter, footnotes, etc.).
 * Source files will **NOT** be changed in any way, possibly except for when you move new files to a different folder (see the next point).
 * Moving files to a different folder automatically updates markdown links to them in other files in your source folder. Also, any relative markdown file links in new files are made absolute.
 * For each source file split, an index file can optionally be created that links to each of the new files, and the new files can optionally have backlinks to the index file (or to the source file if no index file is created).
@@ -23,8 +26,6 @@ Here are some tips for how to use Note Splitter:
 
 * If you want to split some of the files that were found but not all of them, you can select the ones you want to split by clicking on them.
 * On the settings tab, the source folder and the destination folder settings can be the same if you want the new notes Note Splitter creates to appear in the same folder as where their source notes are.
-* The settings on all tabs save whenever the application closes.
-* See the sections below for more tips.
 
 ### split types
 
