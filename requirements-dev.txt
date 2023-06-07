@@ -1,6 +1,6 @@
 -e .  # for documentation
 briefcase==0.3.11
-coverage
+coverage==7.2.7
 myst-parser
 pre-commit
 pytest==7.2.1
