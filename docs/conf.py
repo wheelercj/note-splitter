@@ -4,6 +4,7 @@ This file only contains a selection of the most common options. For a full
 list see the documentation:
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
+# flake8: noqa: E402
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -12,9 +13,9 @@ import inspect
 import os
 import sys
 
-from note_splitter import tokens
+sys.path.insert(0, os.path.abspath("../src"))
 
-sys.path.insert(0, os.path.abspath("../note_splitter"))
+from note_splitter import tokens
 
 
 # -- Project information -----------------------------------------------------
