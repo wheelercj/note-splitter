@@ -19,7 +19,6 @@ class AboutTab(QtWidgets.QWidget):
                     }
                     ul {
                         font-size: 1.2em;
-                        list-style-type: none;
                         padding-left: 0;
                     }
                     li {
