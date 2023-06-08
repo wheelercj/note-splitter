@@ -20,9 +20,9 @@ class PatternsTab(QtWidgets.QWidget):
                 </style>
                 <p>These are the regular expressions used to identify the various
                 elements of a <br> note. You will probably never need to change them,
-                but if you do and you <br> don't know how, feel free to join the
-                <a href="%(url)s/discussions">discussions</a> or make an
-                <a href="%(url)s/issues">issue</a> on GitHub.</p>
+                but if you do and you <br> don't know how, feel free to
+                <a href="%(url)s/discussions">join the discussions</a> or
+                <a href="%(url)s/issues">make an issue</a> on GitHub.</p>
                 """
                 % {"url": "https://github.com/wheelercj/note-splitter"}
             )
