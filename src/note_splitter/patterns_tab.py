@@ -192,3 +192,106 @@ class PatternsTab(QtWidgets.QWidget):
         self.layout.addRow(
             "unordered list item (full-line):", self.unordered_list_item_line_edit
         )
+
+    def reload_tab_inputs(self) -> None:
+        """Reloads the inputs on the tab from the settings.
+
+        Uses the default settings as a fallback for any settings that are not found.
+        """
+        settings = QtCore.QSettings()
+        self.blockquote_line_edit.setText(
+            settings.value(
+                "blockquote_pattern",
+                DEFAULT_SETTINGS["blockquote_pattern"],
+            )
+        )
+        self.code_fence_line_edit.setText(
+            settings.value(
+                "code_fence_pattern",
+                DEFAULT_SETTINGS["code_fence_pattern"],
+            )
+        )
+        self.empty_line_line_edit.setText(
+            settings.value(
+                "empty_line_pattern",
+                DEFAULT_SETTINGS["empty_line_pattern"],
+            )
+        )
+        self.file_path_in_link_line_edit.setText(
+            settings.value(
+                "file_path_in_link_pattern",
+                DEFAULT_SETTINGS["file_path_in_link_pattern"],
+            )
+        )
+        self.finished_task_line_edit.setText(
+            settings.value(
+                "finished_task_pattern",
+                DEFAULT_SETTINGS["finished_task_pattern"],
+            )
+        )
+        self.footnote_line_edit.setText(
+            settings.value(
+                "footnote_pattern",
+                DEFAULT_SETTINGS["footnote_pattern"],
+            )
+        )
+        self.frontmatter_fence_line_edit.setText(
+            settings.value(
+                "frontmatter_fence_pattern",
+                DEFAULT_SETTINGS["frontmatter_fence_pattern"],
+            )
+        )
+        self.header_line_edit.setText(
+            settings.value(
+                "header_pattern",
+                DEFAULT_SETTINGS["header_pattern"],
+            )
+        )
+        self.horizontal_rule_line_edit.setText(
+            settings.value(
+                "horizontal_rule_pattern",
+                DEFAULT_SETTINGS["horizontal_rule_pattern"],
+            )
+        )
+        self.math_fence_line_edit.setText(
+            settings.value(
+                "math_fence_pattern",
+                DEFAULT_SETTINGS["math_fence_pattern"],
+            )
+        )
+        self.ordered_list_item_line_edit.setText(
+            settings.value(
+                "ordered_list_item_pattern",
+                DEFAULT_SETTINGS["ordered_list_item_pattern"],
+            )
+        )
+        self.table_divider_line_edit.setText(
+            settings.value(
+                "table_divider_pattern",
+                DEFAULT_SETTINGS["table_divider_pattern"],
+            )
+        )
+        self.table_row_line_edit.setText(
+            settings.value(
+                "table_row_pattern",
+                DEFAULT_SETTINGS["table_row_pattern"],
+            )
+        )
+        self.tag_line_edit.setText(
+            settings.value(
+                "tag_pattern",
+                DEFAULT_SETTINGS["tag_pattern"],
+            )
+        )
+        self.task_line_edit.setText(
+            settings.value(
+                "task_pattern",
+                DEFAULT_SETTINGS["task_pattern"],
+            )
+        )
+        self.unordered_list_item_line_edit.setText(
+            settings.value(
+                "unordered_list_item_pattern",
+                DEFAULT_SETTINGS["unordered_list_item_pattern"],
+            )
+        )

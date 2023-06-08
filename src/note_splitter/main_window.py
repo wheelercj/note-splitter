@@ -24,15 +24,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.is_quitting = True
         settings = QtCore.QSettings()
         settings.setValue("main_window/geometry", self.saveGeometry())
-        # TODO: save other settings.
 
     def __load_settings_and_show_window(self):
         """Reads the settings from the device's configuration files."""
         settings = QtCore.QSettings()
-        # TODO: load other settings.
-        # if settings.contains("user/email") and settings.contains("user/password"):
-        #     user.email = str(settings.value("user/email"))
-        #     user.password = str(settings.value("user/password"))
         if not settings.contains("main_window/geometry"):
             self.showMaximized()
         else:

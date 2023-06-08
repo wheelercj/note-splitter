@@ -113,6 +113,35 @@ class HomeTab(QtWidgets.QWidget):
         self.layout.addWidget(self.split_button)
         self.layout.addStretch()
 
+    def reload_tab_inputs(self) -> None:
+        """Reloads the inputs on the tab from the settings.
+
+        Uses the default settings as a fallback for any settings that are not found.
+        """
+        settings = QtCore.QSettings()
+        self.keyword_line_edit.setText(
+            settings.value("split_keyword", DEFAULT_SETTINGS["split_keyword"])
+        )
+        self.chosen_notes.clear()
+        self.file_list_text_browser.clear()
+        self.type_combo_box.setCurrentText(
+            settings.value("split_type", DEFAULT_SETTINGS["split_type"])
+        )
+        if settings.contains("split_attrs") and settings.value("split_attrs"):
+            self.attribute_combo_box.setCurrentText(
+                list(settings.value("split_attrs"))[0]
+            )
+            self.value_line_edit.setText(
+                str(list(settings.value("split_attrs").values())[0])
+            )
+        else:
+            split_attrs: dict = DEFAULT_SETTINGS["split_attrs"]  # type: ignore
+            self.attribute_combo_box.setCurrentText(list(split_attrs.keys())[0])
+            self.value_line_edit.setText(str(list(split_attrs.values())[0]))
+        self.parse_blocks_checkbox.setChecked(
+            settings.value("parse_blocks", DEFAULT_SETTINGS["parse_blocks"])
+        )
+
     def __on_browse_button_click(self) -> None:
         """Shows a file dialog and saves selected files into ``self.chosen_notes``."""
         QtCore.QSettings().setValue("using_split_keyword", 0)

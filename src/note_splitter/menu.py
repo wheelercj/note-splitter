@@ -13,7 +13,7 @@ class Menu(QtWidgets.QWidget):
         self.layout.addWidget(self.tab_widget)
         self.home_tab = HomeTab(self)
         self.tab_widget.addTab(self.home_tab, "home")
-        self.settings_tab = SettingsTab()
+        self.settings_tab = SettingsTab(main_window)
         self.tab_widget.addTab(self.settings_tab, "settings")
         self.patterns_tab = PatternsTab()
         self.tab_widget.addTab(self.patterns_tab, "patterns")

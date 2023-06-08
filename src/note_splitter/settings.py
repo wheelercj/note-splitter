@@ -142,9 +142,15 @@ DEFAULT_SETTINGS = {
 }
 
 
+def show_message(text: str) -> None:
+    QtWidgets.QMessageBox(text=text).exec()
+
+
 def reset_settings() -> None:
-    """Clears all settings and saves the default settings to the registry."""
-    # TODO: call this function somewhere.
+    """Clears all settings and saves the default settings to the registry.
+
+    Does not clear settings from the user interface.
+    """
     settings = QtCore.QSettings()
     settings.clear()
     for key, value in DEFAULT_SETTINGS.items():
@@ -155,41 +161,55 @@ def reset_settings() -> None:
 
 
 def export_settings() -> None:
-    """Export the settings from the registry to a JSON file."""
-    # TODO: call this function somewhere.
+    """Exports the settings from the registry to a JSON file."""
     settings = QtCore.QSettings()
     settings_dict: dict[str, Any] = {}
     for key in DEFAULT_SETTINGS.keys():
-        settings_dict[key] = settings.value(key)
+        if settings.contains(key):
+            if isinstance(DEFAULT_SETTINGS[key], bool):
+                settings_dict[key] = bool(settings.value(key))
+            else:
+                settings_dict[key] = settings.value(key)
     try:
-        with open("settings.json", "x") as file:
+        with open("settings.json", "w") as file:
             json.dump(settings_dict, file, indent=4)
     except Exception as e:
-        print(f"Error: could not export settings to 'settings.json' because {e}.")
+        show_message(
+            f"Error: could not export settings to 'settings.json' because {e}."
+        )
     else:
         os.startfile("settings.json")
 
 
 def import_settings() -> None:
-    """Attempt to import settings from a JSON file to the registry.
+    """Attempts to import settings from a JSON file to the registry.
 
-    Overwrites any existing conflicting settings.
+    Overwrites any existing conflicting settings. Ignores any settings with keys that
+    are not in the default settings.
     """
-    # TODO: call this function somewhere.
+    file_name: str = QtWidgets.QFileDialog.getOpenFileName(
+        None, "import settings", "", "JSON Files (*.json)"
+    )[0]
+    if not file_name:
+        return
     try:
-        with open("settings.json", "r") as file:  # TODO: let user choose the json file.
+        with open(file_name, "r") as file:
             settings_dict: dict[str, Any] = json.load(file)
     except Exception as e:
-        print(f"Error: could not import settings from 'settings.json' because {e}.")
+        show_message(
+            f"Error: could not import settings from '{file_name}' because {e}."
+        )
     else:
         if not isinstance(settings_dict, dict):
-            print("Error: invalid settings file format.")
+            show_message("Error: invalid settings file format.")
             return
         if "null" in settings_dict["split_attrs"]:
             settings_dict["split_attrs"] = {None: ""}
         settings = QtCore.QSettings()
         for key, value in settings_dict.items():
-            if isinstance(value, bool):
+            if key not in DEFAULT_SETTINGS:
+                continue
+            elif isinstance(value, bool):
                 settings.setValue(key, int(value))
             else:
                 settings.setValue(key, value)
