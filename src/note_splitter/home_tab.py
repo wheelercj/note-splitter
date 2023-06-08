@@ -41,6 +41,7 @@ class HomeTab(QtWidgets.QWidget):
         self.layout.addLayout(files_choosing_layout)
         self.browse_button = QtWidgets.QPushButton("browse")
         files_choosing_layout.addWidget(self.browse_button)
+        self.browse_button.clicked.connect(self.__on_browse_button_click)
         files_choosing_layout.addWidget(QtWidgets.QLabel(" or "))
         self.keyword_search_button = QtWidgets.QPushButton("find by keyword")
         self.keyword_search_button.clicked.connect(self.__on_keyword_search)
@@ -55,7 +56,6 @@ class HomeTab(QtWidgets.QWidget):
 
         self.layout.addWidget(QtWidgets.QLabel("Files to split:"))
         self.file_list_text_browser = QtWidgets.QTextBrowser()
-        self.browse_button.clicked.connect(self.__on_browse_button_click)
         self.layout.addWidget(self.file_list_text_browser)
 
         self.layout.addWidget(QtWidgets.QLabel("Choose what to split by:"))
@@ -65,7 +65,7 @@ class HomeTab(QtWidgets.QWidget):
         self.split_by_layout.addLayout(self.type_layout)
         self.type_layout.addWidget(QtWidgets.QLabel("type:"))
         self.type_combo_box = QtWidgets.QComboBox()
-        token_type_names = get_token_type_names()
+        token_type_names: list[str] = get_token_type_names()
         token_type_names.remove("section")
         self.type_combo_box.addItems(token_type_names)
         self.type_combo_box.setCurrentText(
@@ -76,22 +76,31 @@ class HomeTab(QtWidgets.QWidget):
         self.attribute_layout = QtWidgets.QVBoxLayout()
         self.split_by_layout.addLayout(self.attribute_layout)
         self.attribute_layout.addWidget(QtWidgets.QLabel("attribute:"))
+        split_attrs: dict = settings.value(
+            "split_attrs", DEFAULT_SETTINGS["split_attrs"]
+        )
         self.attribute_combo_box = QtWidgets.QComboBox()
+        self.attribute_combo_box.setMinimumWidth(100)
         self.attribute_combo_box.addItems(self.__get_split_type_attr_names())
+        if split_attrs:
+            self.attribute_combo_box.setCurrentText(list(split_attrs.keys())[0])
         self.attribute_combo_box.currentTextChanged.connect(self.__on_split_attr_change)
         self.attribute_layout.addWidget(self.attribute_combo_box)
         self.value_layout = QtWidgets.QVBoxLayout()
         self.split_by_layout.addLayout(self.value_layout)
         self.value_layout.addWidget(QtWidgets.QLabel("value:"))
         self.value_line_edit = QtWidgets.QLineEdit()
-        self.value_line_edit.textChanged.connect(
-            lambda: update_from_line_edit("split_value", self.value_line_edit)
-        )
+        if split_attrs:
+            self.value_line_edit.setText(str(list(split_attrs.values())[0]))
+        self.value_line_edit.textChanged.connect(self.__on_split_value_change)
         self.value_layout.addWidget(self.value_line_edit)
 
         self.parse_blocks_layout = QtWidgets.QHBoxLayout()
         self.layout.addLayout(self.parse_blocks_layout)
         self.parse_blocks_checkbox = QtWidgets.QCheckBox()
+        self.parse_blocks_checkbox.setChecked(
+            settings.value("parse_blocks", DEFAULT_SETTINGS["parse_blocks"])
+        )
         self.parse_blocks_checkbox.stateChanged.connect(
             lambda: update_from_checkbox("parse_blocks", self.parse_blocks_checkbox)
         )
@@ -106,55 +115,74 @@ class HomeTab(QtWidgets.QWidget):
 
     def __on_browse_button_click(self) -> None:
         """Shows a file dialog and saves selected files into ``self.chosen_notes``."""
+        QtCore.QSettings().setValue("using_split_keyword", 0)
         self.chosen_notes = files_browse(self, "choose files to split")
         if self.chosen_notes:
             self.file_list_text_browser.setText(
                 "\n".join(n.title for n in self.chosen_notes)
             )
         else:
-            self.file_list_text_browser.setText("")
+            self.file_list_text_browser.clear()
 
     def __on_keyword_search(self) -> None:
         """Searches for files with the keyword and updates the file list."""
-        keyword = self.keyword_line_edit.text()
+        keyword: str = self.keyword_line_edit.text()
         if not keyword:
-            show_message("No keyword entered.")
+            show_message("Please enter a keyword to search for.")
             return
         QtCore.QSettings().setValue("using_split_keyword", 1)
         self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return
-        self.chosen_notes = self.__get_notes_with_keyword()
-        if not self.chosen_notes:
-            show_message("No notes found.")
-            return
-        self.file_list_text_browser.setText(
-            "\n".join(n.title for n in self.chosen_notes)
-        )
+        self.chosen_notes = self.__get_notes_with_keyword(keyword)
+        if self.chosen_notes:
+            self.file_list_text_browser.setText(
+                "\n".join(n.title for n in self.chosen_notes)
+            )
+        else:
+            show_message("No notes with the chosen keyword found.")
+            self.file_list_text_browser.clear()
 
     def __on_split_type_change(self) -> None:
         update_from_combo_box("split_type", self.type_combo_box)
         self.attribute_combo_box.clear()
         attr_names: list[str] = self.__get_split_type_attr_names()
         self.attribute_combo_box.addItems(attr_names)
-        QtCore.QSettings().setValue(
-            "split_attrs", {attr_names[0]} if attr_names else {}
-        )
+        if attr_names and attr_names[0] != "(none)":
+            QtCore.QSettings().setValue("split_attrs", {attr_names[0]: ""})
+        else:
+            QtCore.QSettings().setValue("split_attrs", {})
         self.value_line_edit.clear()
 
     def __on_split_attr_change(self) -> None:
-        update_from_combo_box("split_attrs", self.attribute_combo_box)
+        current_text: str = self.attribute_combo_box.currentText()
+        if current_text == "(none)":
+            QtCore.QSettings().setValue("split_attrs", {})
+        else:
+            QtCore.QSettings().setValue("split_attrs", {current_text: ""})
         self.value_line_edit.clear()
 
+    def __on_split_value_change(self) -> None:
+        current_text: str = self.attribute_combo_box.currentText()
+        if current_text == "(none)":
+            QtCore.QSettings().setValue("split_attrs", {})
+        else:
+            QtCore.QSettings().setValue(
+                "split_attrs", {current_text: self.value_line_edit.text()}
+            )
+
     def __get_split_type_attr_names(self) -> list[str]:
-        """Returns a list of attribute names of the split type."""
+        """Returns a list of attribute names of the split type.
+
+        Also adds "(none)" to the list. Removes "_content" from the list if the split
+        type is a block.
+        """
         split_type: type[tokens.Token] = get_token_type(
             QtCore.QSettings().value("split_type", DEFAULT_SETTINGS["split_type"])
         )
-        if inspect.isabstract(split_type):
-            attr_names: list[str] = []
-        else:
-            attr_names = sorted(list(split_type().__dict__.keys()))
+        attr_names: list[str] = ["(none)"]
+        if not inspect.isabstract(split_type):
+            attr_names.extend(sorted(list(split_type().__dict__.keys())))
             if issubclass(split_type, tokens.Block):
                 attr_names.remove("_content")
         return attr_names
@@ -167,7 +195,7 @@ class HomeTab(QtWidgets.QWidget):
         dialog = SplitSummaryDialog(new_notes, self.all_notes, self)
         dialog.exec()
         self.file_list_text_browser.clear()
-        self.chosen_notes = []
+        self.chosen_notes.clear()
 
     def __get_all_notes_in_source_folder(self) -> list[Note]:
         """Gets all the notes in the user's chosen source folder.
@@ -198,15 +226,12 @@ class HomeTab(QtWidgets.QWidget):
         ]
         return create_notes(file_paths)
 
-    def __get_notes_with_keyword(self) -> list[Note]:
+    def __get_notes_with_keyword(self, split_keyword: str) -> list[Note]:
         """Filters to the notes that have the split keyword."""
         if not self.all_notes:
             self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return []
-        split_keyword: str = QtCore.QSettings().value(
-            "split_keyword", DEFAULT_SETTINGS["split_keyword"]
-        )
         chosen_notes: list[Note] = []
         for note in self.all_notes:
             with open(note.path, "r", encoding="utf8") as file:
@@ -215,7 +240,7 @@ class HomeTab(QtWidgets.QWidget):
                 chosen_notes.append(note)
         return chosen_notes
 
-    def __split_files(self, notes: list[Note] = None) -> list[Note]:
+    def __split_files(self, notes: list[Note] | None = None) -> list[Note]:
         """Splits files into multiple smaller files.
 
         If no notes are provided, they will be found using the split keyword and the
@@ -223,8 +248,8 @@ class HomeTab(QtWidgets.QWidget):
 
         Parameters
         ----------
-        notes : list[Note]
-            The notes to be split.
+        notes : list[Note] | None
+            The notes to be split. If None, notes will be found using the split keyword.
 
         Returns
         -------
@@ -234,9 +259,13 @@ class HomeTab(QtWidgets.QWidget):
         tokenize: Callable = Lexer()
         split: Callable = Splitter()
         format_: Callable = Formatter()
-        notes = notes or self.__get_notes_with_keyword()
-        all_new_notes: list[Note] = []
         settings = QtCore.QSettings()
+        split_keyword: str = settings.value("split_keyword", "")
+        if split_keyword and not notes:
+            notes = self.__get_notes_with_keyword(split_keyword)
+        if not notes:
+            return []
+        all_new_notes: list[Note] = []
         file_id_format: str = settings.value(
             "file_id_format", DEFAULT_SETTINGS["file_id_format"]
         )

@@ -23,7 +23,7 @@ file_id_format : str
 file_id_regex : str
     The uncompiled regular expression to use to extract file IDs from the files.
 file_name_format : str
-    The format of the new file names.
+    The format of the new file names. Does not include the file extension.
 file_path_in_link_pattern : str
     The uncompiled regex pattern for file paths in links.
 finished_task_pattern : str

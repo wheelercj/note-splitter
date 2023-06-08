@@ -20,14 +20,37 @@ You can [download Note Splitter here (Windows only)](https://github.com/wheelerc
 
 ![demo](docs/images/demo.png)
 
-## usage
+## split attributes and values
 
-Here are some tips for how to use Note Splitter:
+Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should leave the value field blank and/or select `(none)` as the attribute, but if you want to split by headers of level 2 you should choose `level` as the attribute and `2` as the value.
 
-* If you want to split some of the files that were found but not all of them, you can select the ones you want to split by clicking on them.
-* On the settings tab, the source folder and the destination folder settings can be the same if you want the new notes Note Splitter creates to appear in the same folder as where their source notes are.
+Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header. However, some other split types such as `ordered list item` also have a `level` attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
 
-### split types
+The "parse blocks" checkbox must be checked to split by elements of text that span multiple lines. This option also changes the behavior when splitting by single-line elements; each split section also ends where its containing block ends instead of only when the next element of the split type is found.
+
+## file name formats
+
+The file name format setting should not include a file extension and can use these variables:
+
+`%uuid4` - A universally unique identifier
+`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
+`%Y` - The current year (as a four-digit number)
+`%M` - The current month (as a number)
+`%D` - The current day
+`%h` - The current hour
+`%m` - The current minute
+`%s` - The current second
+`%id` - The same as entering `%Y%M%D%h%m%s`
+
+You can use other characters with these variables. For example, to get file names like `2021-12-16 9.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
+
+If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
+
+All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
+
+If the file name format contains a % (percent symbol) that is not used for one of the variables above, it will be ignored because some operating systems do not allow percent symbols in file names.
+
+## split types
 
 | type name                | description                                                                      | parent types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
@@ -59,41 +82,6 @@ Here are some tips for how to use Note Splitter:
 | text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | line                                     |
 | token                    | anything                                                                         |                                          |
 | unordered list item      | one line of a bullet-point list                                                  | text list item, can have inline elements |
-
-
-### split attributes and values
-
-Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should leave the value field blank and/or select `None` as the attribute, but if you want to split by headers of level 2 you should choose `level` as the attribute and `2` as the value.
-
-Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header (a smaller number for the split value means a larger header). However, some other split types such as `ordered list item` also have a level attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
-
-The "parse blocks" checkbox must be checked to split by elements of text that span multiple lines. This option also changes the behavior when splitting by single-line elements; each split section also ends where its containing block ends instead of only when the next element of the split type is found.
-
-### file name formats
-
-The file name format setting can use these variables:
-
-`%uuid4` - A universally unique identifier
-`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
-`%Y` - The current year (as a four-digit number)
-`%M` - The current month (as a number)
-`%D` - The current day
-`%h` - The current hour
-`%m` - The current minute
-`%s` - The current second
-`%id` - The same as entering `%Y%M%D%h%m%s`
-
-You can use other characters with these variables. For example, to get file names like `2021-12-16 9.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
-
-If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
-
-If the file name format contains any of `#%{&}\\<>*?/$!\'":@+|=` or backticks, those characters will get replaced by minuses in the file names because some operating systems do not support those characters. For the same reason, a file name cannot start or end with any of ` .-_`.
-
-All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
-
-### patterns
-
-Although you hopefully will never need to, you can also customize the regular expressions Note Splitter uses in the Patterns tab. Note Splitter uses Python regex, which is more or less identical to ECMAScript (JavaScript) regex. [Here](https://wheelercj.github.io/notes/pages/20210506235005.html) are some resources for learning and using regex.
 
 ## contributing
 
