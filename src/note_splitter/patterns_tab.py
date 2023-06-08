@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from note_splitter.settings import DEFAULT_SETTINGS
 from note_splitter.settings import update_from_line_edit
 from PySide6 import QtCore
@@ -8,6 +10,25 @@ class PatternsTab(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.layout = QtWidgets.QFormLayout(self)
+        label = QtWidgets.QLabel(
+            dedent(
+                """\
+                <style>
+                    a {
+                        color: #89d3ff;
+                    }
+                </style>
+                <p>These are the regular expressions used to identify the various
+                elements of a <br> note. You will probably never need to change them,
+                but if you do and you <br> don't know how, feel free to join a
+                <a href="%(url)s/discussions">discussion</a> or make an
+                <a href="%(url)s/issues">issue</a> on GitHub.</p>
+                """
+                % {"url": "https://github.com/wheelercj/note-splitter"}
+            )
+        )
+        label.setOpenExternalLinks(True)
+        self.layout.addWidget(label)
         settings = QtCore.QSettings()
         self.blockquote_line_edit = QtWidgets.QLineEdit(
             settings.value("blockquote_pattern", DEFAULT_SETTINGS["blockquote_pattern"])
