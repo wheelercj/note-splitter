@@ -32,6 +32,7 @@ class SettingsTab(QtWidgets.QWidget):
                 "source_folder_path", self.source_folder_line_edit
             )
         )
+        self.source_folder_line_edit.setMinimumWidth(400)
         self.source_folder_layout.addWidget(self.source_folder_line_edit)
         self.source_folder_browse_button = QtWidgets.QPushButton("browse")
         self.source_folder_layout.addWidget(self.source_folder_browse_button)
@@ -53,6 +54,7 @@ class SettingsTab(QtWidgets.QWidget):
                 "destination_folder_path", self.destination_folder_line_edit
             )
         )
+        self.destination_folder_line_edit.setMinimumWidth(400)
         self.destination_folder_layout.addWidget(self.destination_folder_line_edit)
         self.destination_folder_browse_button = QtWidgets.QPushButton("browse")
         self.destination_folder_browse_button.clicked.connect(
