@@ -24,6 +24,9 @@ class SettingsTab(QtWidgets.QWidget):
         self.source_folder_line_edit = QtWidgets.QLineEdit(
             settings.value("source_folder_path", DEFAULT_SETTINGS["source_folder_path"])
         )
+        self.source_folder_line_edit.setToolTip(
+            "The folder to search for the split keyword."
+        )
         self.source_folder_line_edit.editingFinished.connect(
             lambda: update_from_line_edit(
                 "source_folder_path", self.source_folder_line_edit
@@ -44,6 +47,7 @@ class SettingsTab(QtWidgets.QWidget):
                 "destination_folder_path", DEFAULT_SETTINGS["destination_folder_path"]
             )
         )
+        self.destination_folder_line_edit.setToolTip("The folder to put new files in.")
         self.destination_folder_line_edit.editingFinished.connect(
             lambda: update_from_line_edit(
                 "destination_folder_path", self.destination_folder_line_edit
@@ -69,6 +73,10 @@ class SettingsTab(QtWidgets.QWidget):
         self.new_file_name_format_line_edit = QtWidgets.QLineEdit(
             settings.value("file_name_format", DEFAULT_SETTINGS["file_name_format"])
         )
+        self.new_file_name_format_line_edit.setToolTip(
+            "The format of file names to create. Do not include a file extension."
+            r" Can use variables: %title, %id, %Y, %M, %D, %h, %m, %s, %uuid4"
+        )
         self.new_file_name_format_line_edit.textChanged.connect(
             self.__on_file_name_format_change
         )
@@ -92,7 +100,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.invalid_file_name_edge_symbol_label.hide()
 
         self.invalid_file_name_variable_label = QtWidgets.QLabel(
-            r"Valid uses of %: %uuid4, %title, %Y, %M, %D, %h, %m, %s, %id"
+            r"Valid uses of %: %title, %id, %Y, %M, %D, %h, %m, %s, %uuid4"
         )
         self.layout.addWidget(self.invalid_file_name_variable_label)
         self.invalid_file_name_variable_label.setStyleSheet("color: red")
@@ -110,6 +118,9 @@ class SettingsTab(QtWidgets.QWidget):
                 "create_index_file", self.create_index_file_checkbox
             )
         )
+        self.create_index_file_checkbox.setToolTip(
+            "Create a file with a list of links to the other new files."
+        )
         self.checkboxes_layout.addRow(
             "create index file:", self.create_index_file_checkbox
         )
@@ -124,6 +135,9 @@ class SettingsTab(QtWidgets.QWidget):
             lambda: update_from_checkbox(
                 "remove_split_keyword", self.remove_split_keyword_checkbox
             )
+        )
+        self.remove_split_keyword_checkbox.setToolTip(
+            "Remove the split keyword from new files if files were chosen by keyword."
         )
         self.checkboxes_layout.addRow(
             "remove split keyword:", self.remove_split_keyword_checkbox
@@ -140,6 +154,9 @@ class SettingsTab(QtWidgets.QWidget):
         self.move_footnotes_checkbox.stateChanged.connect(
             lambda: update_from_checkbox("move_footnotes", self.move_footnotes_checkbox)
         )
+        self.move_footnotes_checkbox.setToolTip(
+            "Copy any footnotes into each new file with their references."
+        )
         self.checkboxes_layout.addRow("move footnotes:", self.move_footnotes_checkbox)
         self.move_footnotes_checkbox.setChecked(
             settings.value("move_footnotes", DEFAULT_SETTINGS["move_footnotes"])
@@ -152,6 +169,9 @@ class SettingsTab(QtWidgets.QWidget):
             lambda: update_from_checkbox(
                 "copy_frontmatter", self.copy_frontmatter_checkbox
             )
+        )
+        self.copy_frontmatter_checkbox.setToolTip(
+            "Copy any frontmatter from the original file into each new file."
         )
         self.checkboxes_layout.addRow(
             "copy frontmatter:", self.copy_frontmatter_checkbox
@@ -168,6 +188,10 @@ class SettingsTab(QtWidgets.QWidget):
                 "copy_global_tags", self.copy_global_tags_checkbox
             )
         )
+        self.copy_global_tags_checkbox.setToolTip(
+            "Copy any tags above all headers level 2 and smaller from the original file"
+            " into each new file."
+        )
         self.checkboxes_layout.addRow(
             "copy global tags:", self.copy_global_tags_checkbox
         )
@@ -182,6 +206,9 @@ class SettingsTab(QtWidgets.QWidget):
             lambda: update_from_checkbox(
                 "create_backlinks", self.create_backlinks_checkbox
             )
+        )
+        self.create_backlinks_checkbox.setToolTip(
+            "Create backlinks in each new file to the original file."
         )
         self.checkboxes_layout.addRow(
             "create backlinks:", self.create_backlinks_checkbox
