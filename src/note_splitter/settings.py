@@ -105,11 +105,11 @@ from PySide6 import QtWidgets
 
 
 DEFAULT_SETTINGS = {
-    "create_backlinks": False,
+    "create_backlinks": True,
     "blockquote_pattern": patterns.blockquote.pattern,
     "code_fence_pattern": patterns.code_fence.pattern,
-    "copy_frontmatter": False,
-    "copy_global_tags": False,
+    "copy_frontmatter": True,
+    "copy_global_tags": True,
     "create_index_file": True,
     "destination_folder_path": "",
     "empty_line_pattern": patterns.empty_line.pattern,
@@ -123,7 +123,7 @@ DEFAULT_SETTINGS = {
     "header_pattern": patterns.header.pattern,
     "horizontal_rule_pattern": patterns.horizontal_rule.pattern,
     "math_fence_pattern": patterns.math_fence.pattern,
-    "move_footnotes": False,
+    "move_footnotes": True,
     "note_types": [".md", ".markdown", ".txt"],
     "ordered_list_item_pattern": patterns.ordered_list_item.pattern,
     "parse_blocks": True,
