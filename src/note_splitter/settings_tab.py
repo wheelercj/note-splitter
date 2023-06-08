@@ -245,13 +245,29 @@ class SettingsTab(QtWidgets.QWidget):
     def __on_settings_reset(self) -> None:
         """Resets all settings to their defaults and reloads the inputs on all tabs.
 
-        This is a destructive action that cannot be undone and affects all tabs. Uses
-        the default settings as a fallback for any settings that are not found.
+        Asks for confirmation first. This is a destructive action that cannot be undone
+        and affects all tabs. Uses the default settings as a fallback for any settings
+        that are not found.
         """
+        if not self.__confirm_settings_reset():
+            return
         reset_settings()
         self.__reload_tab_inputs()
         self.main_window.central_widget.home_tab.reload_tab_inputs()
         self.main_window.central_widget.patterns_tab.reload_tab_inputs()
+
+    def __confirm_settings_reset(self) -> bool:
+        """Asks for confirmation before resetting all settings.
+
+        Returns True if the user confirms the reset, False otherwise.
+        """
+        msg_box = QtWidgets.QMessageBox()
+        msg_box.setWindowTitle("reset settings")
+        msg_box.setText("This will reset the settings on ALL tabs to their defaults.")
+        msg_box.setInformativeText("Are you sure you want to reset the settings?")
+        msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
+        return msg_box.exec() == QtWidgets.QMessageBox.Yes
 
     def __reload_tab_inputs(self) -> None:
         """Reloads the inputs on the tab from the settings.
