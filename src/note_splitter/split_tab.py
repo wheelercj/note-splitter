@@ -183,6 +183,14 @@ class SplitTab(QtWidgets.QWidget):
         else:
             QtCore.QSettings().setValue("split_attrs", {})
         self.value_line_edit.clear()
+        split_type: type[tokens.Token] = get_token_type(
+            self.type_combo_box.currentText()
+        )
+        if issubclass(split_type, tokens.Block):
+            self.parse_blocks_checkbox.setChecked(True)
+            self.parse_blocks_checkbox.setEnabled(False)
+        else:
+            self.parse_blocks_checkbox.setEnabled(True)
 
     def __on_split_attr_change(self) -> None:
         current_text: str = self.attribute_combo_box.currentText()
