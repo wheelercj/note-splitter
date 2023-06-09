@@ -148,7 +148,7 @@ class HomeTab(QtWidgets.QWidget):
         self.chosen_notes = files_browse(self, "choose files to split")
         if self.chosen_notes:
             self.file_list_text_browser.setText(
-                "\n".join(n.title for n in self.chosen_notes)
+                "\n".join(f"[[{n.name}]] {n.title}" for n in self.chosen_notes)
             )
         else:
             self.file_list_text_browser.clear()
@@ -166,7 +166,7 @@ class HomeTab(QtWidgets.QWidget):
         self.chosen_notes = self.__get_notes_with_keyword(keyword)
         if self.chosen_notes:
             self.file_list_text_browser.setText(
-                "\n".join(n.title for n in self.chosen_notes)
+                "\n".join(f"[[{n.name}]] {n.title}" for n in self.chosen_notes)
             )
         else:
             show_message("No notes with the chosen keyword found.")
@@ -262,11 +262,21 @@ class HomeTab(QtWidgets.QWidget):
         if not self.all_notes:
             return []
         chosen_notes: list[Note] = []
-        for note in self.all_notes:
+        progress_dialog = QtWidgets.QProgressDialog(
+            "searching for notes with the keyword",
+            "cancel",
+            0,
+            len(self.all_notes),
+            self,
+            modal=True,
+        )
+        for i, note in enumerate(self.all_notes):
+            progress_dialog.setValue(i)
             with open(note.path, "r", encoding="utf8") as file:
                 contents = file.read()
             if split_keyword in contents:
                 chosen_notes.append(note)
+        progress_dialog.setValue(len(self.all_notes))
         return chosen_notes
 
     def __split_files(self, notes: list[Note] | None = None) -> list[Note]:
