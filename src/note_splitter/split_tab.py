@@ -110,6 +110,7 @@ class SplitTab(QtWidgets.QWidget):
 
         self.split_button = QtWidgets.QPushButton("split")
         self.split_button.clicked.connect(self.__on_split_button_click)
+        self.split_button.setStyleSheet("background-color: #225185;")
         self.layout.addWidget(self.split_button)
         self.layout.addStretch()
 
