@@ -14,7 +14,7 @@ version = "0.0.1"
 url = "https://github.com/wheelercj/note-splitter"
 license = "GNU General Public License v3 (GPLv3)"
 author = 'Chris Wheeler, Shiva Ramezani, Christian Vargas, and Serge Nazaretyan'
-author_email = "christopher.wheeler.320@my.csun.edu"
+author_email = "mail@chriswheeler.dev"
 
 [tool.briefcase.app.note_splitter]
 formal_name = "Note Splitter"
