@@ -10,23 +10,23 @@ You can [download Note Splitter here (Windows only)](https://github.com/wheelerc
 
 ## features
 
-* Split by almost any feature of text you can describe.
+* Split by almost any markdown element.
 * Split multiple files at the same time.
-* Select files to split by typing a keyword that appears in those files, or by using a file browser.
-* Optionally copy other parts of a split file into the new files when splitting (e.g. tags, frontmatter, footnotes, etc.).
+* Choose files to split by keyword or with a file browser.
+* Optionally copy tags, frontmatter, footnotes, etc. into the new files.
 * Source files will **NOT** be changed in any way, possibly except for when you move new files to a different folder (see the next point).
-* Moving files to a different folder automatically updates markdown links to them in other files in your source folder. Also, any relative markdown file links in new files are made absolute.
+* Moving files to a different folder can automatically update markdown links to them in other files in your source folder. Also, any relative markdown file links in new files are made absolute.
 * For each source file split, an index file can optionally be created that links to each of the new files, and the new files can optionally have backlinks to the index file (or to the source file if no index file is created).
 
 ![demo](docs/images/demo.png)
 
 ## split attributes and values
 
-Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should leave the value field blank and/or select `(none)` as the attribute, but if you want to split by headers of level 2 you should choose `level` as the attribute and `2` as the value.
+Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should choose the `(none)` attribute, but if you want to split by headers of level 2 you should choose the `level` attribute and the value `2`.
 
 Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header. However, some other split types such as `ordered list item` also have a `level` attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
 
-The "parse blocks" checkbox must be checked to split by elements of text that span multiple lines. This option also changes the behavior when splitting by single-line elements; each split section also ends where its containing block ends instead of only when the next element of the split type is found.
+The "parse blocks" checkbox is mainly for elements of text that span multiple lines (blocks), but the option also changes the behavior when splitting by single-line elements. When parse blocks is chosen, each split section also ends where its containing block ends instead of only when the next element of the split type is found.
 
 ## file name formats
 
@@ -47,8 +47,6 @@ You can use other characters with these variables. For example, to get file name
 If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
 
 All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
-
-If the file name format contains a % (percent symbol) that is not used for one of the variables above, it will be ignored because some operating systems do not allow percent symbols in file names.
 
 ## split types
 
