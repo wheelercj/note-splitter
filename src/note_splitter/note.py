@@ -166,7 +166,6 @@ def create_file_names(
 ) -> list[str]:
     """Creates names for new files.
 
-    The returned file names are in the format specified in the file_name_format setting.
     If more than one file name is created and file_name_format contains a time variable,
     the time will be incremented for each file name.
 
