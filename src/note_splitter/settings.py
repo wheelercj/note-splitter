@@ -291,17 +291,17 @@ def get_token_type_name(token_type: type) -> str:
     return "".join(token_name).lower()
 
 
-def get_token_type(chosen_name: str) -> type:
+def get_token_type(type_name: str) -> type:
     """Get a token type by name.
 
     Parameters
     ----------
-    chosen_name : str
+    type_name : str
         The output-formatted name of the token type to get.
     """
     all_token_types: list[type] = tokens.get_all_token_types(tokens)
     token_type_names = get_token_type_names(None, all_token_types)
     for name, type_ in zip(token_type_names, all_token_types):
-        if name == chosen_name:
+        if name == type_name:
             return type_
-    raise ValueError(f'Token type "{chosen_name}" not found.')
+    raise ValueError(f'Token type "{type_name}" not found.')
