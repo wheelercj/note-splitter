@@ -36,6 +36,13 @@ class SettingsTab(QtWidgets.QWidget):
         self.source_folder_layout.addWidget(self.source_folder_line_edit)
         self.source_folder_browse_button = QtWidgets.QPushButton("browse")
         self.source_folder_layout.addWidget(self.source_folder_browse_button)
+        self.source_folder_browse_button.clicked.connect(
+            lambda: folder_browse(
+                self,
+                self.source_folder_line_edit,
+                "choose the source folder",
+            )
+        )
         self.source_folder_layout.addStretch()
 
         self.destination_folder_layout = QtWidgets.QHBoxLayout()
