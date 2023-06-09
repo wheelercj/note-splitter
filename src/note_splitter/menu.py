@@ -1,7 +1,7 @@
 from note_splitter.about_tab import AboutTab
-from note_splitter.home_tab import HomeTab
 from note_splitter.patterns_tab import PatternsTab
 from note_splitter.settings_tab import SettingsTab
+from note_splitter.split_tab import SplitTab
 from PySide6 import QtWidgets
 
 
@@ -11,8 +11,8 @@ class Menu(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.tab_widget = QtWidgets.QTabWidget()
         self.layout.addWidget(self.tab_widget)
-        self.home_tab = HomeTab(self)
-        self.tab_widget.addTab(self.home_tab, "home")
+        self.split_tab = SplitTab(self)
+        self.tab_widget.addTab(self.split_tab, "split")
         self.settings_tab = SettingsTab(main_window)
         self.tab_widget.addTab(self.settings_tab, "settings")
         self.patterns_tab = PatternsTab()

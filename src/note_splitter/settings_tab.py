@@ -268,7 +268,7 @@ class SettingsTab(QtWidgets.QWidget):
     def __on_settings_import(self) -> None:
         import_settings()
         self.__reload_tab_inputs()
-        self.main_window.central_widget.home_tab.reload_tab_inputs()
+        self.main_window.central_widget.split_tab.reload_tab_inputs()
         self.main_window.central_widget.patterns_tab.reload_tab_inputs()
 
     def __on_settings_reset(self) -> None:
@@ -282,7 +282,7 @@ class SettingsTab(QtWidgets.QWidget):
             return
         reset_settings()
         self.__reload_tab_inputs()
-        self.main_window.central_widget.home_tab.reload_tab_inputs()
+        self.main_window.central_widget.split_tab.reload_tab_inputs()
         self.main_window.central_widget.patterns_tab.reload_tab_inputs()
 
     def __confirm_settings_reset(self) -> bool:

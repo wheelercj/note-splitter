@@ -1,8 +1,8 @@
 import re
 from textwrap import dedent
 
-from note_splitter import home_tab
 from note_splitter import patterns
+from note_splitter import split_tab
 from note_splitter import tokens
 from note_splitter.formatter_ import Formatter
 from note_splitter.lexer import Lexer
@@ -15,7 +15,7 @@ from note_splitter.splitter import Splitter
 
 
 def test_split_text_with_nothing():
-    assert [] == home_tab.split_text(
+    assert [] == split_tab.split_text(
         content="",
         tokenize=Lexer(),
         split=Splitter(),
@@ -41,7 +41,7 @@ def test_split_text_with_headers():
         Here is another sentence.
         """
     )
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),
@@ -91,7 +91,7 @@ def test_split_text_with_blocks():
         $$
         """
     )
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),
@@ -159,7 +159,7 @@ def test_split_text_with_elements_to_copy():
         Here[^1] is a sentence.
         """
     )
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),
@@ -211,7 +211,7 @@ def test_split_text_with_top_ordered_list_items():
             1. first subitem
         """
     )
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),
@@ -262,7 +262,7 @@ def test_split_text_with_all_ordered_list_items():
             1. third subitem
         """
     )
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),
@@ -304,7 +304,7 @@ def test_split_text_with_custom_pattern():
     ordered_list_item_pattern = patterns.ordered_list_item
     patterns.__dict__["ordered_list_item"] = re.compile(r"^\s*\d+[.)]\s*.*$")
     assert patterns.ordered_list_item != ordered_list_item_pattern
-    result: list[str] = home_tab.split_text(
+    result: list[str] = split_tab.split_text(
         content=content,
         tokenize=Lexer(),
         split=Splitter(),

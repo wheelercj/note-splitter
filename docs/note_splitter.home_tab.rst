@@ -1,7 +1,7 @@
-note\_splitter.home\_tab module
+note\_splitter.split\_tab module
 ===============================
 
-.. automodule:: note_splitter.home_tab
+.. automodule:: note_splitter.split_tab
    :members:
    :undoc-members:
    :show-inheritance:

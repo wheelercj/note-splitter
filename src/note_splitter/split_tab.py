@@ -28,7 +28,7 @@ from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
-class HomeTab(QtWidgets.QWidget):
+class SplitTab(QtWidgets.QWidget):
     def __init__(self, main_window: QtWidgets.QMainWindow):
         super().__init__()
         self.main_window = main_window

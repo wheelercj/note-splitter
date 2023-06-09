@@ -9,7 +9,7 @@ note_splitter
    note_splitter.gui
    note_splitter.lexer
    note_splitter.about_tab
-   note_splitter.home_tab
+   note_splitter.split_tab
    note_splitter.main_window
    note_splitter.menu
    note_splitter.patterns_tab
