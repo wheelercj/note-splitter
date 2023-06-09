@@ -23,18 +23,32 @@ def folder_browse(
     return folder_path
 
 
-def files_browse(parent: QtWidgets.QWidget, title: str) -> list[Note]:
-    """Opens a file dialog, and returns the selected notes.
+def files_browse(
+    parent: QtWidgets.QWidget | None, title: str, start_folder_path: str | None = None
+) -> list[Note]:
+    """Opens a file dialog and returns the selected notes.
 
     If the user cancels the dialog, an empty list is returned.
+
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget | None
+        The parent widget. If not None, the dialog will be centered over the parent.
+    title : str
+        The title of the dialog.
+    start_folder_path : str | None
+        The folder path that the dialog will open to. If None, the current working
+        directory is used.
     """
+    if not start_folder_path:
+        start_folder_path = QtCore.QDir.currentPath()
     return create_notes(
         QtWidgets.QFileDialog.getOpenFileNames(
             parent,
             title,
-            QtCore.QDir.currentPath(),
+            start_folder_path,
             "Text Files (*.txt *.md *.rst);;All Files (*)",
-        )
+        )[0]
     )
 
 

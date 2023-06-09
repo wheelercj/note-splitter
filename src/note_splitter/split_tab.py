@@ -145,8 +145,13 @@ class SplitTab(QtWidgets.QWidget):
 
     def __on_browse_button_click(self) -> None:
         """Shows a file dialog and saves selected files into ``self.chosen_notes``."""
-        QtCore.QSettings().setValue("using_split_keyword", 0)
-        self.chosen_notes = files_browse(self, "choose files to split")
+        settings = QtCore.QSettings()
+        settings.setValue("using_split_keyword", 0)
+        self.chosen_notes = files_browse(
+            self,
+            "choose files to split",
+            settings.value("source_folder_path", None),
+        )
         if self.chosen_notes:
             self.file_list_text_browser.setText(
                 "\n".join(f"[[{n.name}]] {n.title}" for n in self.chosen_notes)
