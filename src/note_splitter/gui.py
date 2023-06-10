@@ -2,6 +2,7 @@
 from note_splitter.note import create_notes
 from note_splitter.note import Note
 from note_splitter.settings import DEFAULT_SETTINGS
+from note_splitter.settings import show_message
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -138,7 +139,13 @@ class SplitSummaryDialog(QtWidgets.QDialog):
 
     def __open_notes(self) -> None:
         """Opens the selected notes for the user to view."""
-        for note_list_widget_item in self.notes_list_widget.selectedItems():
+        selected_items: list[
+            QtWidgets.QListWidgetItem
+        ] = self.notes_list_widget.selectedItems()
+        if not selected_items:
+            show_message("No notes selected.")
+            return
+        for note_list_widget_item in selected_items:
             note_title: str = "]]".join(
                 note_list_widget_item.text().split("]]", 1)[1:]
             )[1:]
@@ -150,7 +157,13 @@ class SplitSummaryDialog(QtWidgets.QDialog):
 
     def __delete_notes(self) -> None:
         """Moves the selected notes to the trash."""
-        for note_list_widget_item in self.notes_list_widget.selectedItems():
+        selected_items: list[
+            QtWidgets.QListWidgetItem
+        ] = self.notes_list_widget.selectedItems()
+        if not selected_items:
+            show_message("No notes selected.")
+            return
+        for note_list_widget_item in selected_items:
             note_title: str = "]]".join(
                 note_list_widget_item.text().split("]]", 1)[1:]
             )[1:]
@@ -166,11 +179,17 @@ class SplitSummaryDialog(QtWidgets.QDialog):
 
     def __move_notes(self) -> None:
         """Moves the selected notes and updates internal links to them."""
-        note_types: list[str] = QtCore.QSettings().value(
-            "note_types", DEFAULT_SETTINGS["note_types"]
-        )
+        selected_items: list[
+            QtWidgets.QListWidgetItem
+        ] = self.notes_list_widget.selectedItems()
+        if not selected_items:
+            show_message("No notes selected.")
+            return
         if destination := request_folder_path("destination"):
-            for note_list_widget_item in self.notes_list_widget.selectedItems():
+            note_types: list[str] = QtCore.QSettings().value(
+                "note_types", DEFAULT_SETTINGS["note_types"]
+            )
+            for note_list_widget_item in selected_items:
                 note_title: str = "]]".join(
                     note_list_widget_item.text().split("]]", 1)[1:]
                 )[1:]
@@ -186,7 +205,13 @@ class SplitSummaryDialog(QtWidgets.QDialog):
 
     def __show_notes(self) -> None:
         """Shows the selected notes in the file browser."""
-        for note_list_widget_item in self.notes_list_widget.selectedItems():
+        selected_items: list[
+            QtWidgets.QListWidgetItem
+        ] = self.notes_list_widget.selectedItems()
+        if not selected_items:
+            show_message("No notes selected.")
+            return
+        for note_list_widget_item in selected_items:
             note_title: str = "]]".join(
                 note_list_widget_item.text().split("]]", 1)[1:]
             )[1:]
