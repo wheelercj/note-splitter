@@ -6,4 +6,3 @@ pre-commit
 pytest==7.2.1
 sphinx-rtd-theme
 sphinx==4.2.0
-tox
