@@ -31,7 +31,7 @@ Here are various guides, tools, etc. that have been helpful to us while building
 ## testing
 
 * [Automated Testing in Python with pytest, tox, and GitHub Actions](https://www.youtube.com/watch?v=DhUpxWjOhME) by mCoding
-* [pytest](https://docs.pytest.org/en/6.2.x/)
+* [pytest](https://docs.pytest.org/en)
 * [tox](https://tox.wiki/en/latest/)
 * [coverage.py](https://coverage.readthedocs.io/en)
 
