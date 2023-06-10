@@ -108,6 +108,7 @@ class SplitSummaryDialog(QtWidgets.QDialog):
         self.notes_list_widget.addItems(
             f"[[{n.name}]] {n.title}" for n in self.new_notes
         )
+        self.notes_list_widget.setMinimumWidth(800)
         group_box_layout = QtWidgets.QVBoxLayout()
         group_box_layout.addWidget(self.notes_list_widget)
         notes_buttons_layout = QtWidgets.QHBoxLayout()
