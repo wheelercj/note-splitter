@@ -321,20 +321,63 @@ class SplitTab(QtWidgets.QWidget):
         tokenize: Callable = Lexer()
         split: Callable = Splitter()
         format_: Callable = Formatter()
+
         settings = QtCore.QSettings()
-        split_keyword: str = settings.value("split_keyword", "")
-        if split_keyword and not notes:
-            notes = self.__get_notes_with_keyword(split_keyword, self.all_notes)
-        progress.setValue(1)
-        if not notes:
-            return []
-        all_new_notes: list[Note] = []
+        split_keyword: str = settings.value(
+            "split_keyword", DEFAULT_SETTINGS["split_keyword"]
+        )
         file_id_format: str = settings.value(
             "file_id_format", DEFAULT_SETTINGS["file_id_format"]
         )
         file_name_format: str = settings.value(
             "file_name_format", DEFAULT_SETTINGS["file_name_format"]
         )
+        split_type: type[tokens.Token] = get_token_type(
+            QtCore.QSettings().value("split_type")
+        )
+        split_attrs: dict = settings.value(
+            "split_attrs", DEFAULT_SETTINGS["split_attrs"]
+        )
+        using_split_keyword: bool = bool(
+            settings.value(
+                "using_split_keyword", DEFAULT_SETTINGS["using_split_keyword"]
+            )
+        )
+        remove_split_keyword: bool = bool(
+            settings.value(
+                "remove_split_keyword", DEFAULT_SETTINGS["remove_split_keyword"]
+            )
+        )
+        parse_blocks: bool = bool(
+            settings.value("parse_blocks", bool(DEFAULT_SETTINGS["parse_blocks"]))
+        )
+        copy_global_tags: bool = bool(
+            settings.value(
+                "copy_global_tags", bool(DEFAULT_SETTINGS["copy_global_tags"])
+            )
+        )
+        copy_frontmatter: bool = bool(
+            settings.value(
+                "copy_frontmatter", bool(DEFAULT_SETTINGS["copy_frontmatter"])
+            )
+        )
+        move_footnotes: bool = bool(
+            settings.value("move_footnotes", bool(DEFAULT_SETTINGS["move_footnotes"]))
+        )
+        create_index_file: bool = bool(
+            settings.value("create_index_file", DEFAULT_SETTINGS["create_index_file"])
+        )
+        create_backlinks: bool = bool(
+            settings.value("create_backlinks", DEFAULT_SETTINGS["create_backlinks"])
+        )
+
+        progress.setValue(1)
+        if not notes:
+            notes = self.__get_notes_with_keyword(split_keyword, self.all_notes)
+        if not notes:
+            return []
+        all_new_notes: list[Note] = []
+
         note_count = len(notes)
         for i, source_note in enumerate(notes):
             progress.setValue((i + 1) / (note_count + 5) * 100)
@@ -346,43 +389,15 @@ class SplitTab(QtWidgets.QWidget):
                 tokenize,
                 split,
                 format_,
-                get_token_type(
-                    settings.value("split_type", DEFAULT_SETTINGS["split_type"])
-                ),
-                settings.value("split_attrs", DEFAULT_SETTINGS["split_attrs"]),
-                bool(
-                    settings.value(
-                        "using_split_keyword",
-                        bool(DEFAULT_SETTINGS["using_split_keyword"]),
-                    )
-                ),
-                bool(
-                    settings.value(
-                        "remove_split_keyword",
-                        bool(DEFAULT_SETTINGS["remove_split_keyword"]),
-                    )
-                ),
-                settings.value("split_keyword", DEFAULT_SETTINGS["split_keyword"]),
-                bool(
-                    settings.value(
-                        "parse_blocks", bool(DEFAULT_SETTINGS["parse_blocks"])
-                    )
-                ),
-                bool(
-                    settings.value(
-                        "copy_global_tags", bool(DEFAULT_SETTINGS["copy_global_tags"])
-                    )
-                ),
-                bool(
-                    settings.value(
-                        "copy_frontmatter", bool(DEFAULT_SETTINGS["copy_frontmatter"])
-                    )
-                ),
-                bool(
-                    settings.value(
-                        "move_footnotes", bool(DEFAULT_SETTINGS["move_footnotes"])
-                    )
-                ),
+                split_type,
+                split_attrs,
+                using_split_keyword,
+                remove_split_keyword,
+                split_keyword,
+                parse_blocks,
+                copy_global_tags,
+                copy_frontmatter,
+                move_footnotes,
             )
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
@@ -394,19 +409,15 @@ class SplitTab(QtWidgets.QWidget):
             progress.setValue((i + 5) / (note_count + 5) * 100)
             print(f"Created {len(new_notes)} new files.")
             if new_notes:
-                if settings.value(
-                    "create_index_file", DEFAULT_SETTINGS["create_index_file"]
-                ):
-                    index_note: Note = create_index_file_(source_note, new_notes)
+                if create_index_file:
+                    index_note: Note = create_index_file_(
+                        source_note, new_notes, split_type
+                    )
                     print(f"Created index file at {index_note.path}")
                     all_new_notes.append(index_note)
-                    if settings.value(
-                        "create_backlinks", DEFAULT_SETTINGS["create_backlinks"]
-                    ):
+                    if create_backlinks:
                         append_backlinks(index_note, new_notes)
-                elif settings.value(
-                    "create_backlinks", DEFAULT_SETTINGS["create_backlinks"]
-                ):
+                elif create_backlinks:
                     append_backlinks(source_note, new_notes)
         progress.cancel()
         return all_new_notes
@@ -432,24 +443,20 @@ class SplitTab(QtWidgets.QWidget):
         """
         new_notes = []
         settings = QtCore.QSettings()
-        for new_file_name, split_content in zip(new_file_names, split_contents):
-            destination_folder_path: str | None = settings.value(
-                "destination_folder_path"
-            )
-            if not destination_folder_path or not os.path.exists(
+        source_folder_path: str | None = settings.value("source_folder_path")
+        destination_folder_path: str | None = settings.value("destination_folder_path")
+        if not destination_folder_path or not os.path.exists(destination_folder_path):
+            destination_folder_path = require_folder_path("destination")
+            settings.setValue("destination_folder_path", destination_folder_path)
+            self.main_window.settings_tab.destination_folder_line_edit.setText(
                 destination_folder_path
-            ):
-                destination_folder_path = require_folder_path("destination")
-                settings.setValue("destination_folder_path", destination_folder_path)
-                self.main_window.settings_tab.destination_folder_line_edit.setText(
-                    destination_folder_path
-                )
+            )
+
+        for new_file_name, split_content in zip(new_file_names, split_contents):
             new_file_path: str = ensure_file_path_uniqueness(
                 os.path.join(destination_folder_path, new_file_name)
             )
-            if not settings.contains(
-                "source_folder_path"
-            ) or destination_folder_path != settings.value("source_folder_path"):
+            if not source_folder_path or source_folder_path != destination_folder_path:
                 split_content = make_file_paths_absolute(split_content, new_file_path)
             with open(new_file_path, "x", encoding="utf8") as file:
                 file.write(split_content)
@@ -532,7 +539,9 @@ def split_text(
     return split_contents
 
 
-def create_index_file_(source_note: Note, new_notes: list[Note]) -> Note:
+def create_index_file_(
+    source_note: Note, new_notes: list[Note], split_type: type[tokens.Token]
+) -> Note:
     """Creates an index file for the new notes in the same folder.
 
     Parameters
@@ -541,6 +550,8 @@ def create_index_file_(source_note: Note, new_notes: list[Note]) -> Note:
         The note that the new notes were created from.
     new_notes : list[Note]
         The newly created notes.
+    split_type : type[tokens.Token]
+        The type of token that was split by.
 
     Returns
     -------
@@ -554,7 +565,10 @@ def create_index_file_(source_note: Note, new_notes: list[Note]) -> Note:
     with open(index_file_path, "x", encoding="utf8") as file:
         file.write(f"# index of {source_note.title}\n\n")
         for n in new_notes:
-            file.write(f"* [{n.title}]({n.path})\n")
+            if issubclass(split_type, tokens.Header):
+                file.write(f"* [{n.title}]({n.path})\n")
+            else:
+                file.write(f"* [{n.name}]({n.path})\n")
         file.write(f"\n[Source: {source_note.title}]({source_note.path})")
     return Note(index_file_path, folder_path, index_name)
 
