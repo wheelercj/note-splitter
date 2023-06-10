@@ -311,6 +311,10 @@ class SplitTab(QtWidgets.QWidget):
         new_notes : list[Note]
             The newly created notes.
         """
+        progress = QtWidgets.QProgressDialog(
+            "splitting...", "cancel", 0, 100, self, modal=True
+        )
+        progress.forceShow()
         tokenize: Callable = Lexer()
         split: Callable = Splitter()
         format_: Callable = Formatter()
@@ -318,6 +322,7 @@ class SplitTab(QtWidgets.QWidget):
         split_keyword: str = settings.value("split_keyword", "")
         if split_keyword and not notes:
             notes = self.__get_notes_with_keyword(split_keyword)
+        progress.setValue(1)
         if not notes:
             return []
         all_new_notes: list[Note] = []
@@ -326,9 +331,6 @@ class SplitTab(QtWidgets.QWidget):
         )
         file_name_format: str = settings.value(
             "file_name_format", DEFAULT_SETTINGS["file_name_format"]
-        )
-        progress = QtWidgets.QProgressDialog(
-            "splitting...", "cancel", 0, 100, self, modal=True
         )
         note_count = len(notes)
         for i, source_note in enumerate(notes):
@@ -403,6 +405,7 @@ class SplitTab(QtWidgets.QWidget):
                     "create_backlinks", DEFAULT_SETTINGS["create_backlinks"]
                 ):
                     append_backlinks(source_note, new_notes)
+        progress.cancel()
         return all_new_notes
 
     def save_new_notes(
