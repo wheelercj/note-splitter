@@ -133,26 +133,58 @@ class SplitSummaryDialog(QtWidgets.QDialog):
         self.layout.addWidget(self.ok_button)
 
     def __open_notes(self) -> None:
-        """Opens the selected new_notes."""
-        for note_title in self.notes_list_widget.selectedItems():
-            note = next(n for n in self.new_notes if n.title == note_title)
+        """Opens the selected notes for the user to view."""
+        for note_list_widget_item in self.notes_list_widget.selectedItems():
+            note_title: str = "]]".join(
+                note_list_widget_item.text().split("]]", 1)[1:]
+            )[1:]
+            note: Note
+            for note in self.new_notes:
+                if note.title == note_title:
+                    break
             note.open()
 
     def __delete_notes(self) -> None:
-        """Deletes the selected notes."""
-        for note_title in self.notes_list_widget.selectedItems():
-            note = next(n for n in self.new_notes if n.title == note_title)
+        """Moves the selected notes to the trash."""
+        for note_list_widget_item in self.notes_list_widget.selectedItems():
+            note_title: str = "]]".join(
+                note_list_widget_item.text().split("]]", 1)[1:]
+            )[1:]
+            note: Note
+            for note in self.new_notes:
+                if note.title == note_title:
+                    break
             note.delete()
+            self.new_notes.remove(note)
+            self.notes_list_widget.takeItem(
+                self.notes_list_widget.row(note_list_widget_item)
+            )
 
     def __move_notes(self) -> None:
         """Moves the selected notes and updates internal links to them."""
         if destination := request_folder_path("destination"):
-            for note_title in self.notes_list_widget.selectedItems():
-                note = next(n for n in self.new_notes if n.title == note_title)
+            for note_list_widget_item in self.notes_list_widget.selectedItems():
+                note_title: str = "]]".join(
+                    note_list_widget_item.text().split("]]", 1)[1:]
+                )[1:]
+                note: Note
+                for note in self.new_notes:
+                    if note.title == note_title:
+                        break
                 note.move(destination, self.all_notes)
+                self.new_notes.remove(note)
+                self.notes_list_widget.takeItem(
+                    self.notes_list_widget.row(note_list_widget_item)
+                )
 
     def __show_notes(self) -> None:
         """Shows the selected notes in the file browser."""
-        for note_title in self.notes_list_widget.selectedItems():
-            note = next(n for n in self.new_notes if n.title == note_title)
+        for note_list_widget_item in self.notes_list_widget.selectedItems():
+            note_title: str = "]]".join(
+                note_list_widget_item.text().split("]]", 1)[1:]
+            )[1:]
+            note: Note
+            for note in self.new_notes:
+                if note.title == note_title:
+                    break
             note.show()
