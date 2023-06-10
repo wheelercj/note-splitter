@@ -50,36 +50,36 @@ All new file names are guaranteed to be unique. If the file name format somehow 
 
 ## split types
 
-| type name                | description                                                                      | parent types                             |
+| type name                | description                                                                      | child types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
-| block                    | any text element that spans multiple lines                                       | token                                    |
-| blockquote               | a quote                                                                          | can have inline elements                 |
-| blockquote block         | multiple consecutive quotes                                                      | block                                    |
-| can have inline elements | any line of text that can contain inline elements                                | line                                     |
-| code                     | a line of code                                                                   | fenced                                   |
-| code block               | a block of code made of at least one line of code surrounded by code fences      | block                                    |
-| code fence               | a delimiter that shows where a code block begins or ends                         | fence                                    |
-| empty line               | a line with nothing or only whitespace characters                                | line                                     |
-| fence                    | any line of text that delimits others                                            | line                                     |
-| fenced                   | any line of text that is delimited by fences                                     | line                                     |
-| footnote                 | a footnote (commonly at the bottom of a file; not a footnote reference)          | can have inline elements                 |
-| header                   | a header, i.e. a title                                                           | can have inline elements                 |
-| horizontal rule          | a line that divides a document                                                   | line                                     |
-| line                     | any individual line of text                                                      | token                                    |
-| math                     | a line of math                                                                   | fenced                                   |
-| math block               | a block of math made of at least one line of math surrounded by math fences      | block                                    |
-| math fence               | a delimiter that shows where a math block begins or ends                         | fence                                    |
-| ordered list item        | one line of a numbered list                                                      | text list item, can have inline elements |
-| table                    | a table, like this one                                                           | block                                    |
-| table divider            | the second line of a table that divides the table's title row from its body rows | table part                               |
-| table part               | any line of text that is part of a table                                         | line                                     |
-| table row                | a row of a table, like this one                                                  | table part                               |
-| task                     | a line of a to do list                                                           | text list item, can have inline elements |
-| text                     | any line that does not fall into any of the other categories here                | can have inline elements                 |
-| text list                | a bullet-point list and/or an ordered list                                       | block                                    |
-| text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | line                                     |
-| token                    | anything                                                                         |                                          |
-| unordered list item      | one line of a bullet-point list                                                  | text list item, can have inline elements |
+| block                    | any text element that spans multiple lines and contains other tokens                                      | blockquote block, code block, math block, table, text list                                   |
+| blockquote               | a quote                                                                          | (none)                 |
+| blockquote block         | multiple consecutive quotes                                                      | (none)                                    |
+| can have inline elements | any line of text that can contain inline elements                                | blockquote, footnote, header, task, text, ordered list item, unordered list item                                     |
+| code                     | a line of code                                                                   | (none)                                   |
+| code block               | a block of code made of at least one line of code surrounded by code fences      | (none)                                    |
+| code fence               | a delimiter that shows where a code block begins or ends                         | (none)                                    |
+| empty line               | a line with nothing or only whitespace characters                                | (none)                                     |
+| fence                    | any line of text that delimits others                                            | code fence, math fence                                     |
+| fenced                   | any line of text that is delimited by fences                                     | code, math                                     |
+| footnote                 | a footnote (commonly at the bottom of a file; not a footnote reference)          | (none)                 |
+| header                   | a header, i.e. a title                                                           | (none)                 |
+| horizontal rule          | a line that divides a document                                                   | (none)                                     |
+| line                     | any individual line of text                                                      | everything except token, block, and block's child types                                    |
+| math                     | a line of math                                                                   | (none)                                   |
+| math block               | a block of math made of at least one line of math surrounded by math fences      | (none)                                    |
+| math fence               | a delimiter that shows where a math block begins or ends                         | (none)                                    |
+| ordered list item        | one line of a numbered list                                                      | (none) |
+| table                    | a table, like this one; contains table rows and table parts                                                           | (none)                                    |
+| table divider            | the second line of a table that divides the table's title row from its body rows | (none)                               |
+| table part               | any line of text that is part of a table                                         | table divider, table row                                     |
+| table row                | a row of a table, like this one                                                  | (none)                               |
+| task                     | a line of a to do list                                                           | (none) |
+| text                     | any line that does not fall into any of the other categories here                | (none)                 |
+| text list                | a bullet-point list and/or an ordered list; can contain text list items and other text lists                                       | (none)                                    |
+| text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | task, ordered list item, unordered list item                                     |
+| token                    | anything                                                                         | everything                                       |
+| unordered list item      | one line of a bullet-point list                                                  | (none) |
 
 ## contributing
 
