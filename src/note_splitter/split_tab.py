@@ -544,7 +544,7 @@ def create_index_file_(source_note: Note, new_notes: list[Note]) -> Note:
     Note
         The newly created index note.
     """
-    index_name = validate_file_name(f"index - {source_note.name}.md", 35)
+    index_name = validate_file_name(f"index - {source_note.name}", 35)
     folder_path = new_notes[0].folder_path
     index_file_path = os.path.join(folder_path, index_name)
     index_file_path = ensure_file_path_uniqueness(index_file_path)
