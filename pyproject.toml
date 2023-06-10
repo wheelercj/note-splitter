@@ -22,7 +22,7 @@ description = "Split markdown files into multiple smaller files."
 icon = "src/note_splitter/resources/note_splitter"
 sources = ['src/note_splitter']
 requires = [
-    'pyside6>=6.2.4',
+    'pyside6>=6.5.1.1',
 ]
 
 
