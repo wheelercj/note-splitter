@@ -1,4 +1,4 @@
-# Note Splitter overview
+# parsing overview
 
 Here is a broad overview for developers of how Note Splitter's core splitting algorithm works.
 
