@@ -326,7 +326,7 @@ class SplitTab(QtWidgets.QWidget):
             "file_name_format", DEFAULT_SETTINGS["file_name_format"]
         )
         progress = QtWidgets.QProgressDialog(
-            "splitting...", "", 0, 100, self, modal=True
+            "splitting...", "cancel", 0, 100, self, modal=True
         )
         note_count = len(notes)
         for i, source_note in enumerate(notes):
