@@ -379,7 +379,7 @@ class SplitTab(QtWidgets.QWidget):
             )
             progress.setValue((i + 3) / (note_count + 5) * 100)
             new_file_names: list[str] = create_file_names(
-                file_id_format, file_name_format, source_note.ext, split_contents
+                source_note.ext, file_id_format, file_name_format, split_contents
             )
             progress.setValue((i + 4) / (note_count + 5) * 100)
             new_notes = self.save_new_notes(split_contents, new_file_names)
