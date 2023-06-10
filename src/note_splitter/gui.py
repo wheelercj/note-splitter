@@ -7,6 +7,19 @@ from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 
+def request_confirmation(text: str) -> bool:
+    """Asks for confirmation from the user.
+
+    Returns True if the user chooses "Yes", False otherwise.
+    """
+    msg_box = QtWidgets.QMessageBox()
+    msg_box.setWindowTitle("confirm")
+    msg_box.setText(text)
+    msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+    msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
+    return msg_box.exec() == QtWidgets.QMessageBox.Yes
+
+
 def folder_browse(
     parent: QtWidgets.QWidget, line_edit: QtWidgets.QLineEdit, title: str
 ) -> str:
@@ -162,6 +175,10 @@ class SplitSummaryDialog(QtWidgets.QDialog):
         ] = self.notes_list_widget.selectedItems()
         if not selected_items:
             show_message("No notes selected.")
+            return
+        if not request_confirmation(
+            "Are you sure you want to delete the selected notes?"
+        ):
             return
         for note_list_widget_item in selected_items:
             note_title: str = "]]".join(
