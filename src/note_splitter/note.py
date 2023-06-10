@@ -97,7 +97,9 @@ class Note:
             subprocess.call(["xdg-open", "-R", self.path])
         return True
 
-    def move(self, new_folder_path: str, all_notes: list["Note"]) -> bool | None:
+    def move(
+        self, new_folder_path: str, all_notes: list["Note"], note_types: list[str]
+    ) -> bool | None:
         """Moves the note file to a new folder and updates internal links to them.
 
         Parameters
@@ -106,6 +108,9 @@ class Note:
             The absolute path to the new folder.
         all_notes : list[Note]
             A list of all the notes in the user's notes folder.
+        note_types : list[str]
+            A list of all the file extensions note files can have. Each file extension
+            includes the period.
 
         Returns
         -------
@@ -116,11 +121,11 @@ class Note:
         if not os.path.exists(self.path):
             show_message(f"File not found: {self.path}")
             return None
-        new_path = os.path.join(new_folder_path, self.name)
+        new_path: str = os.path.join(new_folder_path, self.name)
         if os.path.exists(new_path):
             show_message(f"File already exists: {new_path}")
             return False
-        move_files([self.path], new_folder_path, all_notes)
+        move_files([self.path], new_folder_path, all_notes, note_types)
         self.path = new_path
         self.folder_path = new_folder_path
         return True
@@ -360,6 +365,7 @@ def move_files(
     paths_of_files_to_move: list[str],
     destination_path: str,
     all_notes: list[Note],
+    note_types: list[str],
 ) -> None:
     """Moves files and updates all relevant references everywhere.
 
@@ -369,21 +375,24 @@ def move_files(
     Parameters
     ----------
     paths_of_files_to_move : list[str]
-        list of absolute paths of files to be moved. These can be files of any type.
+        A list of absolute paths of files to be moved. These can be files of any type.
     destination_path : str
         Absolute path to the destination folder.
     all_notes : list[Note]
         All the notes in the source folder.
+    note_types : list[str]
+        A list of all the file extensions note files can have. Each file extension
+        includes the period.
     """
     for path in paths_of_files_to_move:
-        path = os.path.normpath(path)
-        file_name_with_ext = os.path.basename(path)
+        path = os.path.normpath(path).replace("\\", "/")
+        file_name_with_ext: str = os.path.basename(path)
         _, file_ext = os.path.splitext(file_name_with_ext)
-        if file_ext in QtCore.QSettings().value(
-            "note_types", DEFAULT_SETTINGS["note_types"]
-        ):
+        if file_ext in note_types:
             _make_file_paths_absolute(note_path=path)
-        new_path = os.path.normpath(os.path.join(destination_path, file_name_with_ext))
+        new_path = os.path.normpath(
+            os.path.join(destination_path, file_name_with_ext)
+        ).replace("\\", "/")
         __change_all_links_to_file(path, new_path, all_notes)
         os.rename(path, new_path)
 
@@ -445,15 +454,17 @@ def __change_all_links_to_file(
     new_path : str
         Absolute path the file will have after being moved.
     all_notes : list[Note]
-        list of all notes in the source folder.
+        A list of all notes in the source folder.
     """
+    all_note_names: list[str] = []
     for note_ in all_notes:
+        all_note_names.append(note_.name)
         with open(note_.path, "r", encoding="utf8") as file:
-            content = file.read()
-        file_paths = get_file_paths(content, note_.folder_path)
-        for original_path, formatted_path in file_paths:
+            content: str = file.read()
+        file_paths: list[tuple[str, str]] = get_file_paths(content, note_.folder_path)
+        for ORIGINAL_PATH, formatted_path in file_paths:
             if os.path.samefile(formatted_path, current_path_to_change):
-                content = content.replace(original_path, new_path)
+                content = content.replace(ORIGINAL_PATH, new_path)
         with open(note_.path, "w", encoding="utf8") as file:
             file.write(content)
 
@@ -473,24 +484,24 @@ def get_file_paths(note_content: str, note_folder_path: str) -> list[tuple[str, 
     Returns
     -------
     list[tuple[str, str]]
-        list of tuples of the original file path in the note and its normalized,
+        A list of tuples of the original, unmodified file path in the note and its
         absolute version. All the paths are valid. (Broken file links and links to
         websites are ignored.)
     """
     noted_file_path_groups: list[tuple[str]] = patterns.file_path_in_link.findall(
         note_content
     )
-    noted_file_paths: list[str] = [t[0] for t in noted_file_path_groups]
-    file_paths: list[tuple[str, str]] = []
-    for file_path in noted_file_paths:
-        if os.path.isabs(file_path):
-            abs_path = file_path
+    ORIGINAL_PATHS: list[str] = [t[0] for t in noted_file_path_groups]
+    result_paths: list[tuple[str, str]] = []
+    for ORIGINAL_PATH in ORIGINAL_PATHS:
+        if os.path.isabs(ORIGINAL_PATH):
+            abs_path = ORIGINAL_PATH
         else:
-            abs_path = os.path.join(note_folder_path, file_path)
-        norm_path = os.path.normpath(abs_path)
+            abs_path = os.path.join(note_folder_path, ORIGINAL_PATH)
+        norm_path: str = os.path.normpath(abs_path).replace("\\", "/")
         if os.path.exists(norm_path):
-            file_paths.append((file_path, norm_path))
-    return file_paths
+            result_paths.append((ORIGINAL_PATH, norm_path))
+    return result_paths
 
 
 def get_by_title(notes: list[Note], title: str) -> Note:
@@ -499,7 +510,7 @@ def get_by_title(notes: list[Note], title: str) -> Note:
     Parameters
     ----------
     notes : list[Note]
-        list of all notes in the source folder.
+        A list of all notes in the source folder.
     title : str
         The title of the note.
 

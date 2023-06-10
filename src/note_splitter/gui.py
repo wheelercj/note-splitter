@@ -1,6 +1,7 @@
 """Various functions for building the graphical user interface."""
 from note_splitter.note import create_notes
 from note_splitter.note import Note
+from note_splitter.settings import DEFAULT_SETTINGS
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
@@ -162,6 +163,9 @@ class SplitSummaryDialog(QtWidgets.QDialog):
 
     def __move_notes(self) -> None:
         """Moves the selected notes and updates internal links to them."""
+        note_types: list[str] = QtCore.QSettings().value(
+            "note_types", DEFAULT_SETTINGS["note_types"]
+        )
         if destination := request_folder_path("destination"):
             for note_list_widget_item in self.notes_list_widget.selectedItems():
                 note_title: str = "]]".join(
@@ -171,7 +175,7 @@ class SplitSummaryDialog(QtWidgets.QDialog):
                 for note in self.new_notes:
                     if note.title == note_title:
                         break
-                note.move(destination, self.all_notes)
+                note.move(destination, self.all_notes, note_types)
                 self.new_notes.remove(note)
                 self.notes_list_widget.takeItem(
                     self.notes_list_widget.row(note_list_widget_item)

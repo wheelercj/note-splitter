@@ -169,7 +169,7 @@ class SplitTab(QtWidgets.QWidget):
         self.all_notes = self.__get_all_notes_in_source_folder()
         if not self.all_notes:
             return
-        self.chosen_notes = self.__get_notes_with_keyword(keyword)
+        self.chosen_notes = self.__get_notes_with_keyword(keyword, self.all_notes)
         if self.chosen_notes:
             self.file_list_text_browser.setText(
                 "\n".join(f"[[{n.name}]] {n.title}" for n in self.chosen_notes)
@@ -237,6 +237,7 @@ class SplitTab(QtWidgets.QWidget):
         if not self.all_notes:
             self.all_notes = self.__get_all_notes_in_source_folder()
         new_notes: list[Note] = self.__split_files(self.chosen_notes)
+        self.all_notes.extend(new_notes)
         dialog = SplitSummaryDialog(new_notes, self.all_notes, self)
         dialog.exec()
         self.file_list_text_browser.clear()
@@ -271,28 +272,30 @@ class SplitTab(QtWidgets.QWidget):
         ]
         return create_notes(file_paths)
 
-    def __get_notes_with_keyword(self, split_keyword: str) -> list[Note]:
+    def __get_notes_with_keyword(
+        self, split_keyword: str, all_notes: list[Note]
+    ) -> list[Note]:
         """Filters to the notes that have the split keyword."""
-        if not self.all_notes:
-            self.all_notes = self.__get_all_notes_in_source_folder()
-        if not self.all_notes:
+        if not all_notes:
+            all_notes = self.__get_all_notes_in_source_folder()
+        if not all_notes:
             return []
         chosen_notes: list[Note] = []
         progress_dialog = QtWidgets.QProgressDialog(
             "searching for notes with the keyword",
             "cancel",
             0,
-            len(self.all_notes),
+            len(all_notes),
             self,
             modal=True,
         )
-        for i, note in enumerate(self.all_notes):
+        for i, note in enumerate(all_notes):
             progress_dialog.setValue(i)
             with open(note.path, "r", encoding="utf8") as file:
                 contents = file.read()
             if split_keyword in contents:
                 chosen_notes.append(note)
-        progress_dialog.setValue(len(self.all_notes))
+        progress_dialog.setValue(len(all_notes))
         return chosen_notes
 
     def __split_files(self, notes: list[Note] | None = None) -> list[Note]:
@@ -321,7 +324,7 @@ class SplitTab(QtWidgets.QWidget):
         settings = QtCore.QSettings()
         split_keyword: str = settings.value("split_keyword", "")
         if split_keyword and not notes:
-            notes = self.__get_notes_with_keyword(split_keyword)
+            notes = self.__get_notes_with_keyword(split_keyword, self.all_notes)
         progress.setValue(1)
         if not notes:
             return []
