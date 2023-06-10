@@ -231,9 +231,11 @@ class SplitTab(QtWidgets.QWidget):
         return attr_names
 
     def __on_split_button_click(self) -> None:
-        if not self.chosen_notes or not self.all_notes:
-            show_message("No files to split.")
+        if not self.chosen_notes:
+            show_message("No files chosen to split.")
             return
+        if not self.all_notes:
+            self.all_notes = self.__get_all_notes_in_source_folder()
         new_notes: list[Note] = self.__split_files(self.chosen_notes)
         dialog = SplitSummaryDialog(new_notes, self.all_notes, self)
         dialog.exec()
