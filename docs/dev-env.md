@@ -53,8 +53,7 @@ Here are descriptions of what each of Note Splitter's folders are for:
 ```
 .
 ├───.github             # Files to configure GitHub.
-│   ├── ISSUE_TEMPLATE  # Issue templates.
-│   └── workflows       # GitHub Actions configuration files for automated testing.
+│   └── ISSUE_TEMPLATE  # Issue templates.
 ├── docs                # Files for documentation (.md and .rst) and for configuration.
 │   └── images          # Images used in the documentation and/or the README.
 └── src
