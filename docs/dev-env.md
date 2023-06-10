@@ -2,7 +2,7 @@
 
 ## setup
 
-1. Download [Python](https://www.python.org/downloads/) 3.10 or newer if you haven't already.
+1. Download [Python](https://www.python.org/downloads/) 3.11 if you haven't already.
 2. Navigate in a terminal to where you want the project's folder to appear.
 3. `git clone https://github.com/wheelercj/note-splitter.git` to download the project's files.
 4. `cd` into the project's folder.
