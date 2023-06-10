@@ -97,7 +97,7 @@ class SplitSummaryDialog(QtWidgets.QDialog):
     def __init__(
         self, new_notes: list[Note], all_notes: list[Note], parent: QtWidgets.QWidget
     ):
-        super().__init__(parent, QtCore.Qt.WindowModality.WindowModal)
+        super().__init__(parent, QtCore.Qt.WindowType.Window)
         self.new_notes = new_notes
         self.all_notes = all_notes
         self.layout = QtWidgets.QVBoxLayout(self)
