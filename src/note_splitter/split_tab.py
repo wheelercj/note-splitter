@@ -333,7 +333,7 @@ class SplitTab(QtWidgets.QWidget):
             "file_name_format", DEFAULT_SETTINGS["file_name_format"]
         )
         split_type: type[tokens.Token] = get_token_type(
-            QtCore.QSettings().value("split_type")
+            settings.value("split_type", DEFAULT_SETTINGS["split_type"])
         )
         split_attrs: dict = settings.value(
             "split_attrs", DEFAULT_SETTINGS["split_attrs"]
