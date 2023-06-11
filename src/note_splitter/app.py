@@ -27,14 +27,21 @@ def main():
     QtWidgets.QApplication.setOrganizationName("Note Splitter")
 
     QtWidgets.QApplication.setStyle("Fusion")
+    sys.argv += ["-platform", "windows:darkmode=1"]
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(
         """
         QWidget {
             font-size: 14px;
-        }
-        QCheckBox {
             background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        QCheckBox,
+        QComboBox,
+        QLineEdit,
+        QListWidget,
+        QTextBrowser {
+            background-color: #454545;
         }
         """
     )
