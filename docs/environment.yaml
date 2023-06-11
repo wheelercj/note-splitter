@@ -1,6 +1,5 @@
 name: docs
 channels:
-  - conda-forge
   - defaults
 dependencies:
   - sphinx==4.2.0

@@ -22,6 +22,3 @@ python:
   install:
     - method: pip
       path: .
-
-conda:
-  environment: docs/environment.yaml
