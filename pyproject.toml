@@ -23,6 +23,7 @@ icon = "src/note_splitter/resources/note_splitter"
 sources = ['src/note_splitter']
 requires = [
     'pyside6>=6.5.1.1',
+    'pyyaml>=6.0',
 ]
 
 
