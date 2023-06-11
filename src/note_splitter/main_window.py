@@ -1,3 +1,5 @@
+import os
+
 from note_splitter.menu import Menu
 from PySide6 import QtCore
 from PySide6 import QtGui
@@ -8,6 +10,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Note Splitter")
+        if os.path.exists("app"):
+            self.setWindowIcon(
+                QtGui.QIcon("app/note_splitter/resources/note_splitter.svg")
+            )
+        else:
+            self.setWindowIcon(
+                QtGui.QIcon("src/note_splitter/resources/note_splitter.svg")
+            )
         self.central_widget = Menu(self)
         self.setCentralWidget(self.central_widget)
         self.is_quitting = False
