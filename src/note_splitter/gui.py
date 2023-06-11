@@ -116,9 +116,8 @@ class SplitSummaryDialog(QtWidgets.QDialog):
         self.new_notes = new_notes
         self.all_notes = all_notes
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.note_count_label = QtWidgets.QLabel(
-            f"{len(self.new_notes)} new files created."
-        )
+        self.note_count_label = QtWidgets.QLabel(f"{len(self.new_notes)} files created")
+        self.layout.addWidget(self.note_count_label)
         self.notes_list_widget = QtWidgets.QListWidget()
         self.notes_list_widget.addItems(
             f"[[{n.name}]] {n.title}" for n in self.new_notes
