@@ -2,11 +2,11 @@
 
 ## setup
 
-1. Download [Python](https://www.python.org/downloads/) 3.11 if you haven't already.
+1. Download [Python](https://www.python.org/downloads/) 3.10 if you haven't already.
 2. Navigate in a terminal to where you want the project's folder to appear.
 3. `git clone https://github.com/wheelercj/note-splitter.git` to download the project's files.
 4. `cd` into the project's folder.
-5. Create a virtual environment, such as with `py -3.11 -m venv venv` or `python3.11 -m venv venv`.
+5. Create a virtual environment, such as with `py -3.10 -m venv venv` or `python3.10 -m venv venv`.
 6. [Activate the virtual environment](https://python.land/virtual-environments/virtualenv).
 7. `pip install -r requirements.txt` to install the app's dependencies.
 8. `pip install -r requirements-dev.txt` to install the development dependencies.
