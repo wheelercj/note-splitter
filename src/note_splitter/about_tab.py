@@ -30,7 +30,7 @@ class AboutTab(QtWidgets.QWidget):
                 </style>
 
                 <h1>Note Splitter</h1>
-                <p style="font-size: 0.8em">v0.0.1</p>
+                <p style="font-size: 0.8em">v1.0.0</p>
 
                 <p>Split markdown files into multiple smaller files.</p>
 
