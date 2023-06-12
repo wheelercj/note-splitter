@@ -2,8 +2,6 @@
 
 Split markdown files into multiple smaller files.
 
-![Tests](https://github.com/wheelercj/note-splitter/actions/workflows/tests.yml/badge.svg)
-
 ## download
 
 You can [download Note Splitter here (Windows only)](https://github.com/wheelercj/note-splitter/releases) or [install Note Splitter from source (all platforms)](https://github.com/wheelercj/note-splitter/blob/main/docs/dev-env.md).
