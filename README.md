@@ -71,15 +71,15 @@ All new file names are guaranteed to be unique. If the file name format does not
 
 The file name format setting should not include a file extension and can use these variables:
 
-`%uuid4` - A universally unique identifier
-`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
-`%Y` - The current year (4 digits)
-`%M` - The current month (2 digits)
-`%D` - The current day (2 digits)
-`%h` - The current hour (2 digits)
-`%m` - The current minute (2 digits)
-`%s` - The current second (2 digits)
-`%id` - The same as entering `%Y%M%D%h%m%s`
+* `%uuid4` - A universally unique identifier
+* `%title` - The title of the file (the body of the first header, or of the first line if there is no header)
+* `%Y` - The current year (4 digits)
+* `%M` - The current month (2 digits)
+* `%D` - The current day (2 digits)
+* `%h` - The current hour (2 digits)
+* `%m` - The current minute (2 digits)
+* `%s` - The current second (2 digits)
+* `%id` - The same as entering `%Y%M%D%h%m%s`
 
 You can use other characters with these variables. For example, to get file names like `2021-12-16 09.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
 
