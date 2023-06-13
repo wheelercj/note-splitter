@@ -6,7 +6,7 @@ Automate tedious parts of many workflows, such as research notetaking that requi
 
 ![demo](docs/images/demo.png)
 
-![demo gif](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTMyYjMzNDhjNDZlOTE1ZWYwZTA1ZjZmNjVlYmRjZDEwNGQxNDA1OCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/uzb6EwjbNryv3OUTU3/giphy.gif)
+![demo gif](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTdhZDczODEyZDA3MGJhOWM2ZmM1YzllODYxNGU5ZjlmYTUwNGI5ZCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/SVRERckC3PE62pt73i/giphy.gif)
 
 ## download
 
