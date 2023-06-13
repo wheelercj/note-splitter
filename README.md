@@ -1,59 +1,35 @@
 # Note Splitter
 
-Split markdown files into multiple smaller files.
+Split text files into multiple smaller files.
+
+Automate tedious parts of many workflows, such as research notetaking that requires not just splitting a file, but also copying footnotes, resizing headers, etc.
+
+![demo](docs/images/demo.png)
+
+![demo gif](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTMyYjMzNDhjNDZlOTE1ZWYwZTA1ZjZmNjVlYmRjZDEwNGQxNDA1OCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/uzb6EwjbNryv3OUTU3/giphy.gif)
 
 ## download
 
 You can [download Note Splitter here (Windows only)](https://github.com/wheelercj/note-splitter/releases) or [install Note Splitter from source (all platforms)](https://github.com/wheelercj/note-splitter/blob/main/docs/dev-env.md).
 
-## features
+## major features
 
 * Split by almost any markdown element.
-* Split multiple files at the same time.
-* Choose files to split by keyword or with a file browser.
-* Optionally copy tags, frontmatter, footnotes, etc. into the new files.
-* Source files will **NOT** be changed in any way, possibly except for when you move new files to a different folder (see the next point).
-* Moving files to a different folder can automatically update markdown links to them in other files in your source folder. Also, any relative markdown file links in new files are made absolute.
-* For each source file split, an index file can optionally be created that links to each of the new files, and the new files can optionally have backlinks to the index file (or to the source file if no index file is created).
-
-![demo](docs/images/demo.png)
-
-## split attributes and values
-
-Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should choose the `(none)` attribute, but if you want to split by headers of level 2 you should choose the `level` attribute and the value `2`.
-
-Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header. However, some other split types such as `ordered list item` also have a `level` attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
-
-The "parse blocks" checkbox is mainly for elements of text that span multiple lines (blocks), but the option also changes the behavior when splitting by single-line elements. When parse blocks is chosen, each split section also ends where its containing block ends instead of only when the next element of the split type is found.
-
-## file name formats
-
-The file name format setting should not include a file extension and can use these variables:
-
-`%uuid4` - A universally unique identifier
-`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
-`%Y` - The current year (as a four-digit number)
-`%M` - The current month (as a number)
-`%D` - The current day
-`%h` - The current hour
-`%m` - The current minute
-`%s` - The current second
-`%id` - The same as entering `%Y%M%D%h%m%s`
-
-You can use other characters with these variables. For example, to get file names like `2021-12-16 9.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
-
-If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
-
-All new file names are guaranteed to be unique. If the file name format somehow does not allow for unique file names, a period followed by a number will be appended to each new file name to make them unique.
+* Backlinks and/or index files.
+* Automatically update links when new files are moved.
+* Optionally copy tags, frontmatter, footnotes, etc. into new files.
+* Source files are **NOT** changed in any way except for automatic link updates.
 
 ## split types
+
+Choose an element's name to choose what to split by. Some split types group together multiple other related split types ("child types"), so you can split by multiple types by choosing one with child types.
 
 | type name                | description                                                                      | child types                             |
 |--------------------------|----------------------------------------------------------------------------------|------------------------------------------|
 | block                    | any text element that spans multiple lines and contains other tokens                                      | blockquote block, code block, math block, table, text list                                   |
 | blockquote               | a quote                                                                          | (none)                 |
 | blockquote block         | multiple consecutive quotes                                                      | (none)                                    |
-| can have inline elements | any line of text that can contain inline elements                                | blockquote, footnote, header, task, text, ordered list item, unordered list item                                     |
+| can have inline elements | any line of text that can contain inline elements (tags and markdown links to files)                                | blockquote, footnote, header, task, text, ordered list item, unordered list item                                     |
 | code                     | a line of code                                                                   | (none)                                   |
 | code block               | a block of code made of at least one line of code surrounded by code fences      | (none)                                    |
 | code fence               | a delimiter that shows where a code block begins or ends                         | (none)                                    |
@@ -78,6 +54,36 @@ All new file names are guaranteed to be unique. If the file name format somehow 
 | text list item           | one line of a bullet-point list and/or ordered (numbered) list                   | task, ordered list item, unordered list item                                     |
 | token                    | anything                                                                         | everything                                       |
 | unordered list item      | one line of a bullet-point list                                                  | (none) |
+
+## split attributes and values
+
+Choosing a split attribute and value is optional, and can be used to be more specific about what you want to split. For example, if you want to split by headers of all levels you should choose the `(none)` attribute, but if you want to split by headers of level 2 you should choose the `level` attribute and the value `2`.
+
+Some split types have different attributes to choose from. For example, the `header` split type has `level` as one of its split attributes, which refers to the size of the header. However, some other split types such as `ordered list item` also have a `level` attribute that refers to the _indentation level_. Any split type's `content` attribute option lets you specify what exact text the element should contain. Some split types have other specialized attributes, such as `code block`'s `language` attribute, which allows you to choose the code block's language.
+
+## parse blocks
+
+The "parse blocks" checkbox is mainly for elements of text that span multiple lines (blocks), but the option also changes the behavior when splitting by single-line elements. When parse blocks is chosen, each split section also ends where its containing block ends instead of only where the next element of the split type is found.
+
+## file name formats
+
+All new file names are guaranteed to be unique. If the file name format does not allow for unique file names, a period followed by a unique number will be added to each new file name.
+
+The file name format setting should not include a file extension and can use these variables:
+
+`%uuid4` - A universally unique identifier
+`%title` - The title of the file (the body of the first header, or of the first line if there is no header)
+`%Y` - The current year (4 digits)
+`%M` - The current month (2 digits)
+`%D` - The current day (2 digits)
+`%h` - The current hour (2 digits)
+`%m` - The current minute (2 digits)
+`%s` - The current second (2 digits)
+`%id` - The same as entering `%Y%M%D%h%m%s`
+
+You can use other characters with these variables. For example, to get file names like `2021-12-16 09.30`, you can set the file name format to `%Y-%M-%D %h.%m`.
+
+If multiple files are made when the file name format has at least one of `%s`, `%m`, `%h`, and `%D`, the smallest of these time variables will be incremented once for each new file so that all the files have unique names. The first file starts with the current time.
 
 ## contributing
 
